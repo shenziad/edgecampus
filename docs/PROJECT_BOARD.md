@@ -8,7 +8,7 @@
 | Backend 基线 | C | ✅ | ✅（fake） | DONE | Gate 1 稳定化 |
 | Fake Edge | B+C | ✅ | ✅ | DONE | 保留为开发替身 |
 | Dashboard 基线 | D | ✅（代码检查） | ✅（WS） | READY | Gate 1 实机浏览器确认 |
-| VLAN/IP 逻辑规划 | A | ✅ | — | DONE | Gate 1 实施 |
+| VLAN/IP 逻辑规划 | A | ✅ | — | DONE | Gate 1 网络底座完成（VLAN/Trunk/EtherChannel/SVI/DHCP/ACL + N1/N2/N3） |
 | PT 设备型号/端口映射 | A | ✅ | — | DONE | 冻结 |
 | PT → 真实主机控制通道 | A+B+C | ✅ | ✅ | VERIFIED | Gate 2 接真实 Telemetry |
 | Edge 本地自治 | B | ✅（核心逻辑） | ❌（PT） | TESTING | Gate 1 映射 PT API |
@@ -44,3 +44,4 @@ Gate 1 每位 Owner 最长独立开发 4 小时，之后进行一次 Integration
 | 初始化 | 全组 | G0 | 仓库/契约/基线 | PT 实机信息 | 优先验证 PT↔Host |
 | 自动验证 | B+C+D | G1 | Policy/Command、断云自治、重连同步（fake） | PT 尚未接入 | 软件基线可并行开发 |
 | 2026-09-14 | G0 Owner | G0 | 3650/2960 型号与端口冻结；RealWSClient→FastAPI 实测通过；重开 PT 后复测通过 | 无 G0 阻塞项 | **Gate 0 COMPLETE，进入 Gate 1 四路并行** |
+| 2026-09-15 | A Network | G1 | VLAN 10/20/30、Access 端口、LACP EtherChannel+Trunk、SVI+ip routing、DHCP、ACL（SVI inbound）、N1/N2/N3 全部通过 | 无 | A 侧 Gate 1 完成，待并入 canonical `.pkt` 并复核 |
