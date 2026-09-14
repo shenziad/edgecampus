@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EdgeCampus NOC</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <div>
+          <p class="eyebrow">NETWORK & EDGE OPERATIONS CENTER</p>
+          <h1>Edge<span>Campus</span></h1>
+          <p class="subtitle">智慧园区边缘—云协同网络控制平台</p>
+        </div>
+        <div id="socketBadge" class="badge warning"><i></i>控制平面连接中</div>
+      </header>
+
+      <main>
+        <section class="summary-grid">
+          <article class="hero-card temperature-card">
+            <div class="card-label">环境温度 · TEMP01</div>
+            <div class="temperature"><strong id="temperature">--.-</strong><span>℃</span></div>
+            <div id="thermalState" class="pill neutral">等待遥测</div>
+            <div class="meter"><div id="temperatureBar"></div></div>
+            <div class="meter-scale"><span>15℃</span><span>30℃</span><span>45℃</span></div>
+          </article>
+
+          <article class="hero-card">
+            <div class="card-label">边缘节点 · EDGE-SBC-01</div>
+            <div class="node-row"><span>Connectivity</span><b id="edgeState">OFFLINE</b></div>
+            <div class="node-row"><span>Control Mode</span><b id="controlMode">AUTO</b></div>
+            <div class="node-row"><span>Cloud State</span><b id="cloudState">WAITING</b></div>
+            <div class="node-row"><span>Policy Version</span><b id="policyVersion">v1</b></div>
+            <div class="node-row"><span>Last Heartbeat</span><b id="heartbeat">—</b></div>
+          </article>
+
+          <article class="hero-card fan-card">
+            <div class="card-label">冷却设备 · FAN01</div>
+            <div id="fanVisual" class="fan-visual"><div class="fan">✣</div></div>
+            <div class="fan-state">当前状态 <strong id="fanState">UNKNOWN</strong></div>
+            <div class="button-row">
+              <button data-action="ON">手动开启</button>
+              <button class="secondary" data-action="OFF">手动关闭</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="lower-grid">
+          <article class="panel">
+            <div class="panel-heading">
+              <div><p class="eyebrow">CLOUD-TO-EDGE</p><h2>控制策略</h2></div>
+              <span class="tag">Policy as Intent</span>
+            </div>
+            <form id="policyForm">
+              <label>运行模式
+                <select id="policyMode"><option>AUTO</option><option>MANUAL</option></select>
+              </label>
+              <label>启动阈值
+                <div class="input-unit"><input id="threshold" type="number" min="0" max="80" step="0.5" value="30" /><span>℃</span></div>
+              </label>
+              <label>迟滞区间
+                <div class="input-unit"><input id="hysteresis" type="number" min="0" max="10" step="0.5" value="1" /><span>℃</span></div>
+              </label>
+              <button type="submit">下发新策略</button>
+            </form>
+            <p id="policyHint" class="hint">AUTO 模式下，Edge 在断云时仍按最后有效策略运行。</p>
+          </article>
+
+          <article class="panel events-panel">
+            <div class="panel-heading">
+              <div><p class="eyebrow">OBSERVABILITY</p><h2>实时事件流</h2></div>
+              <span id="eventCount" class="tag">0 events</span>
+            </div>
+            <div class="event-head"><span>TIME</span><span>EVENT</span><span>SOURCE</span><span>DETAIL</span></div>
+            <div id="events" class="events"><div class="empty">等待系统事件…</div></div>
+          </article>
+        </section>
+
+        <section class="security-strip">
+          <div><p class="eyebrow">NETWORK SECURITY DOMAINS</p><h2>网络隔离</h2></div>
+          <div class="zone"><span>VLAN 10</span><b>OFFICE</b><small>仅访问 Dashboard</small></div>
+          <div class="zone accent"><span>VLAN 20</span><b>IoT</b><small>传感器与执行器</small></div>
+          <div class="zone"><span>VLAN 30</span><b>MANAGEMENT</b><small>控制平面与管理员</small></div>
+        </section>
+      </main>
+
+      <footer><span>EdgeCampus Protocol v1.0</span><span>Local Loop + Global Loop</span></footer>
+    </div>
+    <div id="toast" class="toast"></div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

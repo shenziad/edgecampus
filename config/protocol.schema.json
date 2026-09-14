@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgecampus.local/schema/protocol-v1.json",
+  "title": "EdgeCampus message v1",
+  "type": "object",
+  "required": ["type", "protocol_version", "timestamp"],
+  "properties": {
+    "type": {
+      "enum": [
+        "hello", "heartbeat", "telemetry", "status", "command",
+        "command_ack", "policy", "policy_ack", "state_sync", "error"
+      ]
+    },
+    "protocol_version": {"const": "1.0"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "edge_id": {"type": "string"},
+    "device_id": {"type": "string"},
+    "message_id": {"type": "string"}
+  },
+  "additionalProperties": true
+}

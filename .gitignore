@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.idea/
+.vscode/
+.DS_Store
+.env
+runtime/
+*.log
+*.tmp
+dist/
+EdgeCampus.zip
+
+# Packet Tracer 自动备份，正式 .pkt 文件保留
+*.pkt.autosave
+*.pka
