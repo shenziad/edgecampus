@@ -1,17 +1,60 @@
 # EdgeCampus
 
-面向智慧园区的边缘—云协同网络控制平台。项目把 Packet Tracer 园区网络、SBC 边缘自治、FastAPI 控制平面与实时 Dashboard 组合成一个可现场验收的闭环系统。
+**面向多园区智慧校园的边缘—云协同网络控制平台。**
 
-## 当前基线
+EdgeCampus 将 Packet Tracer 中的总部园区、企业 WAN、Internet 与异地分部，和 SBC 边缘自治、真实主机 FastAPI 控制平面、实时 Dashboard 组合为一个可现场验收的系统。项目核心仍是“感知—边缘决策—云端管理—设备执行”的双控制环；Final Architecture v2 只向现有总部 Core 外扩，不破坏 Gate 1 已验证的 VLAN / Edge 基线。
 
-- 已冻结设备 ID、消息字段、WebSocket 路径和默认策略。
-- 后端可接收 Edge 遥测/心跳并向 Dashboard 广播。
-- `fake_edge.py` 可在没有 Packet Tracer 时完成端到端联调。
-- Dashboard 支持温度、风扇、在线状态、事件流、策略下发和手动控制。
-- Packet Tracer 拓扑与 SBC 适配器保留了明确的实现入口。
-- 测试证据、验收脚本、团队分工和 AI 协作红线已统一。
+## Final Architecture v2
 
-## 5 分钟启动（Windows / Linux）
+```text
+                                  INTERNET-SERVER
+                                     DNS / HTTP
+                                         |
+                                      R-ISP
+                                      AS65000
+                                    /         \
+                               eBGP             eBGP
+                                /                 \
+                           R-HQ                   R-BRANCH
+                          AS65001                  AS65002
+                             |                        |
+                           OSPF                 802.1Q Trunk
+                             |                        |
+                          SW-CORE                 SW-BRANCH
+                             ║                    /       \
+                       LACP EtherChannel     BR-OFFICE   BR-ADMIN
+                             ║
+                          SW-ACCESS
+                    /          |           \
+                 OFFICE       IOT       MANAGEMENT
+                               |
+                     TEMP01 → MCU → SBC → FAN01
+                               |
+                     RealWSClient（带外）
+                               |
+                     FastAPI ↔ Dashboard
+```
+
+最终系统同时承载：总部网络安全分区、Edge 本地自治、真实 Edge→Cloud Telemetry、Cloud→Edge Policy、断云不断控、总部互联网出口、总部—分部业务访问、集中网络管理、OSPF/eBGP、NAT/PAT、DNS/HTTP、IPv6-over-IPv4 Overlay 与 Port Security。
+
+## 关键真实性边界
+
+Packet Tracer 的 VLAN / ACL / Routing / OSPF / BGP / NAT / IPv6 Tunnel 是**模拟企业数据平面**。`EDGE-SBC-01` 使用 Packet Tracer External Network Access / `RealWSClient` 连接宿主机 FastAPI，属于**带外 Edge–Cloud 控制通道**。
+
+因此不得在代码、报告或答辩中声称真实 WebSocket 流量经过 R-HQ、R-ISP、BGP、NAT 或 VLAN 20/30。
+
+`BACKEND-STUB` 是 Packet Tracer 中的 Server-PT，Final Architecture v2 中同时承担 **HQ-SERVICE / CONTROL-PLANE-STUB** 的网络验收角色；它不是真实 FastAPI Backend。
+
+## 当前阶段
+
+- Gate 0：COMPLETE。
+- Gate 1：**CLOSED-WITH-PLACEHOLDER**。A、B、D 已有正式结果；A+B 已完成 canonical 集成与回归；C 的 Owner 专属验收证据暂以 `docs/gate1/C_BACKEND_REPORT.md` 占位，必须在 Gate 5 Freeze 前补齐。
+- 当前 Gate：**Gate 2**。
+- Final Architecture v2 已冻结设计；新增 Branch/WAN 的实际网络配置由 A 从 Gate 2 起按层实施。
+
+当前指挥文件：`docs/CURRENT_GATE.md`。
+
+## 5 分钟软件基线启动
 
 ```bash
 python -m venv .venv
@@ -32,35 +75,50 @@ python -m uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
 python -m edge.fake_edge
 ```
 
-浏览器打开 <http://127.0.0.1:8000>。拖动模拟温度、修改阈值或控制风扇即可验证闭环。
+浏览器打开 <http://127.0.0.1:8000>。
 
-## 团队入口
+## Owner
 
-| Owner | 工作目录 | 首要文档 |
+| Owner | 工作目录 | Final Architecture v2 主责 |
 |---|---|---|
-| A Network | `packet_tracer/`、`docs/NETWORK_PLAN.md` | 网络地址、VLAN、ACL 与拓扑 |
-| B Edge | `edge/` | 本地自治、PT 适配、断线重连 |
-| C Control Plane | `backend/` | WebSocket、状态、策略和日志 |
-| D UI & Integration | `dashboard/`、`tests/` | 页面、联调、验收证据 |
+| A Network | `packet_tracer/`、网络证据 | HQ Core 保持稳定；Branch/WAN、OSPF/BGP、NAT、IPv6 Tunnel、Port Security；唯一 canonical `.pkt` Owner |
+| B Edge | `edge/` | TEMP/MCU/SBC/FAN 本地自治、PT Telemetry、Policy/Command、重连 |
+| C Control Plane | `backend/` | WebSocket、协议校验、状态、事件、策略转发；补齐 Gate 1 占位验收 |
+| D UI & Integration | `dashboard/`、`tests/` | Dashboard、集成测试、端到端证据与演示整合 |
 
-开始工作前必须先读：
+开始任何工作前按顺序阅读：
 
 1. `docs/AI_CONTEXT.md`
-2. `docs/PROTOCOL.md`
+2. `docs/CURRENT_GATE.md`
 3. `docs/CONTRIBUTING.md`
-4. 自己负责模块的文档
+4. `docs/ARCHITECTURE.md`
+5. `docs/PROTOCOL.md`
+6. `docs/NETWORK_PLAN.md`
+7. `docs/ACCEPTANCE.md`
 
-## 最小验收闭环
+## 核心业务流
 
 ```text
-温度变化 → Edge 自动判断 → Fan 动作 → Backend 汇聚 → Dashboard 实时显示
-Dashboard 下发阈值 → Edge 更新策略 → 返回 ACK → 使用新阈值控制
-Backend 停止 → Edge 保持本地自治 → Backend 恢复 → Edge 重连并同步状态
+1. Edge Local Loop
+   TEMP01 → MCU → SBC → FAN01
+
+2. Cloud Control Loop
+   Edge ↔ FastAPI ↔ Dashboard
+
+3. Branch Business Flow
+   BR-OFFICE → Enterprise WAN → HQ-SERVICE
+
+4. Remote Operations Flow
+   BR-ADMIN → IPv6-over-IPv4 Tunnel → HQ MANAGEMENT
+
+5. Central Administration Flow
+   HQ ADMIN → WAN → R-BRANCH / SW-BRANCH
+
+6. Enterprise Internet Flow
+   HQ OFFICE → R-HQ PAT → ISP → DNS/HTTP
 ```
 
-完整 Gate 和现场演示顺序见 `docs/ACCEPTANCE.md` 与 `docs/DEMO_SCRIPT.md`。
-
-## 常用检查
+## 常用软件检查
 
 ```bash
 python -m compileall backend edge tests
@@ -69,4 +127,4 @@ python -m unittest discover -s tests -v
 
 ## 范围边界
 
-首版只承诺 3 个安全域、1 个温度传感器、1 个风扇、AUTO/MANUAL、阈值策略、心跳和断线重连。烟雾、门禁、MQTT、数据库和多节点调度均属于 Gate 5 之后的增强项。
+Final Architecture v2 不引入 Kubernetes、MQ、数据库、多租户、复杂认证、第二套 IoT 场景或多 Edge 调度。网络扩展的目的，是把前五次组网实验能力有机承载到同一个多园区业务系统中，而不是增加与主线无关的功能。
