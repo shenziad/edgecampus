@@ -1,47 +1,102 @@
-# Integration Board
+# Integration Board — Final Architecture v2
 
-只记录端到端能力，不记录按钮颜色、函数改名等局部工作。
+只记录可验收能力与跨模块状态，不记录按钮颜色、函数改名等局部工作。
 
-| 能力 | Owner | 独立测试 | 联调 | 状态 | 下一动作 |
-|---|---|---:|---:|---|---|
-| 公共协议 v1 | B+C+D | ✅ | ✅（fake） | DONE | 冻结 |
-| Backend 基线 | C | ✅ | ✅（fake） | DONE | Gate 1 稳定化 |
-| Fake Edge | B+C | ✅ | ✅ | DONE | 保留为开发替身 |
-| Dashboard 基线 | D | ✅（代码检查） | ✅（WS） | READY | Gate 1 实机浏览器确认 |
-| VLAN/IP 逻辑规划 | A | ✅ | — | DONE | Gate 1 网络底座完成（VLAN/Trunk/EtherChannel/SVI/DHCP/ACL + N1/N2/N3） |
-| PT 设备型号/端口映射 | A | ✅ | — | DONE | 冻结 |
-| PT → 真实主机控制通道 | A+B+C | ✅ | ✅ | VERIFIED | Gate 2 接真实 Telemetry |
-| Edge 本地自治 | B | ✅（核心逻辑） | ❌（PT） | TESTING | Gate 1 映射 PT API |
-| Telemetry 全链路 | B+C+D | ✅（fake） | ❌（PT） | TESTING | Gate 2 |
-| Policy 下发 | B+C+D | ✅（协议） | ❌（PT） | TESTING | Gate 3 |
-| 断云不断控 | B+C | ✅（fake） | ✅（fake） | TESTING | PT Gate 4 |
-| 云恢复状态同步 | B+C+D | ✅（fake） | ✅（fake） | TESTING | PT Gate 4 |
+## 能力状态
+
+| 能力 | Owner | 当前状态 | 证据 / 说明 | 下一动作 |
+|---|---|---|---|---|
+| Protocol v1.0 | B+C+D | **FROZEN** | `docs/PROTOCOL.md` | 不改字段/URL/ID |
+| Backend 软件基线 | C | AVAILABLE | main 已有 FastAPI / state / events / fake 基线 | C 补 Gate1 owner 证据 + G2 真 Telemetry |
+| C Gate1 Owner 验收 | C | **PLACEHOLDER** | `docs/gate1/C_BACKEND_REPORT.md` | Gate5 前必须清零 |
+| Fake Edge | B+C | DONE | 可独立开发/联调 | 保留，不替代 PT 真链路 |
+| Dashboard 基线 | D | **PASS G1** | `docs/gate1/D_DASHBOARD_REPORT.md` + 4 张 evidence | G2 接真 PT Telemetry |
+| HQ VLAN/IP / SVI / DHCP | A | **PASS G1** | A Gate1 报告 / network evidence | 冻结 Core |
+| HQ EtherChannel / Trunk | A | **PASS G1** | Po1 + trunk evidence | 新 WAN 后持续 regression |
+| HQ ACL | A | **PASS G1** | OFFICE→IOT deny 等 | 新 WAN 不得破坏 |
+| Edge Local Loop | B | **PASS G1** | TEMP→MCU→SBC→FAN / hysteresis / backend-off | G2 增量加 Telemetry |
+| A+B canonical integration | A+B | **PASS G1** | `docs/gate1/AB_INTEGRATION_REPORT.md` | 作为 HQ Core baseline |
+| PT → Real Host RealWSClient | A+B+C | VERIFIED | Gate0 实机 + 重开复测 | G2 承载真 Telemetry |
+| Real PT Telemetry | B+C+D | IN PROGRESS | G2 主 Critical Path | TEMP→Dashboard |
+| Branch LAN / ROAS | A | NOT STARTED | Final Architecture v2 | G2 |
+| IPv4 WAN Underlay | A | NOT STARTED | Final Architecture v2 | G2 |
+| HQ OSPF | A | NOT STARTED | Area0 SW-CORE↔R-HQ | G3 |
+| WAN eBGP | A | NOT STARTED | AS65001/65000/65002 | G3 |
+| Branch→HQ business | A | NOT STARTED | BR-OFFICE→HQ-SERVICE | G3 |
+| HQ Internet PAT / DNS / HTTP | A | NOT STARTED | OFFICE→Internet | G3 |
+| Static TCP/80 mapping | A | NOT STARTED | `203.0.113.1:80→192.168.30.10:80` | G3 |
+| Cloud Policy / Command 真闭环 | B+C+D | READY FROM FAKE | 真 PT 未验收 | G3 |
+| IPv6 address modes | A | NOT STARTED | SLAAC + DHCPv6 + Static | G4 |
+| IPv6-over-IPv4 Overlay | A | NOT STARTED | BR-ADMIN→HQ MGMT | G4 |
+| Central Network Admin | A | NOT STARTED | HQ ADMIN→Branch devices | G4 |
+| Port Security / sticky MAC | A | NOT STARTED | HQ OFFICE access | G4 |
+| Cloud-off local autonomy | B | PASS LOCALLY / FINAL PENDING | G1 backend-off local loop 已证；整套演示待 G4 | G4 |
+| Cloud reconnect + State Sync | B+C+D | PASS FAKE / REAL PENDING | fake 基线存在 | G4 真 PT |
+| Final canonical `.pkt` | A | IN DEVELOPMENT | HQ Core baseline 已存在；V2 WAN 待配置 | G5 freeze |
 
 ## Gate 状态
 
 | Gate | 状态 | 说明 |
 |---|---|---|
-| G0 Contract Freeze | **COMPLETE** | 设备/端口、公共协议、VLAN/IP、ACL 放置原则、PT→Real Host 通道均已冻结或实测 |
-| G1 四模块独立运行 | IN PROGRESS | A/B/C/D 可并行推进 |
-| G2 单向数据链路 | NOT STARTED | 等 G1 完成后接入真实 PT Telemetry |
-| G3 双向策略闭环 | NOT STARTED | 等 G2 |
-| G4 断云不断控 | NOT STARTED | 核心创新验收 |
-| G5 Freeze 与三轮彩排 | NOT STARTED | 最终冻结 |
+| G0 Contract Freeze | **COMPLETE** | 软件契约、HQ Core 规划、PT→Real Host 控制通道 |
+| G1 四模块独立运行 | **CLOSED-WITH-PLACEHOLDER** | A/B/D PASS；A+B integration PASS；C owner evidence pending |
+| G2 Real Telemetry + WAN Foundation | **IN PROGRESS** | B/C/D 真 TEMP→Dashboard；A Branch LAN + IPv4 Underlay |
+| G3 Policy Loop + WAN Business | NOT STARTED | Policy/Command；OSPF/eBGP/NAT/DNS/HTTP/Branch business |
+| G4 Failure Recovery + IPv6/Security | NOT STARTED | 断云恢复；IPv6 Tunnel、Port Security、Central Admin |
+| G5 Freeze + 3 Rehearsals | NOT STARTED | 清零 placeholder、final `.pkt`、三轮完整彩排 |
 
-## Gate 1 并行边界
+## 当前 Critical Path
 
-- **A Network**：唯一维护 canonical `.pkt`，完成 VLAN、Trunk、LACP EtherChannel、SVI、DHCP、ACL 与网络独立验收。
-- **B Edge**：使用自己的 PT 开发副本验证 TEMP01 / FAN01 API 和 `TEMP01 → SBC → FAN01` 本地自治；不要把开发副本直接覆盖 canonical `.pkt`。
-- **C Control Plane**：使用 `fake_edge.py` 独立稳定 Backend、状态管理、协议校验、断连处理和事件日志，不等待 B。
-- **D UI & Integration**：使用 fake/Backend snapshot 独立完成 Dashboard 状态、事件、告警与策略表单，并维护集成测试与验收证据。
+```text
+B: PT real temperature + local fan
+          ↓
+C: Backend receives Protocol v1 telemetry
+          ↓
+D: Dashboard renders real PT state
+```
 
-Gate 1 每位 Owner 最长独立开发 4 小时，之后进行一次 Integration Check。谁先完成自己的 Gate 1 任务，优先支援当前 Critical Path，不新增非必要功能。
+A 与主 Critical Path 并行：
+
+```text
+Branch VLAN40/50
+      ↓
+Router-on-a-Stick
+      ↓
+IPv4 WAN Underlay
+      ↓
+G3 OSPF/eBGP/NAT
+      ↓
+G4 IPv6 Tunnel / Port Security
+```
+
+## Owner 边界
+
+- **A Network**：唯一 canonical `.pkt` Owner。Final Architecture v2 的新增设备/链路也由 A 合入正式文件；不得为了 WAN 重写 HQ Gate1 Core。
+- **B Edge**：只增量修改 `edge/` 与 SBC 适配；Local Loop 优先于 Cloud 通信。
+- **C Control Plane**：`backend/`；不得因 G2 真 PT 接入更改 Protocol v1；同时补齐 Gate1 placeholder。
+- **D UI & Integration**：`dashboard/`、`tests/`、端到端 evidence；不得把展示字段改成新的传输契约。
 
 ## Integration Check 记录
 
-| 时间 | 参与人 | 当前 Gate | 成功项 | 阻塞项 | 决策 |
-|---|---|---|---|---|---|
-| 初始化 | 全组 | G0 | 仓库/契约/基线 | PT 实机信息 | 优先验证 PT↔Host |
-| 自动验证 | B+C+D | G1 | Policy/Command、断云自治、重连同步（fake） | PT 尚未接入 | 软件基线可并行开发 |
-| 2026-09-14 | G0 Owner | G0 | 3650/2960 型号与端口冻结；RealWSClient→FastAPI 实测通过；重开 PT 后复测通过 | 无 G0 阻塞项 | **Gate 0 COMPLETE，进入 Gate 1 四路并行** |
-| 2026-09-15 | A Network | G1 | VLAN 10/20/30、Access 端口、LACP EtherChannel+Trunk、SVI+ip routing、DHCP、ACL（SVI inbound）、N1/N2/N3 全部通过 | 无 | A 侧 Gate 1 完成，待并入 canonical `.pkt` 并复核 |
+| 时间 | 参与 | Gate | 成功项 | 缺口 / 决策 |
+|---|---|---|---|---|
+| 2026-09-14 | 全组 | G0 | HQ topology / protocol / RealWSClient frozen | G0 COMPLETE |
+| 2026-09-15 | A | G1 | VLAN/Trunk/EtherChannel/SVI/DHCP/ACL/N1-N3 PASS | A PASS |
+| 2026-09-15 | B | G1 | TEMP→MCU→SBC→FAN、hysteresis、backend-off autonomy PASS | B PASS |
+| 2026-09-15 | A+B | G1 | canonical integration + HQ regression PASS | A+B PASS |
+| 2026-09-15 | D | G1 | NORMAL/WARNING/OFFLINE/RECONNECT evidence archived | D PASS |
+| 2026-09-15 | C | G1 | 软件 baseline 已存在，但 Owner 专属证据未提交 | 建立 placeholder；不阻塞 G2；G5 前必须补 |
+| 2026-09-15 | 全组 | Re-baseline | Final Architecture v2 冻结：HQ + ISP/Internet + Branch；保留双控制环与 Protocol v1 | 进入 G2 |
+
+## Final Architecture v2 课程覆盖追踪
+
+| 课程能力 | 目标 Gate | 状态 |
+|---|---|---|
+| VLSM / IPv4 DHCP | G2 | Branch 待实现；HQ DHCP 已 PASS |
+| VLAN / Trunk / SVI / EtherChannel | G1/G2 | HQ PASS；Branch ROAS 待 G2 |
+| OSPF / BGP | G3 | NOT STARTED |
+| ACL / NAT/PAT / DNS/HTTP / static mapping | G1/G3 | HQ ACL PASS；其他待 G3 |
+| SLAAC / DHCPv6 / Static IPv6 / IPv6 static route | G4 | NOT STARTED |
+| MAC / Port Security | G4 | NOT STARTED |
+| IPv6-over-IPv4 Tunnel | G4 | NOT STARTED |
+| Remote management | G4 | NOT STARTED |
