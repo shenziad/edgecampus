@@ -32,9 +32,9 @@ CLOSED-WITH-PLACEHOLDER
 - B：PASS。
 - D：PASS。
 - A+B canonical 集成与回归：PASS。
-- C：Owner 专属 Gate 1 证据未交，已建立 `docs/gate1/C_BACKEND_REPORT.md` 占位；**不是 PASS**，Gate 5 前必须补齐。
+- C：核心验收句已举证（见 `docs/gate1/C_BACKEND_REPORT.md` 与 `evidence/backend/G1-01`–`G1-07`）。invalid-message / offline / reconnect 仍 PENDING，**不得写成完整 PASS**，Gate 5 前必须补齐。Gate 2 真 PT 遥测已进入 Backend（`evidence/backend/G2-C-01`–`G2-C-04`）。
 
-因此 Gate 2 可以推进，但任何报告不得把 C Gate 1 占位符写成“已验收完成”。
+因此 Gate 2 可以推进。不得把 C 稳定性三项未完成写成“C Gate 1 完整 PASS”。
 
 ---
 
@@ -282,7 +282,7 @@ unit = C
 
 参见：`docs/gate1/C_BACKEND_REPORT.md`。
 
-Gate 2 可以先联调，但 C 应尽早补：healthz、fake edge、invalid message、offline、reconnect/state_sync 证据。
+核心句（healthz / fake edge / `/api/state` 遥测）已举证。仍须补：invalid message、offline、reconnect/state_sync。
 
 ### 任务 B：支持真实 PT Telemetry
 
@@ -298,9 +298,13 @@ Gate 2 可以先联调，但 C 应尽早补：healthz、fake edge、invalid mess
 
 本 Gate 不需要 C 新增数据库、MQ、认证或新 API。
 
+2026-09-16 已验证：PT TEMP01 ≈32 C 经 RealWSClient 进入 `/api/state`（事件 31.8 C / SENSOR；SBC 同时 FAN ON）。证据：`evidence/backend/G2-C-01`–`G2-C-04`。
+
 ### C Gate 2 通过标准
 
 > 收到真实 PT SBC Telemetry 后，`/api/state` 和 Dashboard snapshot 都反映真实 TEMP01 值，并且 fake edge 开发路径仍可继续使用。
+
+C 段 `/api/state` 已满足；Dashboard 展示待 D。
 
 ---
 
@@ -363,9 +367,9 @@ D 本 Gate不要继续堆动画、主题、登录页等非验收功能。
 
 - [ ] A：Branch VLAN40/50 + Router-on-a-Stick + IPv4 Underlay 基础层 PASS。
 - [ ] A：HQ Gate 1 网络 regression PASS。
-- [ ] B：真实 TEMP01 数据进入合法 Protocol v1.0 Telemetry。
+- [x] B：真实 TEMP01 数据进入合法 Protocol v1.0 Telemetry。（C 已在 Backend 侧观察到 31.8 C）
 - [ ] B：Local Loop 仍独立于 Cloud。
-- [ ] C：真实 PT Telemetry 更新 Backend state；Backend 无协议漂移。
+- [x] C：真实 PT Telemetry 更新 Backend state；Backend 无协议漂移。
 - [ ] D：Dashboard 展示真实温度 / WARNING / Fan / events。
 - [ ] B+C+D：`TEMP01 → SBC → Backend → Dashboard` 真实链路 PASS。
 - [ ] 所有新增证据、阶段报告、`PROJECT_BOARD.md` 更新完成。

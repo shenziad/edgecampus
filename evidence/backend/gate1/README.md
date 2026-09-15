@@ -1,15 +1,13 @@
-# Gate 1 Backend Evidence Placeholder
+# Gate 1 Backend Evidence
 
-C Owner 的 Gate 1 专属证据尚未提交。本目录只预留证据位置，不代表验收通过。
-
-最终至少补齐以下等价证据：
+核心遥测证据在上级目录 `evidence/backend/` 的 `G1-01`～`G1-07`。
 
 ```text
-G1-C-01-backend-healthz-pass.png
-G1-C-02-fake-edge-api-state-pass.png
-G1-C-03-invalid-message-rejected-pass.png
-G1-C-04-edge-offline-pass.png
-G1-C-05-reconnect-state-sync-pass.png
+G1-C-01-backend-healthz-pass.png     = G1-04
+G1-C-02-fake-edge-api-state-pass.png = G1-03 + G1-05 + G1-06
+G1-C-03-invalid-message-rejected-pass.png  PENDING
+G1-C-04-edge-offline-pass.png              PENDING
+G1-C-05-reconnect-state-sync-pass.png      PENDING
 ```
 
-正式验收要求见 `docs/gate1/C_BACKEND_REPORT.md` 和 `docs/ACCEPTANCE.md`。
+正式报告：`docs/gate1/C_BACKEND_REPORT.md`

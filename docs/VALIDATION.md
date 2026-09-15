@@ -90,15 +90,13 @@ G1-D-04-reconnect-state-sync-pass.png
 
 以及 `docs/gate1/D_DASHBOARD_REPORT.md`。
 
-### C Control Plane — OWNER EVIDENCE PENDING
+### C Control Plane — CORE EVIDENCE SUBMITTED / STABILITY PENDING
 
-C 的专属 Gate 1 报告和人工证据尚未正式提交。为避免阻塞项目：
-
-- 已建立 `docs/gate1/C_BACKEND_REPORT.md` placeholder；
-- 已建立 `evidence/backend/gate1/README.md` 证据槽位；
-- Gate 2 允许继续；
-- **不得把 placeholder 当作 PASS**；
-- Gate 5 Freeze 前必须补齐 fake-edge/API-state/invalid-message/offline/reconnect 验收。
+核心 fake-edge / healthz / api-state 证据已在 `evidence/backend/G1-01`–`G1-07`。  
+正式部分报告：`docs/gate1/C_BACKEND_REPORT.md`。  
+Gate 2 真 PT telemetry 证据已在 `evidence/backend/G2-C-01`–`G2-C-04`。  
+invalid-message / offline / reconnect 仍须在 Gate 5 前补齐。  
+不得把当前状态写成 C Gate 1 完整 PASS。
 
 Gate 1 管理状态：`CLOSED-WITH-PLACEHOLDER`。
 
@@ -139,7 +137,8 @@ Gate 1 管理状态：`CLOSED-WITH-PLACEHOLDER`。
 → Dashboard
 ```
 
-必须证明 Dashboard 值来自真实 PT，而不是 fake edge。
+C 段（FastAPI `/api/state`）已于 2026-09-16 观察到真实 31.8 C。  
+整关仍须证明 Dashboard 值来自真实 PT，而不是 fake edge（D）。
 
 ### A
 

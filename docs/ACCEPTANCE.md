@@ -88,36 +88,39 @@ EDGE-SBC-01 D0 → FAN01 D0
 - ADMIN→EDGE-SBC-01 允许；
 - Edge 迟滞控制和 Backend-off autonomy 不受网络整合影响。
 
-### C — Control Plane Owner：PLACEHOLDER
+### C — Control Plane Owner：CORE PASS / STABILITY PENDING
 
-C 的 Owner 专属 Gate 1 证据未在项目进入 Gate 2 前提交。项目不再因此阻塞 G2，但不得把它写成 PASS。
-
-占位报告：`docs/gate1/C_BACKEND_REPORT.md`  
-证据占位：`evidence/backend/gate1/README.md`
+核心句（fake_edge + `/api/state` 遥测）已举证。  
+malformed / offline / reconnect 未交，Gate 5 前补齐。  
+正式部分报告：`docs/gate1/C_BACKEND_REPORT.md`。  
+证据：`evidence/backend/G1-01`–`G1-07`。
 
 C 必须在 Gate 5 Freeze 前补齐：
+
+- malformed/unsupported/wrong-version 消息安全拒绝；
+- edge disconnect → offline；
+- reconnect + state_sync。
+
+已完成：
 
 - `/healthz`；
 - fake edge → `/ws/edge`；
 - `/api/state` 状态更新；
-- malformed/unsupported/wrong-version 消息安全拒绝；
-- edge disconnect → offline；
-- reconnect + state_sync；
-- 正式报告和证据。
+- 正式部分报告。
 
 ### Gate 1 管理结论
 
 ```text
 A PASS
 B PASS
-C OWNER EVIDENCE PENDING
+C CORE PASS / STABILITY PENDING
 D PASS
 A+B Integration PASS
 
 Scheduling status: CLOSED-WITH-PLACEHOLDER
 ```
 
-Gate 2 可以开始；**Gate 5 COMPLETE 的前置条件之一是 C placeholder 已清零。**
+Gate 2 可以开始；**Gate 5 COMPLETE 的前置条件之一是 C 稳定性三项已清零。**
 
 ---
 
@@ -147,6 +150,8 @@ Packet Tracer TEMP01
 7. Event Stream 出现可解释的 SENSOR / EDGE-AUTO 事件。
 
 **G2 B/C/D PASS：** Dashboard 展示的温度来自真实 Packet Tracer TEMP01，而非 fake edge。
+
+C 段备注（2026-09-16）：`/api/state` 已观察到真实 31.8 C，证据 `evidence/backend/G2-C-01`–`G2-C-04`。整关仍待 Dashboard。
 
 ## A 并行网络验收
 
@@ -251,7 +256,7 @@ Gate 5 只允许：
 
 ## Freeze 前硬条件
 
-- [ ] C Gate 1 placeholder 已由真实 C Owner 报告和证据替换。
+- [ ] C Gate 1 稳定性三项已由真实 C Owner 报告和证据补齐。
 - [ ] Final canonical `.pkt` 已包含 Final Architecture v2 的最终网络配置。
 - [ ] Protocol v1.0 无未记录漂移。
 - [ ] HQ Gate 1 回归仍 PASS。

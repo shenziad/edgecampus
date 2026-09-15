@@ -7,8 +7,8 @@
 | 能力 | Owner | 当前状态 | 证据 / 说明 | 下一动作 |
 |---|---|---|---|---|
 | Protocol v1.0 | B+C+D | **FROZEN** | `docs/PROTOCOL.md` | 不改字段/URL/ID |
-| Backend 软件基线 | C | AVAILABLE | main 已有 FastAPI / state / events / fake 基线 | C 补 Gate1 owner 证据 + G2 真 Telemetry |
-| C Gate1 Owner 验收 | C | **PLACEHOLDER** | `docs/gate1/C_BACKEND_REPORT.md` | Gate5 前必须清零 |
+| Backend 软件基线 | C | AVAILABLE | main 已有 FastAPI / state / events / fake 基线 | G2 真 Telemetry 已入 Backend；稳定性三项 Gate5 前清零 |
+| C Gate1 Owner 验收 | C | **CORE PASS / STABILITY PENDING** | `docs/gate1/C_BACKEND_REPORT.md` + `G1-01`–`G1-07` | 补 G1-C-03/04/05 |
 | Fake Edge | B+C | DONE | 可独立开发/联调 | 保留，不替代 PT 真链路 |
 | Dashboard 基线 | D | **PASS G1** | `docs/gate1/D_DASHBOARD_REPORT.md` + 4 张 evidence | G2 接真 PT Telemetry |
 | HQ VLAN/IP / SVI / DHCP | A | **PASS G1** | A Gate1 报告 / network evidence | 冻结 Core |
@@ -17,7 +17,7 @@
 | Edge Local Loop | B | **PASS G1** | TEMP→MCU→SBC→FAN / hysteresis / backend-off | G2 增量加 Telemetry |
 | A+B canonical integration | A+B | **PASS G1** | `docs/gate1/AB_INTEGRATION_REPORT.md` | 作为 HQ Core baseline |
 | PT → Real Host RealWSClient | A+B+C | VERIFIED | Gate0 实机 + 重开复测 | G2 承载真 Telemetry |
-| Real PT Telemetry | B+C+D | IN PROGRESS | G2 主 Critical Path | TEMP→Dashboard |
+| Real PT Telemetry | B+C+D | IN PROGRESS | C 已收 31.8 C 真温度（G2-C-01–04）；待 D 页面 | D 展示 32 C / WARNING |
 | Branch LAN / ROAS | A | NOT STARTED | Final Architecture v2 | G2 |
 | IPv4 WAN Underlay | A | NOT STARTED | Final Architecture v2 | G2 |
 | HQ OSPF | A | NOT STARTED | Area0 SW-CORE↔R-HQ | G3 |
@@ -39,18 +39,18 @@
 | Gate | 状态 | 说明 |
 |---|---|---|
 | G0 Contract Freeze | **COMPLETE** | 软件契约、HQ Core 规划、PT→Real Host 控制通道 |
-| G1 四模块独立运行 | **CLOSED-WITH-PLACEHOLDER** | A/B/D PASS；A+B integration PASS；C owner evidence pending |
-| G2 Real Telemetry + WAN Foundation | **IN PROGRESS** | B/C/D 真 TEMP→Dashboard；A Branch LAN + IPv4 Underlay |
+| G1 四模块独立运行 | **CLOSED-WITH-PLACEHOLDER** | A/B/D PASS；A+B integration PASS；C 核心遥测证据已交，invalid/offline/reconnect 仍 pending |
+| G2 Real Telemetry + WAN Foundation | **IN PROGRESS** | C 已收真 TEMP；B/C/D 待 Dashboard；A Branch LAN + IPv4 Underlay |
 | G3 Policy Loop + WAN Business | NOT STARTED | Policy/Command；OSPF/eBGP/NAT/DNS/HTTP/Branch business |
 | G4 Failure Recovery + IPv6/Security | NOT STARTED | 断云恢复；IPv6 Tunnel、Port Security、Central Admin |
-| G5 Freeze + 3 Rehearsals | NOT STARTED | 清零 placeholder、final `.pkt`、三轮完整彩排 |
+| G5 Freeze + 3 Rehearsals | NOT STARTED | 清零 C 稳定性三项、final `.pkt`、三轮完整彩排 |
 
 ## 当前 Critical Path
 
 ```text
 B: PT real temperature + local fan
           ↓
-C: Backend receives Protocol v1 telemetry
+C: Backend receives Protocol v1 telemetry   ← 2026-09-16 C 段已观察到 31.8 C
           ↓
 D: Dashboard renders real PT state
 ```
@@ -73,7 +73,7 @@ G4 IPv6 Tunnel / Port Security
 
 - **A Network**：唯一 canonical `.pkt` Owner。Final Architecture v2 的新增设备/链路也由 A 合入正式文件；不得为了 WAN 重写 HQ Gate1 Core。
 - **B Edge**：只增量修改 `edge/` 与 SBC 适配；Local Loop 优先于 Cloud 通信。
-- **C Control Plane**：`backend/`；不得因 G2 真 PT 接入更改 Protocol v1；同时补齐 Gate1 placeholder。
+- **C Control Plane**：`backend/`；不得因 G2 真 PT 接入更改 Protocol v1；同时补齐 Gate1 稳定性三项。
 - **D UI & Integration**：`dashboard/`、`tests/`、端到端 evidence；不得把展示字段改成新的传输契约。
 
 ## Integration Check 记录
@@ -85,8 +85,9 @@ G4 IPv6 Tunnel / Port Security
 | 2026-09-15 | B | G1 | TEMP→MCU→SBC→FAN、hysteresis、backend-off autonomy PASS | B PASS |
 | 2026-09-15 | A+B | G1 | canonical integration + HQ regression PASS | A+B PASS |
 | 2026-09-15 | D | G1 | NORMAL/WARNING/OFFLINE/RECONNECT evidence archived | D PASS |
-| 2026-09-15 | C | G1 | 软件 baseline 已存在，但 Owner 专属证据未提交 | 建立 placeholder；不阻塞 G2；G5 前必须补 |
+| 2026-09-15 | C | G1 | 核心 healthz/fake-edge/api-state 证据已交（G1-01–G1-07） | invalid/offline/reconnect 仍 pending；不阻塞 G2 |
 | 2026-09-15 | 全组 | Re-baseline | Final Architecture v2 冻结：HQ + ISP/Internet + Branch；保留双控制环与 Protocol v1 | 进入 G2 |
+| 2026-09-16 | C | G2 | PT TEMP01≈32 C 经 RealWSClient 进入 /api/state（31.8 C，FAN ON 后随环境回落关风扇） | Dashboard 待 D |
 
 ## Final Architecture v2 课程覆盖追踪
 

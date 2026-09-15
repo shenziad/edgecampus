@@ -1,53 +1,120 @@
-# Gate 1 — C Control Plane Validation Placeholder
+# Gate 1 — C Control Plane Validation Report
 
-> 状态：**PLACEHOLDER / OWNER EVIDENCE PENDING**  
-> 说明：项目已决定不再等待 C 的 Gate 1 专属证据后才启动 Gate 2。本文件不是 PASS 证明，也不得在报告中写成“C 已完成验收”。
+> 状态：**CORE PASS / STABILITY PENDING**  
+> Owner：C Control Plane  
+> 分支：`feat/backend`  
+> 架构基线：Final Architecture v2 / Protocol v1.0  
+> 公共接口影响：**无**
 
-## 1. 已存在的软件基线
+本文件替换原 PLACEHOLDER。  
+Gate 1 验收句（`fake_edge` → `/api/state` 可见遥测）已举证。  
+官方额外三项（malformed / offline / reconnect）仍待补，Gate 5 前清零。  
+Gate 2 真 PT 遥测见同目录说明与 `evidence/backend/G2-C-*.png`，不能自动替代上述三项。
 
-仓库 `main` 已包含可启动的 FastAPI Backend、Protocol v1.0、`fake_edge.py`、内存状态、JSONL 事件日志以及自动化测试基线。历史基线验证已经覆盖 fake Edge 的状态更新、Policy/Command、断线自治与 State Sync。
+---
 
-这些事实说明 **Backend 基础实现已经存在**，但不能替代 C Owner 对 Gate 1 的正式独立验收与证据提交。
+## 1. 完成内容
 
-## 2. C 必须补交的 Gate 1 验收
+- 未修改 `backend/` 业务代码，未修改 Protocol v1.0。
+- 本机完成 Backend 启动、fake_edge 接入、`/healthz`、`/api/state`。
+- 向 `feat/backend` 提交 Gate 1 运行证据 `G1-01`～`G1-07`。
+- 后续在同一 Backend 上完成真实 PT Telemetry 接入（见第 10 节）。
 
-在 Gate 5 Freeze 前，C 必须完成并把本文件改成正式报告：
+## 2. 环境
 
-1. 启动 Backend，验证 `/healthz`。
-2. 启动 `python -m edge.fake_edge`，验证 `/ws/edge` 成功建立连接。
-3. 验证 `/api/state` 能反映 Edge online、temperature、fan state、policy 等当前状态。
-4. 验证 Telemetry / Status / Heartbeat / State Sync 按 Protocol v1.0 被接受并记录。
-5. 发送 malformed / unsupported / wrong-version 消息，确认 Backend 返回错误或拒绝消息但服务不崩溃。
-6. 停止 fake edge，确认 `edge_online=false`、Cloud/Edge 状态进入预期离线状态。
-7. 重启 fake edge，确认 reconnect + `state_sync` 后状态恢复。
-8. 记录启动命令、环境、结果、问题与结论。
+| 项 | 值 |
+|---|---|
+| 仓库 | `https://github.com/shenziad/edgecampus.git` |
+| 本地 | `C:\Users\33621\edgecampus` |
+| 分支 | `feat/backend` |
+| Python | `.venv\Scripts\python.exe`（不可使用 MSYS2 的 `python`） |
+| Backend | `http://127.0.0.1:8000` |
+| Edge WS | `ws://127.0.0.1:8000/ws/edge` |
+| 默认策略 | AUTO / 30.0 C / hysteresis 1.0 C / version 1 |
 
-## 3. 预留证据文件名
+## 3. 运行命令
 
-证据目录：`evidence/backend/gate1/`
-
-```text
-G1-C-01-backend-healthz-pass.png
-G1-C-02-fake-edge-api-state-pass.png
-G1-C-03-invalid-message-rejected-pass.png
-G1-C-04-edge-offline-pass.png
-G1-C-05-reconnect-state-sync-pass.png
+```bat
+cd C:\Users\33621\edgecampus
+.venv\Scripts\python.exe -m unittest discover -s tests -v
+.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
+.venv\Scripts\python.exe -m edge.fake_edge --temperatures 27,29,30,32,34,31,28,26 --interval 3
+curl.exe -s http://127.0.0.1:8000/healthz
+curl.exe -s http://127.0.0.1:8000/api/state
 ```
 
-若使用日志文本而非截图，应在正式报告中给出等价证据路径和说明。
+Gate 2 联调期间不要同时运行 fake_edge。
 
-## 4. Gate 2 期间的处理规则
+## 4. Gate 1 验收对照
 
-- C 可以直接参加 Gate 2 的真实 PT Telemetry 联调，不需要等待本占位符补齐后才能开发。
-- 但 Gate 2 的真实链路成功 **不能自动替代** Gate 1 的 malformed-message、offline、reconnect 等独立稳定性验证。
-- 最迟 Gate 5 Freeze 前，本文件必须由 C 更新为真实的 `C_BACKEND_REPORT.md`，并删除 PLACEHOLDER 标记。
-- 不得为了补证据修改 `docs/PROTOCOL.md`、设备 ID、WS 路径或消息字段。
+| 要求 | 结果 | 证据 |
+|---|---|---|
+| `/healthz` | PASS | `evidence/backend/G1-04-healthz-pass.png` |
+| fake_edge → `/ws/edge` | PASS | `G1-02`、`G1-03` |
+| `/api/state` 反映 online/温度/风扇/策略 | PASS | `G1-05`、`G1-06` |
+| 9 项单元测试 | PASS | `G1-01-unittest-pass.png` |
+| AUTO 风扇事件入库 | PASS | `G1-07` |
+| malformed 拒绝且不崩溃 | PENDING | — |
+| 停止 Edge → offline | PENDING | — |
+| 重连 + state_sync | PENDING | — |
 
-## 5. 当前结论
+## 5. Gate 1 截图说明
+
+| 文件 | 证明 |
+|---|---|
+| G1-01 | `Ran 9 tests` / `OK` |
+| G1-02 | `/ws/edge` accepted + `edge connected` |
+| G1-03 | Fake Edge `Cloud connected`，AUTO ON/OFF |
+| G1-04 | `healthz` + `edge_online:true` |
+| G1-05 | snapshot 含温度与 SENSOR 事件 |
+| G1-06 | 第二帧温度/心跳变化 |
+| G1-07 | `FAN` / `EDGE-AUTO` ON 与 OFF |
+
+官方预留名映射：`G1-C-01`←G1-04，`G1-C-02`←G1-03+G1-05+G1-06；`G1-C-03/04/05` 仍缺。
+
+## 6. 排错
+
+- 仅 socket accept 不等于遥测入库。
+- CMD 中 `Activate.ps1` 不会切换解释器；必须用 `.venv\Scripts\python.exe`。
+- 远程 `feat/backend` 有更新时先 `git pull --rebase`，禁止 force push。
+
+## 7. Git
 
 ```text
-C Gate 1 owner-specific validation: PENDING
-Backend software baseline: AVAILABLE
-Project scheduling decision: Gate 2 may proceed
-Final freeze requirement: placeholder MUST be resolved before Gate 5 COMPLETE
+origin: https://github.com/shenziad/edgecampus.git
+branch: feat/backend
+Gate1 evidence commit: b8b681d
+未合入 main
+无 backend 业务代码变更
 ```
+
+## 8. Gate 1 结论
+
+```text
+C Gate 1 核心验收句：PASS
+C Gate 1 稳定性三项：PENDING
+不阻塞 Gate 2
+Gate 5 前必须清零 PENDING 项
+```
+
+## 9. 下一动作
+
+- 补 `G1-C-03` / `G1-C-04` / `G1-C-05`。
+- 保持 Backend 给 D 做 Dashboard 真温度展示。
+- 不在本阶段做 Policy/Command（G3）或正式断云（G4）。
+
+## 10. Gate 2 进展（记录，不替代第 8 节）
+
+已验证：
+
+```text
+PT TEMP01 环境温度 ≈32 C
+→ EDGE-SBC-01 RealWSClient ws://127.0.0.1:8000/ws/edge
+→ FastAPI /api/state 事件出现 31.8 C SENSOR
+→ SBC：TX TELEMETRY TEMP=31.8 C，FAN=ON
+```
+
+环境曲线回落后快照可为 26.3 C / FAN OFF，属于迟滞关风扇，不是链路失败。
+
+证据：`evidence/backend/G2-C-01`～`G2-C-04`。  
+详细过程见 `evidence/backend/GATE2_C_REPORT.md`。
