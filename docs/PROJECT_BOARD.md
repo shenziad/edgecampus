@@ -18,8 +18,9 @@
 | A+B canonical integration | A+B | **PASS G1** | `docs/gate1/AB_INTEGRATION_REPORT.md` | 作为 HQ Core baseline |
 | PT → Real Host RealWSClient | A+B+C | VERIFIED | Gate0 实机 + 重开复测 | G2 承载真 Telemetry |
 | Real PT Telemetry | B+C+D | IN PROGRESS | G2 主 Critical Path | TEMP→Dashboard |
-| Branch LAN / ROAS | A | NOT STARTED | Final Architecture v2 | G2 |
-| IPv4 WAN Underlay | A | NOT STARTED | Final Architecture v2 | G2 |
+| Branch LAN / ROAS | A | **PASS G2** | VLAN40/50 + ROAS + DHCP/管理地址；`G2-A-02/03/04` | G3 Branch 业务 |
+| IPv4 WAN Underlay | A | **PASS G2** | 四段链路相邻可达；`G2-A-05/06` | G3 OSPF/eBGP |
+| HQ Gate1 Regression（G2） | A | **PASS G2** | 五条 show + 三个行为测试；`G2-A-07*` | 每层网络变更后继续 regression |
 | HQ OSPF | A | NOT STARTED | Area0 SW-CORE↔R-HQ | G3 |
 | WAN eBGP | A | NOT STARTED | AS65001/65000/65002 | G3 |
 | Branch→HQ business | A | NOT STARTED | BR-OFFICE→HQ-SERVICE | G3 |
@@ -32,7 +33,7 @@
 | Port Security / sticky MAC | A | NOT STARTED | HQ OFFICE access | G4 |
 | Cloud-off local autonomy | B | PASS LOCALLY / FINAL PENDING | G1 backend-off local loop 已证；整套演示待 G4 | G4 |
 | Cloud reconnect + State Sync | B+C+D | PASS FAKE / REAL PENDING | fake 基线存在 | G4 真 PT |
-| Final canonical `.pkt` | A | IN DEVELOPMENT | HQ Core baseline 已存在；V2 WAN 待配置 | G5 freeze |
+| Final canonical `.pkt` | A | IN DEVELOPMENT | HQ Core + G2 Branch/WAN Underlay 已合入 | G3 叠加 OSPF/eBGP/NAT |
 
 ## Gate 状态
 
@@ -87,13 +88,14 @@ G4 IPv6 Tunnel / Port Security
 | 2026-09-15 | D | G1 | NORMAL/WARNING/OFFLINE/RECONNECT evidence archived | D PASS |
 | 2026-09-15 | C | G1 | 软件 baseline 已存在，但 Owner 专属证据未提交 | 建立 placeholder；不阻塞 G2；G5 前必须补 |
 | 2026-09-15 | 全组 | Re-baseline | Final Architecture v2 冻结：HQ + ISP/Internet + Branch；保留双控制环与 Protocol v1 | 进入 G2 |
+| 2026-09-15 | A | G2 | Branch VLAN40/50 + ROAS + DHCP/管理地址；IPv4 Underlay 四段相邻可达；HQ Gate1 regression PASS | WAN/Branch 业务与路由协议留 G3 | A 侧 G2 网络基础层完成 |
 
 ## Final Architecture v2 课程覆盖追踪
 
 | 课程能力 | 目标 Gate | 状态 |
 |---|---|---|
-| VLSM / IPv4 DHCP | G2 | Branch 待实现；HQ DHCP 已 PASS |
-| VLAN / Trunk / SVI / EtherChannel | G1/G2 | HQ PASS；Branch ROAS 待 G2 |
+| VLSM / IPv4 DHCP | G2 | ✅ Branch VLSM + DHCP PASS；HQ DHCP 已 PASS |
+| VLAN / Trunk / SVI / EtherChannel | G1/G2 | ✅ HQ SVI PASS；Branch VLAN + ROAS PASS |
 | OSPF / BGP | G3 | NOT STARTED |
 | ACL / NAT/PAT / DNS/HTTP / static mapping | G1/G3 | HQ ACL PASS；其他待 G3 |
 | SLAAC / DHCPv6 / Static IPv6 / IPv6 static route | G4 | NOT STARTED |
