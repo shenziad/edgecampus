@@ -1,154 +1,326 @@
-# Gate 与验收标准
+# Gate 与验收标准 — Final Architecture v2
+
+## 总原则
+
+Final Architecture v2 保留原 Gate 主线：
+
+```text
+G0 Contract Freeze
+→ G1 四模块独立运行
+→ G2 单向真实数据链路
+→ G3 双向策略闭环
+→ G4 断云自治与恢复
+→ G5 Freeze 与三轮彩排
+```
+
+新增的多园区网络不是额外开一个“实验 Gate”，而是由 A 在 G2–G4 与 B/C/D 主线并行建设。
+
+软件 Public Contract v1.0 不变；HQ Gate 1 Core 不重构。
+
+---
 
 ## Gate 0：Contract Freeze — COMPLETE
 
-| 验收项 | 状态 |
-|---|---|
-| 项目定位、三平面与双控制环 | DONE |
-| 设备 ID、消息协议、WS 路径 | DONE |
-| VLAN/IP 逻辑规划 | DONE |
-| 物理设备型号、接口映射 | DONE |
-| PT 与真实主机互通方式 | VERIFIED |
-| ACL 放置原则 | DONE |
-| 重开 Packet Tracer 后连接可重复 | VERIFIED |
-| 最终 6 分钟 Demo | DONE |
+已完成并继续有效：
 
-Gate 0 结束后，公共契约只通过 RFC 改动。
+- 项目定位、双控制环、状态所有权；
+- Protocol v1.0、设备 ID、WS 路径、默认 Policy；
+- HQ VLAN10/20/30、IPv4 地址和 Gate 1 ACL 放置原则；
+- SW-CORE / SW-ACCESS 型号与 HQ 物理接口；
+- Packet Tracer External Network Access / RealWSClient → 真实 FastAPI 实机连通；
+- 保存、关闭、重开 `.pkt` 后 RealWSClient 连接可重复。
 
-### Gate 0 已冻结事实
+Final Architecture v2 是后续经项目级决策批准的网络范围扩展，不修改上述软件契约和已验证 HQ Core。
 
-- `SW-CORE`：Cisco 3650-24PS。
-- `SW-ACCESS`：Cisco 2960-24TT。
-- `SW-CORE Gi1/0/1 ↔ SW-ACCESS Gi0/1`。
-- `SW-CORE Gi1/0/2 ↔ SW-ACCESS Gi0/2`。
-- `SW-ACCESS Fa0/1 → OFFICE-PC`。
-- `SW-ACCESS Fa0/2 → EDGE-SBC-01`。
-- `SW-ACCESS Fa0/3 → ADMIN-PC`。
-- `SW-ACCESS Fa0/4 → BACKEND-STUB`。
-- Edge 控制通道：`ws://127.0.0.1:8000/ws/edge`，通过 Packet Tracer `RealWSClient` / External Network Access 连接真实 FastAPI Backend。
-- 首次连接与保存、关闭、重新打开 `.pkt` 后的再次连接均验证成功。
-- VLAN 10、20 的 ACL 首版部署在对应 SVI inbound；VLAN 30 作为管理域首版不配置限制性 ACL。
+---
 
-### Gate 0 证据建议
+## Gate 1：四模块独立运行 — CLOSED-WITH-PLACEHOLDER
 
-```text
-G0-02-minimal-topology-pass.png
-G0-03-external-network-access-enabled.png
-G0-04-pt-realhost-websocket-pass.png
-```
+### A — Network Owner：PASS
 
-其中 `G0-04` 应能体现 SBC `CONNECTED`、Backend `edge connected` 以及 `/api/state` 中 `edge_online=true`、`cloud_state=CONNECTED`。
+已完成：
 
-## Gate 1：四模块独立运行（四路并行）
+- VLAN10/20/30；
+- Access 端口；
+- LACP EtherChannel / Trunk；
+- 三个 SVI + `ip routing`；
+- OFFICE DHCP；
+- VLAN10/VLAN20 inbound ACL；
+- N1/N2/N3 网络验收与证据。
 
-Gate 1 的目标不是端到端联调，而是让四个 Owner 在冻结的 Public Contract 下各自获得一个可独立验收的模块。除 canonical `.pkt` 外，四路工作可以并行进行。
+### B — Edge Owner：PASS
 
-### A — Network Owner
-
-- 在 canonical `.pkt` 中完成 VLAN 10/20/30。
-- 配置 Access 端口、两条 Core–Access 链路的 LACP EtherChannel 与 trunk。
-- 在 3650 上完成三个 SVI、三层转发、OFFICE DHCP。
-- 按 Gate 0 冻结原则部署 VLAN 10 / VLAN 20 inbound ACL。
-- 独立完成允许通信、OFFICE→IOT 隔离、MANAGEMENT 运维访问等网络测试。
-- A 是 canonical `.pkt` 的唯一 Owner；其他人不得并行覆盖正式 `.pkt`。
-
-**Gate 1 A 通过标志：** 纯 Packet Tracer 园区网络可以独立验收，且配置与 `docs/NETWORK_PLAN.md` 一致。
-
-### B — Edge Owner
-
-- 使用 PT 开发副本确认 `TEMP01` 读取 API、`FAN01` 控制 API 及实际连接/pin 映射。
-- 在不依赖 Cloud 的条件下完成 `TEMP01 → EDGE-SBC-01 → FAN01` 本地 AUTO 控制。
-- 保持冻结状态：`threshold_c=30.0`、`hysteresis_c=1.0`、`policy_version=1`。
-- 验证迟滞逻辑，避免阈值附近风扇频繁抖动。
-- 保留已验证的 `RealWSClient` 连接方式，但 Gate 1 不要求真实 Telemetry 已进入 Dashboard。
-- 将可复用的 Edge 代码和 PT API 验证结果提交到 `edge/`，不要用开发 `.pkt` 覆盖 canonical `.pkt`。
-
-**Gate 1 B 通过标志：** Backend 完全关闭时，在 PT 内改变温度，FAN01 仍按照本地策略正确动作。
-
-### C — Control Plane Owner
-
-- 使用 `fake_edge.py` 独立验证 `/ws/edge`、`/ws/dashboard`、`/api/state`、`/healthz`。
-- 确保 Telemetry / Status / Heartbeat 能更新内存状态并形成事件记录。
-- 确保非法消息按 Protocol v1.0 被拒绝，而不是导致 Backend 崩溃。
-- 验证 Edge 断开后 `edge_online=false`，并保持服务可用。
-- 保留 Policy / Command 转发和 ACK 所需状态，为 Gate 3 做准备，但 Gate 1 不新增数据库、MQ、微服务等非必要组件。
-
-**Gate 1 C 通过标志：** 不依赖真实 PT，仅使用 fake edge 就能稳定驱动 Backend 状态、断连和日志行为。
-
-### D — UI & Integration Owner
-
-- 使用 fake/Backend snapshot 独立完成 Dashboard 状态展示。
-- 至少展示 Cloud/Edge 状态、当前温度、Fan 状态、控制模式、当前 Policy 和事件流。
-- 对温度跨阈值、Edge offline 等状态提供明确视觉反馈。
-- 准备 Gate 3 所需的 Policy 表单，但 Gate 1 不要求真实 PT 已接入。
-- 维护 `tests/` 中与页面/集成相关的验证入口，并开始整理验收证据。
-
-**Gate 1 D 通过标志：** 不依赖真实 PT，Dashboard 可根据 fake/Backend 状态正确更新并可独立演示。
-
-### Gate 1 Integration Check
-
-四个 Owner 各自通过独立测试后进行一次短集成：
-
-1. B 将已验证的 SBC 接线/API/代码方案合入 A 维护的 canonical `.pkt`；
-2. 不要求此时完整打通 `TEMP01 → Dashboard`；
-3. 确认 Public Contract 未被任何 AI 或个人擅自修改；
-4. 更新 `docs/PROJECT_BOARD.md` 与证据目录。
-
-达到以上条件后，Gate 1 COMPLETE，进入 Gate 2。
-
-## Gate 2：单向数据链路
+已完成真实 PT Local Loop：
 
 ```text
-Packet Tracer TEMP01 → SBC → Backend → Dashboard
+TEMP01 A0 → IO-MCU-01 A0
+IO-MCU-01 USB0 → EDGE-SBC-01 USB0
+EDGE-SBC-01 D0 → FAN01 D0
 ```
 
-验收动作：PT 温度从 28℃ 改到 32℃；Dashboard 在可接受延迟内显示 32℃ 与 WARNING，事件流出现 SENSOR 记录。
-
-## Gate 3：双向策略闭环
+已验证：
 
 ```text
-Dashboard threshold 30→33 → Backend → Edge → policy_ack
+30.2 C → TURN_ON  → FAN ON
+29.4 C → HOLD     → FAN ON
+28.6 C → TURN_OFF → FAN OFF
 ```
 
-验收动作：下发 33℃，温度 32℃ 时风扇保持 OFF，温度 34℃ 时风扇 ON；事件流能区分 CLOUD-POLICY 与 EDGE-AUTO。
+以及 Backend 端口不可达时本地循环仍继续工作。
 
-增强验收：Dashboard 手动下发 FAN01 ON/OFF，收到 `command_ack`。
+### D — UI & Integration Owner：PASS
 
-## Gate 4：断云不断控
+已归档 Dashboard Gate 1 报告和证据，覆盖：
 
-1. 正常连接，确认 Cloud/Edge ONLINE。
-2. 停止 Backend，Dashboard 显示失联。
-3. 在 PT 内将温度改到阈值之上，Fan 仍由 SBC 开启。
-4. 再改到阈值减迟滞区间之下，Fan 关闭。
-5. 恢复 Backend；Edge 自动重连并发送当前温度、风扇和 Policy Version。
+- NORMAL；
+- WARNING；
+- Edge Offline；
+- Reconnect / State Sync 视图。
 
-这是项目的核心创新性证据，必须保留连续录屏或按时间顺序的截图。
+### A+B Integration：PASS
 
-## Gate 5：Freeze 与三轮彩排
+在 canonical 网络基线中合入 Edge 接线和 Local Loop 后，已回归验证：
 
-第三天只允许修 Bug、改善 UI、补日志和异常处理。完整流程连续演示三轮都成功后冻结版本。
+- Po1 / Trunk / VLAN10/20/30 正常；
+- HQ SVI / routing / ACL 正常；
+- OFFICE→ADMIN 允许；
+- OFFICE→IOT 仍拒绝；
+- ADMIN→EDGE-SBC-01 允许；
+- Edge 迟滞控制和 Backend-off autonomy 不受网络整合影响。
 
-## 最终功能测试矩阵
+### C — Control Plane Owner：PLACEHOLDER
 
-| ID | 测试 | 操作 | 预期 | Owner |
+C 的 Owner 专属 Gate 1 证据未在项目进入 Gate 2 前提交。项目不再因此阻塞 G2，但不得把它写成 PASS。
+
+占位报告：`docs/gate1/C_BACKEND_REPORT.md`  
+证据占位：`evidence/backend/gate1/README.md`
+
+C 必须在 Gate 5 Freeze 前补齐：
+
+- `/healthz`；
+- fake edge → `/ws/edge`；
+- `/api/state` 状态更新；
+- malformed/unsupported/wrong-version 消息安全拒绝；
+- edge disconnect → offline；
+- reconnect + state_sync；
+- 正式报告和证据。
+
+### Gate 1 管理结论
+
+```text
+A PASS
+B PASS
+C OWNER EVIDENCE PENDING
+D PASS
+A+B Integration PASS
+
+Scheduling status: CLOSED-WITH-PLACEHOLDER
+```
+
+Gate 2 可以开始；**Gate 5 COMPLETE 的前置条件之一是 C placeholder 已清零。**
+
+---
+
+# Gate 2：真实单向数据链路 + Branch/WAN 基础层
+
+## B/C/D 主线验收
+
+目标：
+
+```text
+Packet Tracer TEMP01
+→ IO-MCU-01
+→ EDGE-SBC-01
+→ RealWSClient
+→ FastAPI
+→ Dashboard
+```
+
+主验收动作：
+
+1. 保持默认 Policy：AUTO / 30.0 C / hysteresis 1.0 C。
+2. PT 温度从约 28 C 调到约 32 C。
+3. SBC 本地 FAN 状态按迟滞逻辑变化。
+4. SBC 通过 Protocol v1.0 发送真实 `telemetry`；必要时发送 `status`。
+5. Backend `/api/state` 更新真实 temperature / fan state。
+6. Dashboard 显示约 32 C、WARNING、Fan 状态。
+7. Event Stream 出现可解释的 SENSOR / EDGE-AUTO 事件。
+
+**G2 B/C/D PASS：** Dashboard 展示的温度来自真实 Packet Tracer TEMP01，而非 fake edge。
+
+## A 并行网络验收
+
+A 本 Gate 不等待 B/C/D，按 `NETWORK_PLAN.md` 建立 Final Architecture v2 的基础网络：
+
+1. 核对新增物理接口和设备型号。
+2. 建立 Branch VLAN40 / VLAN50。
+3. 建立 `R-BRANCH G0/1` Router-on-a-Stick。
+4. BR-OFFICE 获得 IPv4 DHCP；BR-ADMIN 和 SW-BRANCH 使用冻结管理地址。
+5. 配置 HQ Transit、HQ↔ISP、ISP↔Branch、Internet Service LAN 的 IPv4 地址。
+6. 只验证相邻节点和 Branch LAN，不急于一次性叠加 OSPF/BGP/NAT/IPv6。
+7. 每一步后复测 HQ Gate 1 Core 未被破坏。
+
+**G2 A PASS：** Branch LAN 与 IPv4 WAN Underlay 基础层独立成立，HQ Gate 1 网络回归仍 PASS。
+
+---
+
+# Gate 3：双向策略闭环 + 企业 WAN 业务层
+
+## B/C/D 主线验收
+
+目标：
+
+```text
+Dashboard threshold 30→33
+→ Backend
+→ Edge
+→ policy_ack
+```
+
+主验收：
+
+1. Dashboard 将阈值从 30 C 改为 33 C，version 严格递增。
+2. Backend 只转发合法 Protocol v1.0 Policy。
+3. Edge 应用新 Policy 并回 `policy_ack`。
+4. 32 C 时 Fan 保持 OFF；34 C 时 Fan ON。
+5. Event Stream 区分 `CLOUD-POLICY` 与 `EDGE-AUTO`。
+
+增强验收：Dashboard 手动下发 FAN01 ON/OFF，Edge 返回 `command_ack`，事件源为 `REMOTE-MANUAL`。
+
+## A 并行网络验收
+
+A 本 Gate 完成主要企业互联：
+
+- HQ SW-CORE ↔ R-HQ：OSPF Area 0；
+- R-HQ / R-ISP / R-BRANCH：eBGP AS65001 / 65000 / 65002；
+- R-HQ 向 HQ OSPF 提供默认出口，不把完整 BGP 表灌入 Core；
+- BR-OFFICE → HQ-SERVICE HTTP；
+- HQ ADMIN → Branch 管理网可达；
+- R-HQ PAT：HQ OFFICE → INTERNET-SERVER；
+- INTERNET-SERVER DNS + HTTP；
+- `203.0.113.1:80 → 192.168.30.10:80` 静态 TCP/80 映射；
+- 业务 ACL 保证 Branch Office 不能获得 HQ IoT / 网络管理权限。
+
+**G3 A PASS：** OSPF/BGP 邻居与路由正确，Branch→HQ 业务、HQ→Internet PAT/DNS/HTTP、静态 HTTP 映射均可解释且可重复。
+
+---
+
+# Gate 4：断云不断控 + IPv6 Overlay / 接入安全
+
+## B/C/D 主线验收
+
+1. 正常连接，确认 Cloud / Edge ONLINE。
+2. 停止 Backend；Dashboard 进入失联状态。
+3. PT 将温度调到阈值之上，Fan 仍由 SBC 本地开启。
+4. 将温度降到 `threshold - hysteresis` 以下，Fan 正确关闭。
+5. 恢复 Backend。
+6. Edge 自动重连并发送 `hello` + `state_sync`。
+7. Dashboard 恢复真实 temperature、fan_state、Policy Version。
+
+这是项目核心创新证据，必须保留连续录屏或顺序明确的截图。
+
+## A 并行网络验收
+
+完成课程网络能力收口：
+
+- HQ OFFICE：IPv6 SLAAC；
+- BR-OFFICE：DHCPv6；
+- 管理域：Static IPv6；
+- ISP 保持 IPv4-only；
+- R-HQ ↔ R-BRANCH IPv6-over-IPv4 Tunnel；
+- IPv6 静态路由实现 BR-ADMIN → HQ MANAGEMENT；
+- HQ ADMIN 远程管理 R-BRANCH / SW-BRANCH，普通 Office 被拒绝；
+- SW-ACCESS Fa0/1 sticky MAC / Port Security，非法终端触发 Violation；
+- 对 HQ / Branch / Internet 权限矩阵进行最终 ACL 回归。
+
+**G4 A PASS：** IPv6 Overlay、远程管理、Port Security 和全部关键业务流均通过，同时 Gate 1 HQ Core 回归无退化。
+
+---
+
+# Gate 5：Final Freeze 与三轮彩排
+
+Gate 5 只允许：
+
+- 修 Bug；
+- 改善必要 UI 可读性；
+- 补日志 / 错误处理；
+- 补报告、截图、AI 协作记录；
+- 修复 canonical `.pkt` 中已经识别的问题。
+
+不得再新增协议、设备或业务场景。
+
+## Freeze 前硬条件
+
+- [ ] C Gate 1 placeholder 已由真实 C Owner 报告和证据替换。
+- [ ] Final canonical `.pkt` 已包含 Final Architecture v2 的最终网络配置。
+- [ ] Protocol v1.0 无未记录漂移。
+- [ ] HQ Gate 1 回归仍 PASS。
+- [ ] G2 Telemetry 真链路 PASS。
+- [ ] G3 Policy 真闭环 PASS。
+- [ ] G4 Cloud-off autonomy + reconnect PASS。
+- [ ] A 的 OSPF/BGP/NAT/DNS/HTTP/IPv6 Tunnel/Port Security 验收 PASS。
+- [ ] 完整流程连续三轮成功。
+
+---
+
+# 最终功能测试矩阵
+
+| ID | 功能 | 操作 | 预期 | Owner |
 |---|---|---|---|---|
-| N1 | VLAN/路由 | 跨允许域 ping/访问 | 可达 | A |
-| N2 | ACL 隔离 | OFFICE 直连 IOT | 拒绝 | A |
-| N3 | 控制面访问 | OFFICE 访问逻辑管理服务 | 按设计允许 | A+C |
-| E1 | 本地自治 | 断开 Cloud 后跨阈值调温 | Fan 正确动作 | B |
-| C1 | 遥测 | fake/PT 发送温度 | Backend 状态更新 | B+C |
-| D1 | 可视化 | 温度跨阈值 | 页面状态与告警更新 | C+D |
-| P1 | 策略下发 | 阈值 30→33 | Edge 应用并 ACK | B+C+D |
-| R1 | 状态恢复 | Cloud 重启 | Edge 重连并同步 | B+C+D |
+| N1 | HQ VLAN / SVI | 允许域跨 VLAN 访问 | 可达 | A |
+| N2 | HQ ACL | OFFICE → IOT | 拒绝 | A |
+| N3 | EtherChannel | 查看 Po1 / Trunk / members | SU / bundled / VLAN 10,20,30 | A |
+| N4 | Branch VLSM / ROAS | BR-OFFICE、BR-ADMIN 到各自网关 | 正确 | A |
+| N5 | OSPF | SW-CORE ↔ R-HQ | FULL / HQ routes 正确 | A |
+| N6 | eBGP | R-HQ ↔ R-ISP ↔ R-BRANCH | Established / prefixes 正确 | A |
+| N7 | Branch Business | BR-OFFICE → HQ-SERVICE HTTP | 允许 | A |
+| N8 | Branch Isolation | BR-OFFICE → HQ IOT / 管理设备 | 拒绝 | A |
+| N9 | PAT | HQ OFFICE → Internet | 成功且有 NAT translation | A |
+| N10 | DNS/HTTP | HQ OFFICE 访问 `www.edgecampus.net` | DNS + HTTP 成功 | A |
+| N11 | Static Port Map | 外部节点 → `203.0.113.1:80` | 映射到 HQ-SERVICE | A |
+| N12 | IPv6 modes | SLAAC / DHCPv6 / Static | 各模式按规划获得地址 | A |
+| N13 | IPv6 Tunnel | BR-ADMIN → HQ-SERVICE IPv6 | 通过 IPv4-only ISP 可达 | A |
+| N14 | Remote Admin | HQ ADMIN → Branch devices | 允许；普通 Office 拒绝 | A |
+| N15 | Port Security | 替换非法 MAC | violation 增长/阻断 | A |
+| E1 | Edge Local Loop | 调温跨阈值 | Fan 正确动作 | B |
+| C1 | Real Telemetry | PT 温度变化 | Backend state 更新 | B+C |
+| D1 | Dashboard | 温度跨阈值 | 页面 WARNING / Fan / event 正确 | C+D |
+| P1 | Policy | 30→33 | Edge APPLIED + ACK | B+C+D |
+| P2 | Manual Command | FAN ON/OFF | command_ack / status 正确 | B+C+D |
+| R1 | Cloud Failure | 停 Backend 后调温 | Local Loop 不停止 | B |
+| R2 | Reconnect | 恢复 Backend | hello + state_sync / UI 恢复 | B+C+D |
 
-## 截图命名
+---
 
-`G<Gate>-<序号>-<内容>-<结果>.png`，例如：
+# 课程五次实验覆盖核对
+
+| 实验 | Final Architecture v2 对应功能 |
+|---|---|
+| 实验1 | VLSM、DHCP、SLAAC、DHCPv6、Static IPv6、IPv6 static route、远程管理 |
+| 实验2 | VLAN、Trunk、EtherChannel、SVI、Router-on-a-Stick |
+| 实验3 | ACL、NAT/PAT、TCP/80 映射、DNS、HTTP |
+| 实验4 | OSPF、eBGP、路由传播 |
+| 实验5 | Sticky MAC / Port Security、IPv6-over-IPv4 Tunnel |
+
+报告主体按业务架构写，上表只用于证明课程覆盖，避免五个实验机械拼接。
+
+---
+
+# 证据命名
+
+继续使用：
 
 ```text
-G1-01-vlan-trunk-pass.png
-G2-01-temperature-dashboard-pass.png
-G3-02-policy-ack-pass.png
-G4-03-cloud-offline-edge-auto-pass.png
-G4-04-reconnect-state-sync-pass.png
+G<Gate>-<Owner>-<序号>-<内容>-<结果>.png
+```
+
+示例：
+
+```text
+G2-B-01-real-telemetry-pass.png
+G2-A-01-branch-roas-pass.png
+G3-A-03-bgp-branch-hq-pass.png
+G3-B-02-policy-ack-pass.png
+G4-A-02-ipv6-tunnel-pass.png
+G4-B-03-cloud-offline-edge-auto-pass.png
 ```
