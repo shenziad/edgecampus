@@ -17,7 +17,7 @@
 | Edge Local Loop | B | **PASS G1** | TEMP→MCU→SBC→FAN / hysteresis / backend-off | G2 增量加 Telemetry |
 | A+B canonical integration | A+B | **PASS G1** | `docs/gate1/AB_INTEGRATION_REPORT.md` | 作为 HQ Core baseline |
 | PT → Real Host RealWSClient | A+B+C | VERIFIED | Gate0 实机 + 重开复测 | G2 承载真 Telemetry |
-| Real PT Telemetry | B+C+D | IN PROGRESS | G2 主 Critical Path | TEMP→Dashboard |
+| Real PT Telemetry | B+C+D | **B EDGE SIDE PASS / C+D END-TO-END PENDING** | B 的 6 张 G2 实机证据 + `docs/gate2/B_EDGE_REPORT.md` | C/D 完成 TEMP→Dashboard |
 | Branch LAN / ROAS | A | NOT STARTED | Final Architecture v2 | G2 |
 | IPv4 WAN Underlay | A | NOT STARTED | Final Architecture v2 | G2 |
 | HQ OSPF | A | NOT STARTED | Area0 SW-CORE↔R-HQ | G3 |
@@ -87,6 +87,7 @@ G4 IPv6 Tunnel / Port Security
 | 2026-09-15 | D | G1 | NORMAL/WARNING/OFFLINE/RECONNECT evidence archived | D PASS |
 | 2026-09-15 | C | G1 | 软件 baseline 已存在，但 Owner 专属证据未提交 | 建立 placeholder；不阻塞 G2；G5 前必须补 |
 | 2026-09-15 | 全组 | Re-baseline | Final Architecture v2 冻结：HQ + ISP/Internet + Branch；保留双控制环与 Protocol v1 | 进入 G2 |
+| 2026-09-15 | B | G2 | RealWSClient / hello / real TEMP telemetry / status / heartbeat / physical FAN state 2 + Protocol ON PASS | B Edge-side PASS；等待 C/D 完整 TEMP→Dashboard 联调 |
 
 ## Final Architecture v2 课程覆盖追踪
 
