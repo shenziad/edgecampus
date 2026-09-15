@@ -1,96 +1,168 @@
 # Packet Tracer Edge 适配说明
 
-此目录由 B（Edge Owner）维护。不要把 `fake_edge.py` 原样复制进 Packet Tracer；PT 的 SBC Python API、网络能力和版本支持需要在目标实验环境中确认。
+此目录由 B（Edge Owner）维护。这里记录真实 Packet Tracer 环境中已经验证过的 API、接线和 Gate 1 本地自治实现。
 
-## 固定输入输出
+> 环境：Cisco Packet Tracer **9.0.1**
 
-输入设备：
+## 1. 固定设备与项目状态
 
 - 温度传感器：`TEMP01`
 - 边缘节点：`EDGE-SBC-01`
 - 风扇：`FAN01`
+- `mode = AUTO`
+- `threshold_c = 30.0`
+- `hysteresis_c = 1.0`
+- `policy_version = 1`
+- `fan_state = OFF / ON`
 
-必须保留的本地状态：
-
-```text
-mode = AUTO
-threshold_c = 30.0
-hysteresis_c = 1.0
-policy_version = 1
-fan_state = OFF
-```
-
-## 实现顺序
-
-1. 只在 PT 内完成 `TEMP01 → SBC → FAN01`，断网也能运行。
-2. 记录本机 PT 版本及 SBC 可用的传感器/执行器 API。
-3. 将传感器读数映射到 `telemetry`，将风扇状态映射到 `status`。
-4. 接收 `policy` 与 `command`，分别返回 `policy_ack` 与 `command_ack`。
-5. WebSocket 断开时继续执行本地 AUTO 策略；恢复后发送 `hello + state_sync`。
-
-核心判断必须与 `edge/controller.py` 一致：
+Gate 1 的正式 AUTO 语义与 `edge/controller.py` 一致：
 
 ```python
-if mode == "AUTO":
-    if temperature_c >= threshold_c:
-        fan_state = "ON"
-    elif temperature_c <= threshold_c - hysteresis_c:
-        fan_state = "OFF"
+if temperature_c >= threshold_c:
+    fan_state = "ON"
+elif temperature_c <= threshold_c - hysteresis_c:
+    fan_state = "OFF"
+# 迟滞区间内保持原状态
 ```
 
-迟滞区间用于避免温度在阈值附近波动时风扇频繁开关。
-
-## Gate 0 已验证环境
-
-- SBC 编程语言/运行模式：`Python 3 Project`
-- Edge 项目：空白 Python 项目（开发时命名为 `EdgeCampusEdgect`）
-- 网络接入：SBC-PT 已安装 FastEthernet 模块，并接入 `SW-ACCESS Fa0/2`
-- External Network Access：已开启
-- 可用真实网络协议：`RealWSClient / WebSocket`
-- Edge WebSocket：`ws://127.0.0.1:8000/ws/edge`
-- 真实 Backend：与 Packet Tracer 运行在同一台物理主机上的 FastAPI/Uvicorn
-
-### PT → Real Host 实机验证
-
-Gate 0 使用最小 `RealWSClient` 探针完成了真实联通测试，结果：
+## 2. Packet Tracer 9.0.1 实测接线
 
 ```text
-Starting EdgeCampusEdgect (Python3)...
-Connecting...
-WS state: 2
-WS state: 3
-CONNECTED
-Remote: 127.0.0.1 8000
+TEMP01 A0
+    |
+    | analog signal
+    v
+IO-MCU-01 A0
+    |
+    | USB0
+    v
+EDGE-SBC-01 USB0
+    |
+    | D0 / Custom Cable
+    v
+FAN01 D0
 ```
 
-同时真实 Backend 侧出现：
+实际验证映射：
+
+| 链路 | 端口/API | 状态 |
+|---|---|---|
+| TEMP01 -> MCU | `TEMP01 A0 -> MCU A0` | VERIFIED |
+| MCU 温度采集 | `analogRead(A0)` | VERIFIED |
+| MCU -> SBC | `MCU USB0 -> SBC USB0`, `USB(0, 9600)` | VERIFIED |
+| SBC -> FAN | `SBC D0 -> FAN01 D0`, Custom Cable | VERIFIED |
+| FAN 控制 | `customWrite(0, "0")` / `customWrite(0, "2")` | VERIFIED |
+
+FAN01 的设备状态值：
 
 ```text
-WebSocket /ws/edge [accepted]
-connection open
-edge connected
+0 = OFF
+1 = LOW
+2 = HIGH
 ```
 
-访问 `/api/state` 可观察到：
+EdgeCampus 公共语义只使用 `ON/OFF`。当前 PT 适配层将：
 
 ```text
-edge_online = true
-cloud_state = CONNECTED
-edge_id = EDGE-SBC-01
+OFF -> FAN state 0
+ON  -> FAN state 2 (HIGH)
 ```
 
-保存并关闭 Packet Tracer、重新打开 `.pkt` 后再次运行探针，WebSocket 仍可稳定连接。因此 Gate 0 中原“PT 与真实主机互通方式”的最高风险项已验证通过。
+## 3. MCU 温度采集与 USB 发送
 
-> 架构说明：该 `RealWSClient` 通道属于 Packet Tracer External Network Access 提供的带外 Edge–Cloud 控制通道，并不表示真实 WebSocket 报文实际经过 PT 内的 VLAN 20/30。PT 以 VLAN/ACL/路由等承担园区模拟数据平面。
+实现文件：`mcu_temperature_sender.py`
 
-## Gate 1 待完成的 PT API 适配
+核心流程：
 
-以下内容不属于 Gate 0，交由 B 在 Gate 1 实机确认：
+```text
+analogRead(A0)
+    ->
+0~1023 映射到 -100~100 C
+    ->
+保留 1 位小数
+    ->
+USB0.write()
+    ->
+SBC USB0
+```
 
-- Packet Tracer 具体版本号：`TODO（记录环境信息）`
-- `TEMP01` 传感器读取 API：`TODO`
-- `FAN01` 风扇控制 API：`TODO`
-- TEMP01 / FAN01 与 SBC 的实际连接方式和 pin/API 映射：`TODO`
-- 无 Cloud 条件下 `TEMP01 → SBC → FAN01` 本地自治验证：`TODO`
+温度换算：
 
-Gate 1 的通过重点是**本地自治**，而不是继续证明 WebSocket 可连接。
+```python
+temp_c = raw * 200.0 / 1023.0 - 100.0
+```
+
+发送数据使用换行符作为帧结束标记，SBC 端使用 `readLine()` 接收。
+
+## 4. SBC 本地自治控制
+
+实现文件：`sbc_local_controller.py`
+
+AUTO 策略：
+
+```text
+TEMP >= 30.0 C       -> FAN ON
+TEMP <= 29.0 C       -> FAN OFF
+29.0 C < TEMP < 30 C -> HOLD previous FAN state
+```
+
+迟滞用于避免温度在 30 C 附近轻微波动时风扇反复开关。
+
+本控制循环只依赖本地 USB 温度输入和本地 `customWrite()` 执行器调用，不依赖 Backend 才能作出 AUTO 决策。
+
+## 5. Gate 1 实测结果
+
+已观察到以下完整序列：
+
+```text
+27.x C -> TURN_OFF -> FAN OFF
+31.0 / 30.2 C -> TURN_ON -> FAN ON
+29.4 C -> HOLD -> FAN ON
+28.6 C -> TURN_OFF -> FAN OFF
+```
+
+这证明：
+
+1. 低温关闭正常；
+2. 越过上阈值后开启正常；
+3. 回落到迟滞区间时不会立即关闭；
+4. 下降到关闭阈值以下后正确关闭。
+
+证据：
+
+- `evidence/B1_hysteresis_console.png`
+- `evidence/B2_fan_state_topology.png`
+
+## 6. Gate 0 已验证的真实 Backend 能力
+
+Gate 0 已验证 `RealWSClient` 可通过 Packet Tracer External Network Access 连接同一物理主机上的 FastAPI：
+
+```text
+ws://127.0.0.1:8000/ws/edge
+```
+
+该通道属于 PT 的带外 Edge-Cloud 控制通道，不等价于 WebSocket 报文真实经过 PT 内 VLAN 20/30。
+
+Gate 1 当前实现优先保证本地自治。后续 Gate 再把本地状态映射到协议 `telemetry/status/state_sync` 并接入真实 Backend。
+
+## 7. 调试经验
+
+### 温度初始接近 -0.5 C
+
+最初 MCU 输出长期接近 -0.5 C。通过改变 TEMP01 的环境温度后，`analogRead(A0)` 和换算结果同步变化，确认采集 API 与映射逻辑有效。
+
+### SBC Console 有输出但 FAN state 不变
+
+最初控制程序可以正常打印，但 FAN01 `Attributes -> state` 始终为 `0`。将链路拆成独立的 `SBC -> FAN` 测试后，重新核对 Custom Cable、D0 pin 和 `customWrite()` 调用，最终 FAN state 可正确切换。
+
+### 分段测试方法
+
+本次采用：
+
+```text
+TEMP -> MCU
+MCU -> SBC
+SBC -> FAN
+```
+
+逐段验证后再合并闭环，避免传感器、通信和执行器问题互相干扰。
