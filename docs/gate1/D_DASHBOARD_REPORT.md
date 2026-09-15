@@ -1,18 +1,18 @@
-\# Gate 1 — D UI \& Integration Report
+# Gate 1 — D UI & Integration Report
 
 
 
-\## 1. Owner
+## 1. Owner
 
 
 
-\- Module: D — UI \& Integration
+- Module: D — UI & Integration
 
-\- Branch: `feat/dashboard`
+- Branch: `feat/dashboard`
 
-\- Scope: `dashboard/`, UI / integration validation, Dashboard evidence
+- Scope: `dashboard/`, UI / integration validation, Dashboard evidence
 
-\- Gate: Gate 1 — 四模块独立运行
+- Gate: Gate 1 — 四模块独立运行
 
 
 
@@ -20,11 +20,11 @@
 
 
 
-\---
+---
 
 
 
-\## 2. Gate 1 Goal
+## 2. Gate 1 Goal
 
 
 
@@ -44,11 +44,11 @@ D 模块在 Gate 1 的目标是：
 
 
 
-\---
+---
 
 
 
-\## 3. Validation Environment
+## 3. Validation Environment
 
 
 
