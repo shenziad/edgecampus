@@ -1,10 +1,10 @@
 # Packet Tracer Edge 适配说明
 
-此目录由 B（Edge Owner）维护。这里记录真实 Packet Tracer 环境中已经验证过的 API、接线和 Gate 1 本地自治实现。
+此目录由 B（Edge Owner）维护。这里记录 Packet Tracer 9.0.1 中已经验证的 API、接线、Gate 1 本地自治，以及 Gate 2 的增量联调边界。
 
 > 环境：Cisco Packet Tracer **9.0.1**
 
-## 1. 固定设备与项目状态
+## 1. 固定设备与公共状态
 
 - 温度传感器：`TEMP01`
 - 边缘节点：`EDGE-SBC-01`
@@ -13,9 +13,9 @@
 - `threshold_c = 30.0`
 - `hysteresis_c = 1.0`
 - `policy_version = 1`
-- `fan_state = OFF / ON`
+- 协议 Fan 状态：`OFF / ON`
 
-Gate 1 的正式 AUTO 语义与 `edge/controller.py` 一致：
+Gate 1 正式 AUTO 语义与 `edge/controller.py` 一致：
 
 ```python
 if temperature_c >= threshold_c:
@@ -24,6 +24,8 @@ elif temperature_c <= threshold_c - hysteresis_c:
     fan_state = "OFF"
 # 迟滞区间内保持原状态
 ```
+
+Final Architecture v2 **不修改**以上 Edge 语义。
 
 ## 2. Packet Tracer 9.0.1 实测接线
 
@@ -43,17 +45,15 @@ EDGE-SBC-01 USB0
 FAN01 D0
 ```
 
-实际验证映射：
-
 | 链路 | 端口/API | 状态 |
 |---|---|---|
-| TEMP01 -> MCU | `TEMP01 A0 -> MCU A0` | VERIFIED |
+| TEMP01 → MCU | `TEMP01 A0 → MCU A0` | VERIFIED |
 | MCU 温度采集 | `analogRead(A0)` | VERIFIED |
-| MCU -> SBC | `MCU USB0 -> SBC USB0`, `USB(0, 9600)` | VERIFIED |
-| SBC -> FAN | `SBC D0 -> FAN01 D0`, Custom Cable | VERIFIED |
+| MCU → SBC | `MCU USB0 → SBC USB0`，`USB(0, 9600)` | VERIFIED |
+| SBC → FAN | `SBC D0 → FAN01 D0`，Custom Cable | VERIFIED |
 | FAN 控制 | `customWrite(0, "0")` / `customWrite(0, "2")` | VERIFIED |
 
-FAN01 的设备状态值：
+FAN01 PT 设备状态值：
 
 ```text
 0 = OFF
@@ -61,29 +61,25 @@ FAN01 的设备状态值：
 2 = HIGH
 ```
 
-EdgeCampus 公共语义只使用 `ON/OFF`。当前 PT 适配层将：
+EdgeCampus 公共协议只使用 `ON/OFF`。PT 适配映射：
 
 ```text
-OFF -> FAN state 0
-ON  -> FAN state 2 (HIGH)
+OFF → physical state 0
+ON  → physical state 2 (HIGH)
 ```
+
+**禁止把 PT 物理值 `2` 直接发送为 Protocol v1.0 Fan 状态。**
 
 ## 3. MCU 温度采集与 USB 发送
 
-实现文件：`mcu_temperature_sender.py`
-
-核心流程：
+实现：`mcu_temperature_sender.py`
 
 ```text
 analogRead(A0)
-    ->
-0~1023 映射到 -100~100 C
-    ->
-保留 1 位小数
-    ->
-USB0.write()
-    ->
-SBC USB0
+→ 0~1023 映射到 -100~100 C
+→ 保留 1 位小数
+→ USB0.write()
+→ SBC USB0 readLine()
 ```
 
 温度换算：
@@ -92,77 +88,91 @@ SBC USB0
 temp_c = raw * 200.0 / 1023.0 - 100.0
 ```
 
-发送数据使用换行符作为帧结束标记，SBC 端使用 `readLine()` 接收。
+发送数据使用换行符作为帧结束标记。
 
-## 4. SBC 本地自治控制
+## 4. SBC Gate 1 Local Loop
 
-实现文件：`sbc_local_controller.py`
-
-AUTO 策略：
+实现：`sbc_local_controller.py`
 
 ```text
-TEMP >= 30.0 C       -> FAN ON
-TEMP <= 29.0 C       -> FAN OFF
-29.0 C < TEMP < 30 C -> HOLD previous FAN state
+TEMP >= 30.0 C       → FAN ON
+TEMP <= 29.0 C       → FAN OFF
+29.0 C < TEMP < 30 C → HOLD previous FAN state
 ```
 
-迟滞用于避免温度在 30 C 附近轻微波动时风扇反复开关。
+本控制循环只依赖本地 USB 温度输入和本地 `customWrite()`，不依赖 Backend 才能作出 AUTO 决策。
 
-本控制循环只依赖本地 USB 温度输入和本地 `customWrite()` 执行器调用，不依赖 Backend 才能作出 AUTO 决策。
+## 5. Gate 1 实测结果 — PASS
 
-## 5. Gate 1 实测结果
-
-已观察到以下完整序列：
+已观察：
 
 ```text
-27.x C -> TURN_OFF -> FAN OFF
-31.0 / 30.2 C -> TURN_ON -> FAN ON
-29.4 C -> HOLD -> FAN ON
-28.6 C -> TURN_OFF -> FAN OFF
+27.x C          → TURN_OFF → FAN OFF
+31.0 / 30.2 C   → TURN_ON  → FAN ON
+29.4 C          → HOLD     → FAN ON
+28.6 C          → TURN_OFF → FAN OFF
 ```
-
-这证明：
-
-1. 低温关闭正常；
-2. 越过上阈值后开启正常；
-3. 回落到迟滞区间时不会立即关闭；
-4. 下降到关闭阈值以下后正确关闭。
 
 证据：
 
 - `evidence/B1_hysteresis_console.png`
 - `evidence/B2_fan_state_topology.png`
+- `evidence/B3_backend_off_local_autonomy.png`
 
-## 6. Gate 0 已验证的真实 Backend 能力
+B3 证明 Backend 端口不可达时，本地循环仍可完成 ON / HOLD / OFF。
 
-Gate 0 已验证 `RealWSClient` 可通过 Packet Tracer External Network Access 连接同一物理主机上的 FastAPI：
+A+B 合入 canonical 网络后也已完成回归，见 `docs/gate1/AB_INTEGRATION_REPORT.md`。
+
+## 6. RealWSClient 真实性边界
+
+Gate 0 已实测：
 
 ```text
+EDGE-SBC-01
+  ↓ Packet Tracer External Network Access / RealWSClient
 ws://127.0.0.1:8000/ws/edge
+  ↓
+Real FastAPI Backend
 ```
 
-该通道属于 PT 的带外 Edge-Cloud 控制通道，不等价于 WebSocket 报文真实经过 PT 内 VLAN 20/30。
+该通道是**带外 Edge–Cloud 控制通道**。Final Architecture v2 新增的 R-HQ / R-ISP / R-BRANCH / BGP / NAT / IPv6 Tunnel 不承载真实 WebSocket。
 
-Gate 1 当前实现优先保证本地自治。后续 Gate 再把本地状态映射到协议 `telemetry/status/state_sync` 并接入真实 Backend。
+不得在报告中写成“Telemetry 经过 Packet Tracer WAN”。正确表述是：真实 PT 传感器产生数据，SBC 通过 RealWSClient 带外送入真实 Backend；模拟 WAN 负责验证企业网络对 HQ/Branch/Internet 业务的承载。
 
-## 7. 调试经验
+## 7. Gate 2 增量任务
+
+当前目标：在**不重写 Gate 1 Local Loop**的基础上，把真实 PT 状态映射到 Protocol v1.0。
+
+需要：
+
+1. 继续读取真实 USB 温度并执行本地 AUTO。
+2. 使用已验证 RealWSClient 连接 `/ws/edge`。
+3. 发送合法 `telemetry`：`EDGE-SBC-01` / `TEMP01` / `temperature` / `C`。
+4. Fan 实际状态变化时发送 `status`，协议值仍为 `ON/OFF`，source 为 `EDGE-AUTO`。
+5. hello / heartbeat 按 `docs/PROTOCOL.md` 发送。
+6. WebSocket 不可用时不得阻塞本地控制。
+7. Gate 2 通过后，Dashboard 显示的温度必须能够追溯到真实 TEMP01，而不是 fake edge。
+
+Policy / Command 的真实 PT 应用属于 Gate 3，不要在 Gate 2 为了“多做一点”破坏 Local Loop。
+
+## 8. 调试经验
 
 ### 温度初始接近 -0.5 C
 
-最初 MCU 输出长期接近 -0.5 C。通过改变 TEMP01 的环境温度后，`analogRead(A0)` 和换算结果同步变化，确认采集 API 与映射逻辑有效。
+通过改变 TEMP01 的环境温度后，`analogRead(A0)` 和换算结果同步变化，确认采集 API 与映射逻辑有效。
 
 ### SBC Console 有输出但 FAN state 不变
 
-最初控制程序可以正常打印，但 FAN01 `Attributes -> state` 始终为 `0`。将链路拆成独立的 `SBC -> FAN` 测试后，重新核对 Custom Cable、D0 pin 和 `customWrite()` 调用，最终 FAN state 可正确切换。
+最初程序可打印，但 FAN01 `Attributes -> state` 始终为 `0`。将链路拆成独立的 `SBC → FAN` 测试后，重新核对 Custom Cable、D0 和 `customWrite()`，最终状态可正确切换。
 
 ### 分段测试方法
 
-本次采用：
-
 ```text
-TEMP -> MCU
-MCU -> SBC
-SBC -> FAN
+TEMP → MCU
+MCU → SBC
+SBC → FAN
+Local Loop
+Local Loop + RealWSClient
 ```
 
-逐段验证后再合并闭环，避免传感器、通信和执行器问题互相干扰。
+始终逐段验证后再合并，避免传感器、串口、执行器和网络问题互相干扰。
