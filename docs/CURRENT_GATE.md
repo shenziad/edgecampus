@@ -1,235 +1,350 @@
 # EdgeCampus 当前阶段指挥文件
 
-> 当前 Gate：**Gate 1 — 四模块独立运行**  
+> 当前 Gate：**Gate 2 — 真实单向 Telemetry + 多园区网络基础层**  
 > 状态：**IN PROGRESS**  
-> 发布日期：2026-09-14  
-> 总原则：**先独立跑通，再进入 Gate 2 真实端到端联调。**
+> 发布日期：2026-09-15  
+> 架构基线：**Final Architecture v2**  
+> 总原则：**B/C/D 打通真实 TEMP→Dashboard；A 并行搭建 Branch LAN + IPv4 WAN Underlay；任何人不得破坏 Gate 1 HQ Core。**
 
 ---
 
 ## 0. 所有人 / 所有 AI 开工前必须先读
 
-在开始修改任何内容前，按顺序检查：
+按顺序：
 
-1. `docs/AI_CONTEXT.md` —— 项目目标、固定架构、Public Contract、AI 红线。
-2. `docs/CONTRIBUTING.md` —— Owner 边界、分支、提交规范、RFC、Definition of Done。
-3. `docs/ARCHITECTURE.md` —— 三平面架构、双控制环、状态所有权、断云降级行为。
-4. `docs/PROTOCOL.md` —— B/C/D 联调唯一消息契约。
-5. `docs/NETWORK_PLAN.md` —— A 的网络地址、设备、端口、ACL 与 PT/真实主机边界。
-6. `docs/ACCEPTANCE.md` —— Gate 1 通过标准及后续 Gate 的验收主线。
+1. `docs/AI_CONTEXT.md`
+2. `docs/CURRENT_GATE.md`
+3. `docs/CONTRIBUTING.md`
+4. `docs/ARCHITECTURE.md`
+5. `docs/PROTOCOL.md`
+6. `docs/NETWORK_PLAN.md`
+7. `docs/ACCEPTANCE.md`
 
-### 开工前必须核对的冻结项
+### Gate 1 状态
 
-- VLAN 10 / OFFICE：`192.168.10.0/24`，网关 `192.168.10.1`。
-- VLAN 20 / IOT：`192.168.20.0/24`，网关 `192.168.20.1`。
-- VLAN 30 / MANAGEMENT：`192.168.30.0/24`，网关 `192.168.30.1`。
-- `EDGE-SBC-01 = 192.168.20.10`。
-- `BACKEND-STUB = 192.168.30.10`，`ADMIN-PC = 192.168.30.20`。
-- Edge WS：`ws://<backend>:8000/ws/edge`；本机 PT → Real Host 已实测 `ws://127.0.0.1:8000/ws/edge` 可用。
-- Dashboard WS：`/ws/dashboard`。
-- 设备 ID：`EDGE-SBC-01`、`TEMP01`、`FAN01`。
-- 协议版本：`1.0`。
-- 公共 JSON 字段、URL、VLAN/IP、设备 ID、目录结构不得由个人或 AI 擅自修改；确需修改先走 RFC。
-
-> **特别注意**：Packet Tracer 的 VLAN/ACL/路由属于模拟数据平面；`RealWSClient` 连接真实 FastAPI 属于 Edge–Cloud 带外控制通道。不要在代码、报告或答辩中把两者混写成“WebSocket 流量经过 VLAN 20/30”。
-
----
-
-## 1. Gate 1 的共同目标
-
-Gate 1 不要求四个模块已经端到端联通。目标是让 A/B/C/D **分别拥有一个可独立运行、可独立验收、可被 fake 对端替代的稳定模块**。
-
-Gate 1 通过时应达到：
+Gate 1 已按项目管理决策进入：
 
 ```text
-A：Packet Tracer 网络底座独立可验收
-B：Edge 在无 Cloud 时可完成 TEMP01 → SBC → FAN01 本地自治
-C：Backend 使用 fake_edge 可稳定接收、校验、维护状态
-D：Dashboard 使用 fake/Backend 状态可稳定展示状态、告警、事件与策略表单
+CLOSED-WITH-PLACEHOLDER
 ```
 
-### Gate 1 暂时不追求
+- A：PASS。
+- B：PASS。
+- D：PASS。
+- A+B canonical 集成与回归：PASS。
+- C：Owner 专属 Gate 1 证据未交，已建立 `docs/gate1/C_BACKEND_REPORT.md` 占位；**不是 PASS**，Gate 5 前必须补齐。
 
-- 不要求真实 `TEMP01 → SBC → Backend → Dashboard` 全链路完成（这是 Gate 2）。
-- 不要求 Dashboard 策略真正下发到 PT Edge（这是 Gate 3）。
-- 不要求正式演示“断云不断控 + 云恢复同步”（这是 Gate 4）。
-- 不新增烟雾、门禁、Guest VLAN、数据库、MQ、Kubernetes、微服务、账号系统等非核心功能。
-- 不为了“看起来高级”擅自扩大范围。
-
----
-
-## 2. A — Network Owner
-
-### 本阶段主要任务
-
-把 Gate 0 已冻结的网络规划真正实现为一个稳定的 **canonical Packet Tracer 网络底座**。
-
-需要完成：
-
-- VLAN 10 / 20 / 30 创建与命名。
-- `Fa0/1`、`Fa0/2`、`Fa0/3`、`Fa0/4` 分别接入 OFFICE / IOT / MANAGEMENT。
-- `SW-CORE Gi1/0/1 ↔ SW-ACCESS Gi0/1` 与 `Gi1/0/2 ↔ Gi0/2` 配置 LACP EtherChannel。
-- Port-Channel 配置 Trunk，仅允许 VLAN 10/20/30。
-- 3650 上创建三个 SVI，开启三层转发。
-- OFFICE 使用 DHCP。
-- IOT / MANAGEMENT 核心节点使用冻结的静态地址。
-- 按 `NETWORK_PLAN.md` 的源安全域原则配置 VLAN10 / VLAN20 inbound ACL。
-- MANAGEMENT 保持最高信任运维域。
-- 完成 N1 / N2 类独立网络验证并记录配置。
-
-### 开工前先检查
-
-- 只使用 Gate 0 已确认的设备型号和端口。
-- 不改 VLAN/IP。
-- 不擅自把真实 FastAPI 伪装成 PT 内 VLAN30 节点；`BACKEND-STUB` 只用于 PT 网络验收。
-- 确认自己持有**唯一 canonical `.pkt` 修改权**。
-
-### 交付物
-
-- 正式可继续集成的 canonical `.pkt`。
-- `packet_tracer/CONFIG_LOG.md` 或等价配置记录，包含关键命令和验证结果。
-- 至少一份可复现的网络验收说明：VLAN/Trunk/EtherChannel/SVI/DHCP/ACL。
-- Gate 1 网络证据截图，重点证明：允许流量可达、OFFICE → IOT 被拒绝、EtherChannel 正常。
-
-### Gate 1 通过标准
-
-> 不依赖 B/C/D 的代码，A 单独打开正式 `.pkt` 就能完成本阶段所有网络验收。
+因此 Gate 2 可以推进，但任何报告不得把 C Gate 1 占位符写成“已验收完成”。
 
 ---
 
-## 3. B — Edge Owner
+## 1. Final Architecture v2 冻结原则
 
-### 本阶段主要任务
-
-完成 Packet Tracer 内真正的 **Edge Local Loop**，证明 Edge 不依赖 Cloud 也能工作。
-
-需要完成：
-
-- 在自己的 PT 开发副本中确认 `TEMP01` 读取方式。
-- 确认 `FAN01` 控制方式。
-- 实现本地状态：`mode`、`threshold_c`、`hysteresis_c`、`policy_version`、`fan_state`。
-- AUTO 模式下实现迟滞控制：
+### 1.1 HQ Gate 1 Core 不得破坏
 
 ```text
-温度 >= threshold       → FAN ON
-温度 <= threshold-hyst  → FAN OFF
-迟滞区间内              → 保持原状态
+VLAN10 OFFICE      192.168.10.0/24  GW 192.168.10.1
+VLAN20 IOT         192.168.20.0/24  GW 192.168.20.1
+VLAN30 MANAGEMENT  192.168.30.0/24  GW 192.168.30.1
+
+EDGE-SBC-01 = 192.168.20.10
+BACKEND-STUB = 192.168.30.10
+ADMIN-PC = 192.168.30.20
 ```
 
-- Cloud / WebSocket 不可用时，本地传感器循环和风扇控制不得停止。
-- 保留 Gate 0 已验证的 `RealWSClient` 能力，但本 Gate **不以完整遥测上传为通过条件**。
-- 将真实 PT API / pin / 接线方式记录到 `edge/packet_tracer/README.md`。
-
-### 开工前先检查
-
-- 不把 `fake_edge.py` 原样复制到 PT。
-- `edge/controller.py` 中的核心控制语义是参考基线，不允许随意改变迟滞规则。
-- 不修改 `docs/PROTOCOL.md` 的字段。
-- B 使用自己的 `.pkt` 开发副本；**不要覆盖或提交替换 A 的 canonical `.pkt`**。
-
-### 交付物
-
-- 可放入 SBC 的 PT Python Edge 程序。
-- `TEMP01` 读取 API、`FAN01` 控制 API、接线/pin 映射的实际验证记录。
-- 本地自治测试结果：至少覆盖低于阈值、跨阈值开启、迟滞区间保持、降到关闭阈值以下四种情况。
-- 一份“关闭真实 Backend 后仍可自治”的证据。
-- 可由 A 后续并入 canonical `.pkt` 的明确接线和导入说明。
-
-### Gate 1 通过标准
-
-> FastAPI 完全关闭时，在 PT 中改变 TEMP01，EDGE-SBC-01 仍能按最后有效 AUTO 策略正确控制 FAN01。
-
----
-
-## 4. C — Control Plane Owner
-
-### 本阶段主要任务
-
-把现有 FastAPI Backend 做成一个**稳定、可被 fake edge 独立验证的控制平面基线**，不要继续扩架构。
-
-需要完成/确认：
-
-- `/healthz` 正常。
-- `/api/state` 正常。
-- `/ws/edge` 能接收并校验协议 v1 消息。
-- `/ws/dashboard` 能向 Dashboard 广播 snapshot，并转发合法 `policy` / `command`。
-- `fake_edge.py` 可以发送 hello / heartbeat / telemetry / status / state_sync 等已定义消息。
-- malformed / unsupported 消息不会导致 Backend 崩溃，而是返回协议错误。
-- Edge 断开时 `edge_online=false`、`cloud_state=DISCONNECTED`。
-- fake edge 重连后状态恢复逻辑可重复测试。
-- 事件日志与内存状态保持最小、清晰、可解释。
-
-### 开工前先检查
-
-- Backend 不是温控决策核心；真正 AUTO 判断属于 Edge。
-- 不新增数据库、MQ、微服务、认证、容器编排等非目标。
-- 不更改协议字段和 WS 路径。
-- 优先稳定性和可测试性，而不是新增功能。
-
-### 交付物
-
-- 可直接启动的 FastAPI Backend。
-- 可独立运行的 `fake_edge.py`。
-- 运行命令与最小环境说明。
-- 自动测试 / 手工验证结果，至少覆盖：正常遥测、非法消息、Edge 断开、重连恢复。
-- `/api/state` 与日志证据。
-
-### Gate 1 通过标准
-
-> 不需要 Packet Tracer，单独运行 Backend + fake_edge 就能稳定复现 Edge ONLINE、温度/风扇状态更新、断线和重连。
-
----
-
-## 5. D — UI & Integration Owner
-
-### 本阶段主要任务
-
-把 Dashboard 做成一个**不依赖真实 PT 也能独立验收的 Management Plane 基线**，并为后续 Gate 2/3/4 的真实联调预留稳定接口。
-
-需要完成/确认：
-
-- 展示系统 / Cloud / Edge 基本状态。
-- 展示当前温度、风扇状态、控制模式、Policy Version / threshold / hysteresis。
-- 温度越过告警阈值时有清晰 WARNING 状态。
-- Edge Offline / Disconnected 时 UI 明确降级显示。
-- Event Stream 可以持续追加并区分关键 source（如 SENSOR、EDGE-AUTO、CLOUD-POLICY、REMOTE-MANUAL、SYSTEM）。
-- 策略表单具备 Gate 3 所需字段，但本 Gate 只要求与 fake/backend 基线联调，不要求真实 PT Edge 已应用。
-- 前端不要自行重命名协议字段；展示层可以转换文案，传输层不能改契约。
-- 维护 `tests/` 中与 UI / 集成有关的最小测试或验证脚本。
-
-### 开工前先检查
-
-- 不把主要时间花在动画、主题、登录页等视觉花活。
-- 页面必须优先服务现场验收：状态是否正确、事件是否可解释、故障是否明显。
-- Dashboard 不直接控制 PT 设备，所有正式控制必须走 Backend。
-
-### 交付物
-
-- 可打开并稳定显示状态的 Dashboard。
-- fake/backend 驱动的状态切换演示：正常温度、WARNING、Edge Offline、事件追加。
-- Policy 表单基线。
-- UI / 集成验证说明与必要截图。
-
-### Gate 1 通过标准
-
-> 不需要 Packet Tracer，使用 Backend 或 fake snapshot 就能完整展示 EdgeCampus 当前状态、告警、事件和策略界面。
-
----
-
-## 6. Gate 1 并行开发规则
-
-四个角色**同时开工**。唯一特殊约束是 `.pkt`：
+HQ 已验证接口：
 
 ```text
-A：唯一 canonical .pkt Owner
-B：自己的 PT 开发副本 + edge/ 代码
-C：backend/
-D：dashboard/ + tests/
+SW-CORE Gi1/0/1 ↔ SW-ACCESS Gi0/1
+SW-CORE Gi1/0/2 ↔ SW-ACCESS Gi0/2
+SW-ACCESS Fa0/1 → OFFICE-PC
+SW-ACCESS Fa0/2 → EDGE-SBC-01
+SW-ACCESS Fa0/3 → ADMIN-PC
+SW-ACCESS Fa0/4 → BACKEND-STUB
 ```
 
-### 第一次 Integration Check
+Edge 已验证接线：
 
-每位 Owner 独立开发最长约 4 小时后，无论完成度如何，进行一次短检查，只汇报：
+```text
+TEMP01 A0 → IO-MCU-01 A0
+IO-MCU-01 USB0 → EDGE-SBC-01 USB0
+EDGE-SBC-01 D0 → FAN01 D0
+```
+
+### 1.2 软件 Public Contract 完全冻结
+
+- Protocol：`1.0`
+- Edge WS：`/ws/edge`
+- Dashboard WS：`/ws/dashboard`
+- IDs：`EDGE-SBC-01`、`TEMP01`、`FAN01`
+- 温度单位：`C`
+- Policy fields：`policy_id`、`version`、`mode`、`threshold_c`、`hysteresis_c`
+- 默认 Policy：AUTO / threshold 30.0 C / hysteresis 1.0 C / version 1
+
+本 Gate 不修改 `docs/PROTOCOL.md`。
+
+### 1.3 真实性边界
+
+```text
+Packet Tracer Data Plane
+VLAN / ACL / Routing / OSPF / BGP / NAT / Tunnel
+```
+
+与：
+
+```text
+EDGE-SBC-01
+  ↓ External Network Access / RealWSClient
+ws://127.0.0.1:8000/ws/edge
+  ↓
+Real FastAPI
+```
+
+是两条不同路径。
+
+**禁止表述真实 WebSocket 经过 R-HQ、R-ISP、BGP、NAT 或 VLAN20/30。**
+
+---
+
+# 2. Gate 2 共同目标
+
+Gate 2 完成时，同时得到两项独立成果：
+
+```text
+软件 / IoT 主线：
+TEMP01 → MCU → SBC → RealWSClient → Backend → Dashboard
+
+网络扩展线：
+HQ Core → R-HQ → R-ISP → R-BRANCH → SW-BRANCH
+                    |
+             INTERNET-SERVER
+```
+
+本 Gate **不要求**：
+
+- Dashboard Policy 已真实下发 PT Edge（Gate 3）；
+- OSPF/BGP/NAT 已全部配完（A 在 Gate 3 完成）；
+- IPv6 Tunnel / Port Security 最终验收（Gate 4）；
+- Cloud-off + reconnect 正式整套演示（Gate 4）。
+
+---
+
+# 3. A — Network Owner
+
+## 本 Gate 目标
+
+在不修改 HQ Gate 1 核心配置的情况下，为 Final Architecture v2 建立 **Branch LAN + IPv4 WAN Underlay**。
+
+### 3.1 先做 Physical Topology Check
+
+新增接口必须与 `docs/NETWORK_PLAN.md` 一致：
+
+```text
+SW-CORE Gi1/0/24 ↔ R-HQ G0/0
+R-HQ G0/1        ↔ R-ISP G0/0
+R-ISP G0/1       ↔ R-BRANCH G0/0
+R-ISP G0/2       ↔ INTERNET-SERVER Fa0
+R-BRANCH G0/1    ↔ SW-BRANCH Gi0/1
+SW-BRANCH Fa0/1  ↔ BR-OFFICE-PC Fa0
+SW-BRANCH Fa0/2  ↔ BR-ADMIN-PC Fa0
+```
+
+设备建议：R-HQ / R-ISP / R-BRANCH 使用 2911；SW-BRANCH 使用 2960-24TT。
+
+不要静默换口。如果当前 `.pkt` 接口与文档不同，先报告并修正再配置。
+
+### 3.2 建立 Branch LAN
+
+冻结：
+
+```text
+VLAN40 BR-OFFICE  172.16.40.0/26  GW 172.16.40.1
+VLAN50 BR-MGMT    172.16.40.64/27 GW 172.16.40.65
+```
+
+完成：
+
+- SW-BRANCH VLAN40 / VLAN50；
+- `Gi0/1` trunk；
+- `Fa0/1` access VLAN40；
+- `Fa0/2` access VLAN50；
+- R-BRANCH `G0/1.40` / `G0/1.50` Router-on-a-Stick；
+- BR-OFFICE IPv4 DHCP；
+- `SW-BRANCH VLAN50 = 172.16.40.66/27`；
+- `BR-ADMIN-PC = 172.16.40.70/27`，GW `172.16.40.65`。
+
+### 3.3 建立 IPv4 Underlay
+
+```text
+HQ Transit
+SW-CORE Gi1/0/24  10.255.0.1/30
+R-HQ G0/0          10.255.0.2/30
+
+HQ ↔ ISP
+R-HQ G0/1          203.0.113.1/30
+R-ISP G0/0         203.0.113.2/30
+
+ISP ↔ Branch
+R-ISP G0/1         198.51.100.1/30
+R-BRANCH G0/0      198.51.100.2/30
+
+Internet LAN
+R-ISP G0/2         192.0.2.1/24
+INTERNET-SERVER    192.0.2.10/24 GW 192.0.2.1
+```
+
+本 Gate 先验证**相邻三层节点**，不要一上来叠加 BGP/NAT/IPv6。
+
+### 3.4 Gate 1 Regression
+
+每次新增网络阶段后至少复查：
+
+```text
+show etherchannel summary
+show interfaces trunk
+show vlan brief
+show ip interface brief
+show access-lists
+```
+
+并验证：
+
+```text
+OFFICE → ADMIN      PASS
+OFFICE → IOT        DENY（预期）
+ADMIN  → EDGE-SBC   PASS
+```
+
+### A Gate 2 通过标准
+
+> Branch VLAN40/50 + Router-on-a-Stick + DHCP/管理地址正常；新增四个 IPv4 三层网段相邻可达；HQ Gate 1 Core 无回归。
+
+### A 交付物
+
+- 更新 canonical `.pkt`；
+- 更新 `packet_tracer/CONFIG_LOG.md`；
+- Gate 2 A 阶段报告；
+- 关键截图：Branch VLAN/Trunk、ROAS、DHCP、相邻 WAN ping、HQ regression。
+
+---
+
+# 4. B — Edge Owner
+
+## 本 Gate 目标
+
+把 Gate 1 已经可靠运行的 PT Local Loop 增量升级为真实 Telemetry Source。
+
+### 必须保留
+
+```text
+TEMP01 → MCU → SBC → FAN01
+```
+
+Cloud 连接、发送 JSON、重连等逻辑不得阻塞本地温控循环。
+
+### 需要完成
+
+1. SBC 从 USB 继续读取真实 MCU 温度。
+2. 保留本地迟滞 AUTO 控制。
+3. 使用 Gate 0 已验证的 `RealWSClient` 连接 `/ws/edge`。
+4. 按 Protocol v1.0 发送真实 `telemetry`：
+
+```text
+type = telemetry
+edge_id = EDGE-SBC-01
+device_id = TEMP01
+metric = temperature
+unit = C
+```
+
+5. Fan 状态变化时发送合法 `status`，source 为 `EDGE-AUTO`。
+6. 必要的 hello / heartbeat 可以复用已有协议语义。
+7. Cloud 不可达时继续本地控制；连接失败不能让 SBC 主循环挂死。
+
+### B Gate 2 通过标准
+
+> Dashboard 最终看到的温度来自真实 PT TEMP01；停止/未启动 Backend 时，Local Loop 仍不受影响。
+
+### B 禁止事项
+
+- 不改温度单位为 `℃`；
+- 不改 device ID；
+- 不把 Fan PT 物理值 `2` 直接传成协议状态；协议仍用 `ON/OFF`；
+- 不为了 WebSocket 重写 Gate 1 本地控制逻辑。
+
+---
+
+# 5. C — Control Plane Owner
+
+## 本 Gate 两个任务
+
+### 任务 A：不阻塞开发地补齐 Gate 1 占位符
+
+参见：`docs/gate1/C_BACKEND_REPORT.md`。
+
+Gate 2 可以先联调，但 C 应尽早补：healthz、fake edge、invalid message、offline、reconnect/state_sync 证据。
+
+### 任务 B：支持真实 PT Telemetry
+
+现有 Backend 设计原则不变：
+
+- `/ws/edge` 校验 Protocol v1.0；
+- Telemetry 更新 SystemState；
+- Status 更新 Fan 实际状态；
+- `/api/state` 提供当前 snapshot；
+- `/ws/dashboard` 广播状态；
+- 事件日志来源清晰；
+- malformed 数据不能使 Backend 崩溃。
+
+本 Gate 不需要 C 新增数据库、MQ、认证或新 API。
+
+### C Gate 2 通过标准
+
+> 收到真实 PT SBC Telemetry 后，`/api/state` 和 Dashboard snapshot 都反映真实 TEMP01 值，并且 fake edge 开发路径仍可继续使用。
+
+---
+
+# 6. D — UI & Integration Owner
+
+## 本 Gate 目标
+
+把 Gate 1 Dashboard 从 fake/Backend 驱动切换到**真实 PT Telemetry 验收**，但不修改传输协议。
+
+需要确认：
+
+- Edge Online/Offline；
+- current temperature；
+- Fan ON/OFF；
+- AUTO mode；
+- Policy Version / threshold / hysteresis；
+- 32 C 左右出现 WARNING；
+- Event Stream 有 SENSOR / EDGE-AUTO；
+- fake edge 仍可作为开发替身。
+
+### D Gate 2 通过标准
+
+> PT 将真实温度从约 28 C 调到约 32 C 后，Dashboard 在可接受延迟内显示真实温度、WARNING、Fan 状态与事件。
+
+D 本 Gate不要继续堆动画、主题、登录页等非验收功能。
+
+---
+
+# 7. Gate 2 Integration Check
+
+建议按下面顺序联调 B/C/D：
+
+```text
+① Backend 启动
+② Dashboard 打开
+③ PT / SBC 启动 Local Loop
+④ RealWSClient CONNECTED
+⑤ 28 C：检查 Backend + Dashboard
+⑥ 32 C：检查 Telemetry + WARNING + Fan ON + Events
+⑦ 保持当前状态 10~20 秒，确认 Heartbeat / UI 稳定
+⑧ 临时中断连接只做健壮性观察；正式 outage 验收留给 Gate 4
+```
+
+每位 Owner 汇报统一格式：
 
 ```text
 完成内容：
@@ -237,53 +352,39 @@ D：dashboard/ + tests/
 测试结果：
 阻塞项：
 是否触碰 Public Contract：
+提交 SHA / 分支：
+建议证据：
 下一动作：
 ```
 
-### 提前完成后的支援原则
+---
 
-- C 先完成：优先帮助 B 调试 WebSocket / JSON，不加数据库。
-- D 先完成：优先帮助 C 做集成测试，不继续堆 UI 花活。
-- A 先完成：优先帮助 B 把已验证 Edge 配置并入 canonical `.pkt`。
-- B 若被 PT API 卡住：尽早报告，A/C 可协助排错；不要一个人闷头重写架构。
+# 8. Gate 2 Definition of Done
+
+- [ ] A：Branch VLAN40/50 + Router-on-a-Stick + IPv4 Underlay 基础层 PASS。
+- [ ] A：HQ Gate 1 网络 regression PASS。
+- [ ] B：真实 TEMP01 数据进入合法 Protocol v1.0 Telemetry。
+- [ ] B：Local Loop 仍独立于 Cloud。
+- [ ] C：真实 PT Telemetry 更新 Backend state；Backend 无协议漂移。
+- [ ] D：Dashboard 展示真实温度 / WARNING / Fan / events。
+- [ ] B+C+D：`TEMP01 → SBC → Backend → Dashboard` 真实链路 PASS。
+- [ ] 所有新增证据、阶段报告、`PROJECT_BOARD.md` 更新完成。
+- [ ] 无人把 RealWSClient 描述成经过 Packet Tracer WAN。
+
+满足后才进入 Gate 3。
 
 ---
 
-## 7. Gate 1 Definition of Done
+# 9. Gate 3 / G4 预告，禁止提前乱加
 
-Gate 1 只有在以下四项**全部**满足后才可宣布 COMPLETE：
+### Gate 3
 
-- [ ] A：正式 `.pkt` 的 VLAN / Trunk / EtherChannel / SVI / DHCP / ACL 独立通过。
-- [ ] B：PT 内 `TEMP01 → EDGE-SBC-01 → FAN01` 本地自治独立通过，Cloud 关闭仍运行。
-- [ ] C：`fake_edge.py → Backend → /api/state` 独立通过，断线 / 重连 / 错误消息行为稳定。
-- [ ] D：Dashboard 使用 fake/backend 数据可展示状态、告警、事件和策略表单。
+B/C/D：Dashboard Policy / Command → Backend → Edge → ACK。  
+A：OSPF + eBGP + BR-OFFICE→HQ-SERVICE + PAT/DNS/HTTP + static TCP/80 mapping。
 
-此外每位 Owner 都必须：
+### Gate 4
 
-- 提供运行/操作方式；
-- 提供至少一个可复现测试；
-- 保留必要证据；
-- 不擅自修改 Public Contract；
-- 更新自己的交付记录或在 Integration Check 中说明现状。
+B/C/D：Cloud-off autonomy + reconnect + state_sync。  
+A：SLAAC + DHCPv6 + static IPv6 + IPv6-over-IPv4 Tunnel + Port Security + HQ central administration + 完整 ACL/业务回归。
 
-**Gate 1 完成后，才进入 Gate 2：第一次真实 `Packet Tracer TEMP01 → SBC → Backend → Dashboard` 单向全链路联调。**
-
----
-
-## 8. 给 AI 的固定提示
-
-每个人把本文件与 `docs/AI_CONTEXT.md` 一并提供给自己的 AI，并追加：
-
-> 你只负责我对应的 Gate 1 Owner 模块。先检查冻结契约和当前仓库实现，再提出最小可运行计划。只做增量修改；若需要改设备 ID、JSON 字段、URL、VLAN/IP、目录结构、最终 Demo 主线或 canonical `.pkt` 所有权，请立即停止并输出 RFC，不要直接修改。每次交付都要给出运行方式、测试结果、待联调项和建议证据。
-
----
-
-## 9. 当前指挥结论
-
-**G0 已完成，G1 已发布。**
-
-本阶段团队的优先级不是“功能越多越好”，而是：
-
-> **四个模块分别变得稳定、可测试、可替代、可合并。**
-
-当四个 Owner 都达到本文件的 Gate 1 通过标准后，由项目总指挥统一复核仓库和证据，再更新本文件并发布 Gate 2。
+除非本 Gate 遇到明确阻塞，不要提前把 Gate 3/4 功能全部混入 Gate 2，避免排错复杂化。
