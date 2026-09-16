@@ -69,7 +69,21 @@ function render(state) {
   $("threshold").value = state.policy.threshold_c;
   $("hysteresis").value = state.policy.hysteresis_c;
   document.querySelectorAll("button").forEach((button) => button.disabled = !state.edge_online);
-  renderEvents(state.events || []);
+
+  const events = state.events || [];
+  renderEvents(events);
+  renderAckState(events);
+}
+
+function latestEvent(events, eventName) {
+  return events.find((item) => item.event === eventName);
+}
+
+function renderAckState(events) {
+  const policyAck = latestEvent(events, "POLICY_ACK");
+  const commandAck = latestEvent(events, "COMMAND_ACK");
+  $("policyAck").textContent = policyAck ? policyAck.detail : "尚未收到";
+  $("commandAck").textContent = commandAck ? commandAck.detail : "尚未收到";
 }
 
 function renderEvents(events) {
@@ -94,6 +108,7 @@ document.querySelectorAll("button[data-action]").forEach((button) => {
       device_id: "FAN01",
       action: button.dataset.action,
     })));
+    $("commandAck").textContent = `等待 ACK · ${button.dataset.action}`;
     showToast(`已发送 FAN01 ${button.dataset.action}`);
   });
 });
@@ -108,6 +123,7 @@ $("policyForm").addEventListener("submit", (event) => {
     threshold_c: Number($("threshold").value),
     hysteresis_c: Number($("hysteresis").value),
   })));
+  $("policyAck").textContent = `等待 ACK · v${version}`;
   showToast(`策略 v${version} 已下发`);
 });
 
