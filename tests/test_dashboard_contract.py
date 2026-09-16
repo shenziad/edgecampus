@@ -30,6 +30,8 @@ class DashboardContractTests(unittest.TestCase):
             "policyMode",
             "threshold",
             "hysteresis",
+            "policyAck",
+            "commandAck",
             "events",
             "eventCount",
         ]
@@ -87,6 +89,43 @@ class DashboardContractTests(unittest.TestCase):
         self.assertIn("item.event", self.js)
         self.assertIn("item.source", self.js)
         self.assertIn("item.detail", self.js)
+
+    def test_gate3_ack_rendering_exists(self):
+        """Gate 3 Dashboard 必须明确展示 Policy / Command ACK。"""
+        self.assertIn('"POLICY_ACK"', self.js)
+        self.assertIn('"COMMAND_ACK"', self.js)
+        self.assertIn('"policyAck"', self.js)
+        self.assertIn('"commandAck"', self.js)
+
+    def test_gate3_policy_and_command_contract_is_preserved(self):
+        """Gate 3 下发仍必须沿用冻结的 Protocol v1.0 字段。"""
+        self.assertIn('envelope("policy"', self.js)
+        self.assertIn('policy_id: "thermal-01"', self.js)
+        self.assertIn("threshold_c:", self.js)
+        self.assertIn("hysteresis_c:", self.js)
+        self.assertIn('envelope("command"', self.js)
+        self.assertIn('device_id: "FAN01"', self.js)
+        self.assertIn("command_id:", self.js)
+
+    def test_gate3_policy_draft_survives_snapshots(self):
+        """用户编辑中的 Policy 草稿不得被周期 snapshot 覆盖。"""
+        required_tokens = [
+            "let policyFormDirty = false;",
+            "let pendingPolicy = null;",
+            "function policyMatchesPending(policy)",
+            "function syncPolicyForm(policy)",
+            "if (policyFormDirty) return;",
+            '$("policyForm").addEventListener("input"',
+            "pendingPolicy = {",
+        ]
+        for token in required_tokens:
+            with self.subTest(token=token):
+                self.assertIn(token, self.js)
+
+        self.assertNotIn(
+            '$("threshold").value = state.policy.threshold_c;',
+            self.js,
+        )
 
 
 if __name__ == "__main__":

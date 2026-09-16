@@ -28,8 +28,8 @@
 | Static TCP/80 mapping | A | **PASS G3** | `203.0.113.1:80 → 192.168.30.10:80` 实测；`G3-A-04d/04d2` | 冻结 |
 | WAN / Branch Business ACL | A | **PASS G3** | WAN-IN 权限矩阵；BR-OFFICE 禁 IOT / 管理设备 / Telnet·SSH；`G3-A-03*` | G4 继续回归 |
 | HQ ADMIN → Branch 管理可达 | A | **PASS G3** | ADMIN → `.65` / `.66` 可达；`G3-A-05` | G4 正式远程管理 |
-| Real Policy Loop | B+C+D | IN PROGRESS G3 | Dashboard→Backend→Edge→ACK | threshold 30→33 |
-| Real FAN Command | B+C+D | IN PROGRESS G3 | command→Edge→ACK | 保持 AUTO/MANUAL 语义 |
+| Real Policy Loop | B+C+D | B Edge-side PASS；E2E reported PASS / evidence review pending | docs/gate3/BCD_INTEGRATION_REPORT.md | 补 Dashboard ACK 证据 |
+| Real FAN Command | B+C+D | B Edge-side PASS；E2E reported PASS / evidence review pending | docs/gate3/B_EDGE_REPORT.md + BCD report | 补 Dashboard ACK 与 Backend events |
 | IPv6 address modes | A | NOT STARTED G4 | SLAAC + DHCPv6 + Static | G4 |
 | IPv6-over-IPv4 Overlay | A | NOT STARTED G4 | BR-ADMIN→HQ MGMT | G4 |
 | Central Network Admin | A | NOT STARTED G4 | HQ ADMIN→Branch devices | G4 |
@@ -149,3 +149,4 @@ Business ACL + Regression
 | Port Security / sticky MAC | G4 | NOT STARTED |
 | IPv6-over-IPv4 Tunnel | G4 | NOT STARTED |
 | Remote management | G4 | NOT STARTED |
+

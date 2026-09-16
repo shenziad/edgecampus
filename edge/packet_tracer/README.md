@@ -182,7 +182,17 @@ Cannot call a function that blocks or suspends here
 
 因此 callback 只记录连接状态。hello、telemetry、status、heartbeat 以及所有 `delay()` 均在主循环中执行。
 
-## 9. 调试经验
+## 9. Gate 3 — B Edge-side PASS LOCALLY
+
+实测源码：`sbc_gate3_controller.py`；报告：`../../docs/gate3/B_EDGE_REPORT.md`；证据：`evidence/gate3/`。
+
+- Policy runtime apply 更新 AUTO/MANUAL、threshold、hysteresis 与 policy version；version 必须严格递增，旧版本不覆盖当前策略，成功应用后发送 `policy_ack / APPLIED`。
+- AUTO 使用动态 threshold + hysteresis；MANUAL 保持远程 FAN ON/OFF，写入真实 FAN 后发送 `REMOTE-MANUAL` status 与 `command_ack / APPLIED`。
+- callback 只入队和记录状态，不阻塞；本地循环不依赖 Cloud。Telemetry / Status / Heartbeat 保留，切回 AUTO 后 Gate 2 regression PASS。
+- 保留已实测 PT 兼容实现：固定 ISO-8601 timestamp、UUID-shaped counter message_id、平坦消息字段提取，不引入新的 datetime/uuid/json 依赖。
+- B 状态：**PASS LOCALLY / READY FOR B+C+D INTEGRATION**；B+C+D formal integration **PENDING**，Global Gate 3 **IN PROGRESS**。正式 Cloud-off/reconnect/state_sync 验收留 Gate 4。
+
+## 10. 调试经验
 
 ### 温度初始接近 -0.5 C
 
