@@ -107,6 +107,26 @@ class DashboardContractTests(unittest.TestCase):
         self.assertIn('device_id: "FAN01"', self.js)
         self.assertIn("command_id:", self.js)
 
+    def test_gate3_policy_draft_survives_snapshots(self):
+        """用户编辑中的 Policy 草稿不得被周期 snapshot 覆盖。"""
+        required_tokens = [
+            "let policyFormDirty = false;",
+            "let pendingPolicy = null;",
+            "function policyMatchesPending(policy)",
+            "function syncPolicyForm(policy)",
+            "if (policyFormDirty) return;",
+            '$("policyForm").addEventListener("input"',
+            "pendingPolicy = {",
+        ]
+        for token in required_tokens:
+            with self.subTest(token=token):
+                self.assertIn(token, self.js)
+
+        self.assertNotIn(
+            '$("threshold").value = state.policy.threshold_c;',
+            self.js,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
