@@ -107,10 +107,16 @@ function latestEvent(events, eventName) {
 }
 
 function renderAckState(events) {
-  const policyAck = latestEvent(events, "POLICY_ACK");
-  const commandAck = latestEvent(events, "COMMAND_ACK");
-  $("policyAck").textContent = policyAck ? policyAck.detail : "尚未收到";
-  $("commandAck").textContent = commandAck ? commandAck.detail : "尚未收到";
+  for (const [ackName, sentName, elementId] of [["POLICY_ACK", "POLICY_SENT", "policyAck"], ["COMMAND_ACK", "COMMAND_SENT", "commandAck"]]) {
+    const ack = latestEvent(events, ackName);
+    const sent = latestEvent(events, sentName);
+    // Events are newest first. An older ACK cannot confirm a newer request.
+    if (sent && (!ack || events.indexOf(sent) < events.indexOf(ack))) {
+      $(elementId).textContent = `等待 ACK · ${sent.detail}`;
+    } else {
+      $(elementId).textContent = ack ? ack.detail : "尚未收到";
+    }
+  }
 }
 
 function renderEvents(events) {

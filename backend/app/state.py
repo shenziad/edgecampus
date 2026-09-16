@@ -40,7 +40,14 @@ class SystemState:
                 "detail": detail,
             },
         )
-        del self.events[100:]
+        # Frequent telemetry must not evict control results from the dashboard.
+        while len(self.events) > 100:
+            telemetry_index = next(
+                (index for index in range(len(self.events) - 1, -1, -1)
+                 if self.events[index]["event"] == "TEMPERATURE"),
+                len(self.events) - 1,
+            )
+            del self.events[telemetry_index]
 
     def apply_edge_message(self, message: dict[str, Any]) -> None:
         message_type = message["type"]
