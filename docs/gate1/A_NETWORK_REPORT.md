@@ -758,6 +758,8 @@ VLAN 创建与命名 → Access 端口划分 → LACP EtherChannel + Trunk → �
 |---|---|---|
 | `IOT → Backend:8000` 允许 | **待验证** | 该 ACL 规则已配置并挂载于 IOT 域入方向（挂载证据见 G1-08），但其**实际流量效果尚未测试**——"从 IOT 域发起 TCP:8000 流量"需要 IOT 侧设备（EDGE-SBC-01）具备主动发包能力。该项与 B 侧 Edge 程序直接相关，计划在 **Gate 2 联调**时随真实 Telemetry 一并验证。 |
 
+> **后续说明（团队结论，2026-09-15）**：该条目已按团队决策**不再作为 RealWSClient 的真实性证明**。真实 Edge–Cloud 通道已在 **Gate 0** 通过 External Network Access 实机验证；PT 内 `VLAN20 → BACKEND-STUB` 的网络测试**仅代表模拟数据平面**。详见 `packet_tracer/CONFIG_LOG.md` 中的对应说明。本条保留为 Gate 1 时点的真实状态记录，未做改写。
+
 ### 12.2 环境信息中待联调确认（涉及 B / C）
 
 | 项 | 状态 | 说明 |
