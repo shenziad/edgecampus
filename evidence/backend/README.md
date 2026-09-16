@@ -4,8 +4,6 @@ WebSocket 连接、Telemetry、Policy/Command ACK、事件日志与错误处理�
 
 ## Gate 1
 
-核心证据（已提交）：
-
 ```text
 G1-01-unittest-pass.png
 G1-02-uvicorn-ws-accepted.png
@@ -16,8 +14,7 @@ G1-06-api-state-temperature-changed-pass.png
 G1-07-fan-auto-on-off-pass.png
 ```
 
-说明：`docs/gate1/C_BACKEND_REPORT.md`  
-占位目录：`evidence/backend/gate1/`（官方 G1-C-03/04/05 仍 PENDING）
+说明：`docs/gate1/C_BACKEND_REPORT.md`
 
 ## Gate 2
 
@@ -29,6 +26,18 @@ G2-C-04-sbc-tx-telemetry-pass.png
 ```
 
 说明：`evidence/backend/GATE2_C_REPORT.md`
+
+## Gate 3
+
+```text
+G3-C-01-healthz-edge-online-pass.png
+G3-C-02-dashboard-policy-v3-33-pass.png
+G3-C-03-api-state-policy-v3-33-pass.png
+G3-C-04-command-fan-on-remote-manual-pass.png
+G3-C-04b-events-remote-manual-on-pass.png
+```
+
+说明：`evidence/backend/GATE3_C_REPORT.md`
 
 ## 运行入口
 
