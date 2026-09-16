@@ -104,3 +104,7 @@ R-HQ 向 HQ OSPF 发布默认路由；不把完整 BGP 表重分发进 Core。
 决策：A/B/D 和 A+B integration 已满足推进条件，C 的 Owner 专属 Gate 1 证据暂以 `docs/gate1/C_BACKEND_REPORT.md` 占位。Gate 2 可以开始，但 placeholder 不等于 PASS，Gate 5 Freeze 前必须补齐。
 
 原因：Backend 软件基线已经存在，继续等待形式性交付会阻塞关键路径；同时通过显式占位避免把未验证内容写成已完成。
+
+## 2026-09-17 Gate4 归档决定
+
+用户明确继续在 feat/edge 整理并提交；A N12-N15 已实测，截图跳过后补，以 Markdown 清单占位而非伪造 PNG。Gate4 保留 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，Gate5 NOT STARTED。C stability debt 依据真实截图清零。最终 Branch HTTP 入口按用户实测采用 203.0.113.1 static TCP/80，私网直连 HTTP FAIL，不重编号冻结地址。

@@ -78,7 +78,11 @@ async def edge_websocket(socket: WebSocket) -> None:
     LOGGER.info("edge connected")
     try:
         while True:
-            raw = await socket.receive_json()
+            try:
+                raw = await socket.receive_json()
+            except json.JSONDecodeError:
+                await send_error(socket, "INVALID_MESSAGE", "invalid JSON text")
+                continue
             try:
                 message = validate_message(raw)
             except ProtocolError as exc:
@@ -103,7 +107,11 @@ async def dashboard_websocket(socket: WebSocket) -> None:
     await socket.send_json(state.snapshot())
     try:
         while True:
-            raw = await socket.receive_json()
+            try:
+                raw = await socket.receive_json()
+            except json.JSONDecodeError:
+                await send_error(socket, "INVALID_MESSAGE", "invalid JSON text")
+                continue
             try:
                 message = validate_message(raw)
             except ProtocolError as exc:

@@ -21,7 +21,7 @@ G0 Contract Freeze
 
 ---
 
-## Gate 1 — CLOSED-WITH-PENDING-STABILITY
+## Gate 1 — CLOSED（稳定性欠账于 Gate4 清零）
 
 ### A Network — PASS
 
@@ -43,17 +43,17 @@ NORMAL、WARNING、Edge Offline、Reconnect/State Sync 视图和 Dashboard contr
 
 canonical Gate1 基线中网络与 Edge Local Loop 回归无退化。
 
-### C Control Plane — CORE PASS / STABILITY PENDING
+### C Control Plane — PASS（稳定性证据见 Gate4 C 报告）
 
 已举证：`/healthz`、fake edge `/ws/edge`、`/api/state`、telemetry/fan events、单元测试。
 
-Gate5 前必须补齐：
+历史三项欠账已于 Gate4 补齐真实证据（见 `docs/gate4/C_CONTROL_PLANE_REPORT.md`）：
 
 - malformed / unsupported / wrong-version 安全拒绝；
 - Edge disconnect → offline；
 - reconnect + `state_sync`。
 
-不得把 C Gate1 写成完整 PASS。
+三项对应 G4-C-01/02/03/04/05；清零不代表 Global Gate4 已关闭。
 
 ---
 
@@ -97,7 +97,7 @@ Packet Tracer TEMP01
 
 # Gate 3 — EVIDENCE PENDING
 
-按项目负责人 2026-09-16 决定，先发布 Gate 4 供 A/B/C/D 并行开工；Gate 3 保持 EVIDENCE PENDING，未正式 COMPLETE。A/B 独立验收 PASS、BCD 实测已确认；ACK 修复已提交 0749255，修复后 Dashboard Policy/Command ACK 与完整 Backend state/events 待补。C Gate 1 stability debt 保留，Gate 5 NOT STARTED。
+2026-09-17 当前审计：Gate4 已实现并有用户现场实测确认；B 离线 ON、真实 reconnect/hello/state_sync、Backend 恢复与 D 失联有截图，C 三项 Gate1 stability debt 清零。A N12-N15 用户确认已测，截图本次跳过后补；离线 OFF/Attributes、恢复后 Dashboard、G4 N1-N11 全量回归及 G3 修复后 ACK/完整 events 仍需归档。Gate4 为 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，未正式 COMPLETE；Gate5 NOT STARTED。
 
 ## B/C/D：真实双向 Policy / Command 闭环
 
@@ -134,7 +134,7 @@ Dashboard 向 `FAN01` 发 ON/OFF → Backend → Real Edge → 物理 FAN → `c
 
 1. **OSPF Area0**：SW-CORE ↔ R-HQ 邻居 FULL；R-HQ 学到 HQ VLAN10/20/30；Core 获得设计要求的出口路由。
 2. **eBGP**：R-HQ AS65001 ↔ R-ISP AS65000 ↔ R-BRANCH AS65002 邻居 Established；业务前缀传播正确。
-3. **Branch Business**：BR-OFFICE → HQ-SERVICE/BACKEND-STUB HTTP PASS。
+3. **Branch Business**：最终 HTTP 入口为 `http://203.0.113.1` → static TCP/80 → HQ-SERVICE；私网 `ping 192.168.30.10` 验证三层。静态映射共存时私网直连 HTTP FAIL，历史直连页面不作为最终 PASS，详见 G4 A 报告。
 4. **HQ PAT**：HQ OFFICE 经 R-HQ PAT 访问 INTERNET-SERVER；IOT 不获得通用 Internet NAT；站点间流量不被错误 NAT。
 5. **DNS/HTTP**：INTERNET-SERVER 提供 DNS/HTTP，HQ OFFICE 域名访问 PASS。
 6. **Static TCP/80**：`203.0.113.1:80 → 192.168.30.10:80` 按 PT 实测行为完成并留证。
@@ -147,7 +147,7 @@ Dashboard 向 `FAN01` 发 ON/OFF → Backend → Real Edge → 物理 FAN → `c
 
 ---
 
-# Gate 4 — RELEASED / IN PROGRESS
+# Gate 4 — IMPLEMENTED / USER-TESTED / EVIDENCE PENDING
 
 ## B/C/D：断云不断控 + 恢复同步
 
@@ -179,7 +179,7 @@ Dashboard 向 `FAN01` 发 ON/OFF → Backend → Real Edge → 物理 FAN → `c
 
 Freeze 前硬条件：
 
-- [ ] C Gate1 三项稳定性欠账清零。
+- [x] C Gate1 三项稳定性欠账清零（G4 C 报告与真实截图）。
 - [ ] Final canonical `.pkt` 完成。
 - [ ] Protocol v1.0 无漂移。
 - [ ] HQ Core regression PASS。
@@ -230,3 +230,7 @@ Freeze 前硬条件：
 | 实验5 | Sticky MAC / Port Security、IPv6-over-IPv4 Tunnel |
 
 证据命名继续使用：`G<Gate>-<Owner>-<序号>-<内容>-<结果>.png`。
+
+## Gate4 当前归档索引（2026-09-17）
+
+报告见 `gate4/`：A/B/C/D/BCD 报告、EVIDENCE_INDEX、VALIDATION_REPORT。Protocol 1.0 与冻结网络规划未改变。

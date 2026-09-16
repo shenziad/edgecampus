@@ -196,3 +196,9 @@
 ## 19. 总结与改进方向
 
 改进方向可以写生产环境中的 SSH、认证、数据库、高可用、真实网络设备、MQTT/消息系统等，但不要把未实现内容写成当前系统功能。
+
+## 2026-09-17 Gate4 归档更新
+
+2026-09-17 当前审计：Gate4 已实现并有用户现场实测确认；B 离线 ON、真实 reconnect/hello/state_sync、Backend 恢复与 D 失联有截图，C 三项 Gate1 stability debt 清零。A N12-N15 用户确认已测，截图本次跳过后补；离线 OFF/Attributes、恢复后 Dashboard、G4 N1-N11 全量回归及 G3 修复后 ACK/完整 events 仍需归档。Gate4 为 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，未正式 COMPLETE；Gate5 NOT STARTED。
+
+过程与配置：`docs/gate4/A_NETWORK_REPORT.md`、B/C/D/BCD 报告；自动验证：`docs/gate4/VALIDATION_REPORT.md`。报告应解释 Cloud outage/Edge restart、临时默认值/state_sync、NAT 业务入口、IPv4-only ISP、static IPv6、VTY ACL 和 sticky/restrict。

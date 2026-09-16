@@ -1,9 +1,9 @@
 # Gate 4 — Failure Recovery + IPv6/Security
 
-> 状态：RELEASED / IN PROGRESS
-> 发布日期：2026-09-16
+> 状态：IMPLEMENTED / USER-TESTED / EVIDENCE PENDING
+> 发布日期：2026-09-16；归档审计：2026-09-17
 
-按项目负责人 2026-09-16 决定，先发布 Gate 4 供 A/B/C/D 并行开工；Gate 3 保持 EVIDENCE PENDING，未正式 COMPLETE。A/B 独立验收 PASS、BCD 实测已确认；ACK 修复已提交 0749255，修复后 Dashboard Policy/Command ACK 与完整 Backend state/events 待补。C Gate 1 stability debt 保留，Gate 5 NOT STARTED。
+2026-09-17 当前审计：Gate4 已实现并有用户现场实测确认；B 离线 ON、真实 reconnect/hello/state_sync、Backend 恢复与 D 失联有截图，C 三项 Gate1 stability debt 清零。A N12-N15 用户确认已测，截图本次跳过后补；离线 OFF/Attributes、恢复后 Dashboard、G4 N1-N11 全量回归及 G3 修复后 ACK/完整 events 仍需归档。Gate4 为 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，未正式 COMPLETE；Gate5 NOT STARTED。
 
 ## 基线与边界
 
@@ -46,15 +46,19 @@
 - [ ] A：N12-N15 PASS，N1-N11 回归 PASS，IPv4 基线无退化。
 - [ ] BCD：真实 Backend-off 下最后有效 AUTO Policy 仍控 FAN，R1 PASS。
 - [ ] BCD：自动 reconnect + hello + state_sync，恢复真实状态与策略且无版本回退，R2 PASS。
-- [ ] C：malformed/unsupported/wrong-version 安全拒绝、disconnect→offline、reconnect+state_sync 稳定性证据齐全。三项全部完成后才清零 Gate 1 debt。
+- [x] C：malformed/unsupported/wrong-version、disconnect→offline、reconnect+state_sync 三项证据齐全，Gate1 debt 清零（G4 C 报告）。
 - [ ] Protocol 1.0 无 drift，真实性边界保持，报告/evidence 可追溯。
 
 Gate 5 为 Freeze + 3 Rehearsals，暂不启动。其硬条件：C debt 清零、final canonical .pkt、Protocol 无 drift、HQ Core/G2/G3/G4 PASS、完整流程连续三次成功。只允许 bug fix、必要可读性、日志/错误处理、报告/证据和 final .pkt；不新增协议、设备、业务场景或架构。
 
 ## 开工基线与分支
 
-各成员先 fetch origin，将 origin/main 合入自己的 feat/network、feat/edge、feat/backend、feat/dashboard 分支，再按各自 Owner 范围开发；有未提交修改先保存，不做强制 reset。分支保留。A canonical 拓扑采用 Gate 3 网络版本，B 的 SBC 源码独立管理；装载运行情况需实测确认。
+本次归档遵循用户最新决定：在 feat/edge 整理并提交，保留当前最新工作树；不创建 g3、不用 main 覆盖现场成果、不做强制 reset。原发布分工仍供历史追溯。当前 canonical 为用户提供的 Gate4 包，136138 bytes，哈希见 G4 A 报告；AI 未改写包内容。B Gate4 源码独立归档，包内实际配置需 A 补图/导出核验。
 
 Gate 3 补证由 D 协同 B/C 完成：Dashboard Policy ACK、Command ACK 与当前真实状态；保存完整 /api/state JSON，包括 SENT/ACK events。版本如实递增，不重拍 B 的温度点，不把启动前 OFFLINE 图当作 ONLINE 证据。
 
 开始前阅读 AI_CONTEXT、CURRENT_GATE、CONTRIBUTING、ARCHITECTURE、PROTOCOL、NETWORK_PLAN、ACCEPTANCE。软件检查：compileall backend edge tests；unittest discover -s tests -v；node tests/test_dashboard_ack.cjs；python scripts/check_contract.py。
+
+## Gate4 当前归档索引（2026-09-17）
+
+报告见 `gate4/`：A/B/C/D/BCD 报告、EVIDENCE_INDEX、VALIDATION_REPORT。Protocol 1.0 与冻结网络规划未改变。

@@ -125,13 +125,13 @@ Real FastAPI
 ## 当前 Gate 状态
 
 - G0：COMPLETE。
-- G1：`CLOSED-WITH-PENDING-STABILITY`。A/B/D PASS，A+B integration PASS；C Core PASS，但 malformed/offline/reconnect+state_sync 三项证据须 Gate5 前补齐。
+- G1：`CLOSED`。A/B/D PASS，A+B integration PASS；C 三项 stability debt 在 Gate4 补齐真实证据并清零。
 - G2：COMPLETE。A 的 Branch/WAN Foundation 与 B/C/D 的真实 PT Telemetry 全链路均 PASS。
 - G3：**EVIDENCE PENDING**，A/B PASS，BCD 实测已确认，修复后 ACK/state/events 待补。
-- 当前：**G4 — Failure Recovery + IPv6/Security（RELEASED / IN PROGRESS）**。
+- 当前：**G4 — Failure Recovery + IPv6/Security（IMPLEMENTED / USER-TESTED / EVIDENCE PENDING）**。
 - G5：NOT STARTED。
 
-按项目负责人 2026-09-16 决定，先发布 Gate 4 供 A/B/C/D 并行开工；Gate 3 保持 EVIDENCE PENDING，未正式 COMPLETE。A/B 独立验收 PASS、BCD 实测已确认；ACK 修复已提交 0749255，修复后 Dashboard Policy/Command ACK 与完整 Backend state/events 待补。C Gate 1 stability debt 保留，Gate 5 NOT STARTED。
+2026-09-17 当前审计：Gate4 已实现并有用户现场实测确认；B 离线 ON、真实 reconnect/hello/state_sync、Backend 恢复与 D 失联有截图，C 三项 Gate1 stability debt 清零。A N12-N15 用户确认已测，截图本次跳过后补；离线 OFF/Attributes、恢复后 Dashboard、G4 N1-N11 全量回归及 G3 修复后 ACK/完整 events 仍需归档。Gate4 为 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，未正式 COMPLETE；Gate5 NOT STARTED。
 
 当前唯一指挥文件：`docs/CURRENT_GATE.md`。
 
@@ -160,7 +160,7 @@ policy_ack = APPLIED
 ```text
 OSPF FULL + HQ route learning
 eBGP established + route propagation
-BR-OFFICE → HQ-SERVICE PASS
+BR-OFFICE → 203.0.113.1:80 → HQ-SERVICE（用户最新实测）；私网 ping PASS，最终私网直连 HTTP FAIL
 HQ OFFICE → PAT → DNS/HTTP PASS
 static TCP/80 + business ACL PASS
 ```
@@ -192,4 +192,8 @@ static TCP/80 + business ACL PASS
 
 ## Gate 4 当前任务
 
-A：N12-N15（地址模式、Tunnel、管理、Port Security），回归 N1-N11；ISP IPv4-only。B：真实 Backend-off 保留 AUTO 策略控 FAN、自动 reconnect + hello/state_sync。C：disconnect/offline snapshot、真实状态恢复、协议安全拒绝，补齐 Gate1 debt。D：Backend/WS down 和恢复状态展示，R1/R2 集成证据，并协同补 Gate3 ACK/state/events。完整任务、DoD 与 Gate5 门禁见 CURRENT_GATE。
+A：N12-N15（地址模式、Tunnel、管理、Port Security），回归 N1-N11；ISP IPv4-only。B：真实 Backend-off 保留 AUTO 策略控 FAN、自动 reconnect + hello/state_sync。C：disconnect/offline snapshot、真实状态恢复、协议安全拒绝已核验，Gate1 debt 清零。D：Backend/WS down 和恢复状态展示，R1/R2 集成证据，并协同补 Gate3 ACK/state/events。完整任务、DoD 与 Gate5 门禁见 CURRENT_GATE。
+
+## Gate4 当前归档索引（2026-09-17）
+
+报告见 `gate4/`：A/B/C/D/BCD 报告、EVIDENCE_INDEX、VALIDATION_REPORT。Protocol 1.0 与冻结网络规划未改变。

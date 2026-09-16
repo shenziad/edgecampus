@@ -8,7 +8,7 @@
 |---|---|---|---|---|
 | Protocol v1.0 | B+C+D | **FROZEN** | `docs/PROTOCOL.md` | 不改字段/URL/ID |
 | Backend 软件基线 | C | AVAILABLE | FastAPI / state / events / fake baseline | G3 Policy/Command 真转发 |
-| C Gate1 Owner 验收 | C | **CORE PASS / STABILITY PENDING** | `docs/gate1/C_BACKEND_REPORT.md` + G1-01~07 | Gate5 前补 malformed/offline/reconnect |
+| C Gate1 Owner 验收 | C | **PASS / STABILITY DEBT CLEARED G4** | `docs/gate4/C_CONTROL_PLANE_REPORT.md`，G4-C-01~05 | 保持稳定性回归 |
 | Fake Edge | B+C | DONE | 独立开发替身 | 保留，不替代 PT 真链路 |
 | Dashboard | D | **PASS G1 + G2** | G1/G2 Dashboard reports + evidence | G3 Policy/Command 真闭环 |
 | HQ VLAN/IP / SVI / DHCP | A | **PASS G1** | A G1 evidence | 冻结 Core |
@@ -23,20 +23,20 @@
 | HQ Gate1 Regression after WAN | A | **PASS G2** | G2-A-07* | 每层继续回归 |
 | HQ OSPF | A | **PASS G3** | Area 0 双向 FULL；R-HQ 学到 HQ VLAN10/20/30；`G3-A-01/01b` | 冻结 |
 | WAN eBGP | A | **PASS G3** | AS65001/65000/65002 三会话 Established；显式 `network` 发布、**无 redistribute**；`G3-A-02/02b` | 冻结 |
-| Branch→HQ business | A | **PASS G3** | BR-OFFICE → HQ-SERVICE HTTP 允许；`G3-A-02c/03c` | G4 继续回归 |
+| Branch→HQ business | A | USER-REPORTED FINAL PATH PASS / G4 EVIDENCE PENDING | HTTP 203.0.113.1→static map→192.168.30.10；私网 ping PASS，直连 HTTP FAIL | 保留历史图；后补最终回归图 |
 | HQ Internet PAT / DNS / HTTP | A | **PASS G3** | HQ OFFICE 经 PAT 访问 Internet DNS/HTTP；`G3-A-04b/04c` | 冻结 |
 | Static TCP/80 mapping | A | **PASS G3** | `203.0.113.1:80 → 192.168.30.10:80` 实测；`G3-A-04d/04d2` | 冻结 |
 | WAN / Branch Business ACL | A | **PASS G3** | WAN-IN 权限矩阵；BR-OFFICE 禁 IOT / 管理设备 / Telnet·SSH；`G3-A-03*` | G4 继续回归 |
 | HQ ADMIN → Branch 管理可达 | A | **PASS G3** | ADMIN → `.65` / `.66` 可达；`G3-A-05` | G4 正式远程管理 |
 | Real Policy Loop | B+C+D | B Edge-side PASS；E2E reported PASS / evidence review pending | docs/gate3/BCD_INTEGRATION_REPORT.md | 补 Dashboard ACK 证据 |
 | Real FAN Command | B+C+D | B Edge-side PASS；E2E reported PASS / evidence review pending | docs/gate3/B_EDGE_REPORT.md + BCD report | 补 Dashboard ACK 与 Backend events |
-| IPv6 address modes | A | NOT STARTED G4 | SLAAC + DHCPv6 + Static | G4 |
-| IPv6-over-IPv4 Overlay | A | NOT STARTED G4 | BR-ADMIN→HQ MGMT | G4 |
-| Central Network Admin | A | NOT STARTED G4 | HQ ADMIN→Branch devices | G4 |
-| Port Security / sticky MAC | A | NOT STARTED G4 | HQ OFFICE access | G4 |
-| Cloud-off local autonomy | B | PASS LOCALLY / FINAL PENDING | G1/G2 local loop architecture | G4 full outage |
-| Cloud reconnect + State Sync | B+C+D | PASS FAKE / REAL PENDING | fake baseline | G4 real PT |
-| Repo canonical `.pkt`（`main`） | A | **G3 NETWORK BASELINE** | 采用 feat/network blob `55605ee0`，120,703 字节 | G4 增量修改与回归；不声称已嵌入 G3 SBC 程序 |
+| IPv6 address modes | A | USER-REPORTED PASS / EVIDENCE PENDING G4 | N12，用户确认已实测 | 后补 SLAAC/DHCPv6/Static 图 |
+| IPv6-over-IPv4 Overlay | A | USER-REPORTED PASS / EVIDENCE PENDING G4 | N13，ISP IPv4-only/static route | 后补 Tunnel 图 |
+| Central Network Admin | A | USER-REPORTED PASS / EVIDENCE PENDING G4 | N14，ADMIN Telnet/VTY ACL | 后补 ADMIN 允许/OFFICE 拒绝图 |
+| Port Security / sticky MAC | A | USER-REPORTED PASS / EVIDENCE PENDING G4 | N15，sticky/maximum 1/restrict | 后补正常/violation/恢复图 |
+| Cloud-off local autonomy | B | REAL OFFLINE ON PASS / FULL EVIDENCE PENDING | G4-B-01/02，v2/33 保留 | 后补离线 OFF 与 Attributes |
+| Cloud reconnect + State Sync | B+C+D | REAL EDGE/BACKEND PASS / UI EVIDENCE PENDING | G4-B-03，G4-C-02/05 | 后补恢复 Dashboard |
+| 当前工作树 canonical `.pkt` | A | **G4 USER PACKAGE / EVIDENCE PENDING** | 当前用户 Gate4 包 136,138 字节，SHA-256 见 G4 A 报告；旧网络 blob 为历史基线 | G4 增量修改与回归；不声称已嵌入 G3 SBC 程序 |
 | A Gate 3 canonical `.pkt` | A | **PUSHED ON `feat/network`** | blob `55605ee0`，120,703 字节；含 Gate 1 + 2 + 3 全部网络配置与 Edge 接线 | 已采用本版本；后续由 A 维护 canonical |
 
 ## Gate 状态
@@ -44,11 +44,11 @@
 | Gate | 状态 | 说明 |
 |---|---|---|
 | G0 Contract Freeze | **COMPLETE** | 软件契约、HQ Core、PT→Real Host 通道 |
-| G1 四模块独立运行 | **CLOSED-WITH-PENDING-STABILITY** | A/B/D PASS；A+B PASS；C Core PASS，3项稳定性待补 |
+| G1 四模块独立运行 | **CLOSED** | C stability debt 于 G4 清零 |
 | G2 Real Telemetry + WAN Foundation | **COMPLETE** | A 网络基础 + B/C/D 真 TEMP→Dashboard 全部 PASS |
 | G3 Policy Loop + WAN Business | **EVIDENCE PENDING** | **A 侧 PASS**（OSPF / eBGP / NAT / DNS / HTTP / Branch business，N5–N11）；B/C/D Policy-Command 闭环待完成 |
-| G4 Failure Recovery + IPv6/Security | **RELEASED / IN PROGRESS** | 断云恢复；IPv6 Tunnel、Port Security、Central Admin |
-| G5 Freeze + 3 Rehearsals | NOT STARTED | 清零 C 稳定性欠账、final `.pkt`、三轮彩排 |
+| G4 Failure Recovery + IPv6/Security | **IMPLEMENTED / USER-TESTED / EVIDENCE PENDING** | A 图、离线 OFF、恢复 UI、全量回归待补 |
+| G5 Freeze + 3 Rehearsals | NOT STARTED | C 欠账已清零；补齐 G3/G4 evidence、final `.pkt` 验收与三轮彩排 |
 
 ## Gate 2 Integration Check
 
@@ -70,7 +70,7 @@ Truthfulness boundary                                       PRESERVED
 ```text
 A: HQ OSPF Area 0 (SW-CORE ↔ R-HQ)                          PASS
 A: WAN eBGP 65001 / 65000 / 65002                           PASS
-A: Branch→HQ Business (BR-OFFICE → HQ-SERVICE HTTP)         PASS
+A: Branch→HQ Business：历史 G3 PASS；最终入口 203.0.113.1（用户实测），G4 图后补
 A: WAN-IN Business / Isolation ACL                          PASS
 A: HQ OFFICE → PAT → Internet DNS / HTTP                    PASS
 A: Static TCP/80 Mapping (203.0.113.1:80 → .30.10:80)       PASS
@@ -84,7 +84,7 @@ Truthfulness boundary                                       PRESERVED
 
 ## 当前 Critical Path — Gate 4
 
-按项目负责人 2026-09-16 决定，先发布 Gate 4 供 A/B/C/D 并行开工；Gate 3 保持 EVIDENCE PENDING，未正式 COMPLETE。A/B 独立验收 PASS、BCD 实测已确认；ACK 修复已提交 0749255，修复后 Dashboard Policy/Command ACK 与完整 Backend state/events 待补。C Gate 1 stability debt 保留，Gate 5 NOT STARTED。
+当前 Gate4 已实现并经用户实测；C stability debt 已清零。A 截图与其余完整验收缺口后补，详见本文件 Gate4 归档审计及 `docs/gate4/EVIDENCE_INDEX.md`。Gate3 EVIDENCE PENDING；Gate5 NOT STARTED。
 
 A：IPv6 modes → Tunnel → static IPv6 routes → Remote Admin → Port Security → N1-N15 regression。
 
@@ -123,14 +123,20 @@ B+C+D：记录真实 AUTO 策略 → 停真实 Backend → 跨迟滞阈值验证
 | VLAN / Trunk / SVI / EtherChannel / ROAS | G1/G2 | ✅ |
 | OSPF / BGP | G3 | ✅ HQ OSPF Area 0 + WAN eBGP 65001/65000/65002 PASS |
 | ACL / NAT/PAT / DNS/HTTP / static mapping | G1/G3 | ✅ HQ ACL；WAN/Branch ACL、PAT、DNS/HTTP、静态 TCP/80 映射均 PASS |
-| SLAAC / DHCPv6 / Static IPv6 / IPv6 route | G4 | NOT STARTED |
-| Port Security / sticky MAC | G4 | NOT STARTED |
-| IPv6-over-IPv4 Tunnel | G4 | NOT STARTED |
-| Remote management | G4 | NOT STARTED |
+| SLAAC / DHCPv6 / Static IPv6 / IPv6 route | G4 | USER-REPORTED PASS / EVIDENCE PENDING |
+| Port Security / sticky MAC | G4 | USER-REPORTED PASS / EVIDENCE PENDING |
+| IPv6-over-IPv4 Tunnel | G4 | USER-REPORTED PASS / EVIDENCE PENDING |
+| Remote management | G4 | USER-REPORTED PASS / EVIDENCE PENDING |
 
 
 ## Gate 4 Release Decision — 2026-09-16
 
-按项目负责人 2026-09-16 决定，先发布 Gate 4 供 A/B/C/D 并行开工；Gate 3 保持 EVIDENCE PENDING，未正式 COMPLETE。A/B 独立验收 PASS、BCD 实测已确认；ACK 修复已提交 0749255，修复后 Dashboard Policy/Command ACK 与完整 Backend state/events 待补。C Gate 1 stability debt 保留，Gate 5 NOT STARTED。
+当前 Gate4 已实现并经用户实测；C stability debt 已清零。A 截图与其余完整验收缺口后补，详见本文件 Gate4 归档审计及 `docs/gate4/EVIDENCE_INDEX.md`。Gate3 EVIDENCE PENDING；Gate5 NOT STARTED。
 
 ACK 修复回归：19 项 Python 测试、JavaScript ACK 行为测试、compileall 与 contract 检查 PASS。各 Owner 同步 origin/main 后开工，保留现有 feature 分支。
+
+## Gate4 归档审计 — 2026-09-17
+
+2026-09-17 当前审计：Gate4 已实现并有用户现场实测确认；B 离线 ON、真实 reconnect/hello/state_sync、Backend 恢复与 D 失联有截图，C 三项 Gate1 stability debt 清零。A N12-N15 用户确认已测，截图本次跳过后补；离线 OFF/Attributes、恢复后 Dashboard、G4 N1-N11 全量回归及 G3 修复后 ACK/完整 events 仍需归档。Gate4 为 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，未正式 COMPLETE；Gate5 NOT STARTED。
+
+实际分支 feat/edge；9 张软件截图已逐张核验并统一命名。详细证据/待补项见 `docs/gate4/EVIDENCE_INDEX.md`。

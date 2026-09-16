@@ -213,3 +213,7 @@ Local Loop + RealWSClient
 ```
 
 始终逐段验证后再合并，避免传感器、串口、执行器和网络问题互相干扰。
+
+## Gate4 断云恢复归档（2026-09-17）
+
+实测源码 `sbc_gate4_controller.py`：本地优先、保留内存最后策略、2000 ms 重连调度、fresh connection hello + 有真实温度后 state_sync。Cloud outage 不等于 Edge process restart。报告与真实证据见 `../../docs/gate4/B_EDGE_REPORT.md`；当前完整验收 EVIDENCE PENDING。固定 ISO timestamp 与 counter message_id 的 PT 兼容实现不改。

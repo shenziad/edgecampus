@@ -1,5 +1,7 @@
 # Gate 1 — C Control Plane Validation Report
 
+> 2026-09-17 更新：本报告保留 Gate1 当时历史记录。三项 stability debt 已由 Gate4 真实截图 G4-C-01/02/03/04/05 补齐并清零；当前 C 结论为 PASS，细节见 [Gate4 C 报告](../gate4/C_CONTROL_PLANE_REPORT.md)。
+
 > 状态：**CORE PASS / STABILITY PENDING**  
 > Owner：C Control Plane  
 > 分支：`feat/backend`  

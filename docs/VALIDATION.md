@@ -136,7 +136,7 @@ size    = 117338 bytes
 
 Gate2 集成记录：`docs/gate2/INTEGRATION_REPORT.md`。
 
-## 5. Gate 3 — IN PROGRESS
+## 5. Gate 3 — EVIDENCE PENDING
 
 待验证网络项：HQ OSPF、WAN eBGP、BR-OFFICE→HQ-SERVICE、HQ OFFICE PAT→Internet、DNS/HTTP、Static TCP/80、业务 ACL 及每层 regression。
 
@@ -155,3 +155,9 @@ Gate2 集成记录：`docs/gate2/INTEGRATION_REPORT.md`。
 Packet Tracer 的 VLAN / ACL / OSPF / BGP / NAT / Tunnel 是模拟企业数据平面。真实 FastAPI WebSocket 通过 Packet Tracer External Network Access / RealWSClient 带外连接，不经过 Packet Tracer WAN。
 
 任何最终报告、演示稿或 AI 输出都必须维持该边界，只把已有 evidence 支持的能力写成已验证。
+
+## 2026-09-17 Gate4 归档更新
+
+2026-09-17 当前审计：Gate4 已实现并有用户现场实测确认；B 离线 ON、真实 reconnect/hello/state_sync、Backend 恢复与 D 失联有截图，C 三项 Gate1 stability debt 清零。A N12-N15 用户确认已测，截图本次跳过后补；离线 OFF/Attributes、恢复后 Dashboard、G4 N1-N11 全量回归及 G3 修复后 ACK/完整 events 仍需归档。Gate4 为 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，未正式 COMPLETE；Gate5 NOT STARTED。
+
+过程与配置：`docs/gate4/A_NETWORK_REPORT.md`、B/C/D/BCD 报告；自动验证：`docs/gate4/VALIDATION_REPORT.md`。报告应解释 Cloud outage/Edge restart、临时默认值/state_sync、NAT 业务入口、IPv4-only ISP、static IPv6、VTY ACL 和 sticky/restrict。

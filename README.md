@@ -40,10 +40,10 @@ EdgeCampus 将 Packet Tracer 中的总部园区、企业 WAN、Internet 与异�
 ## 当前项目状态
 
 - Gate 0：**COMPLETE**。
-- Gate 1：**CLOSED-WITH-PENDING-STABILITY**。A/B/D 与 A+B 集成通过；C 核心验收已补，仍有 malformed/offline/reconnect 三项稳定性证据须在 Gate 5 前清零。
+- Gate 1：**CLOSED**。A/B/D 与 A+B 集成通过；C 三项稳定性欠账已于 Gate4 补齐真实证据。
 - Gate 2：**COMPLETE**。Branch/WAN IPv4 基础层以及真实 `TEMP01 → Dashboard` 全链路均已通过。
 - Gate 3：**EVIDENCE PENDING**，实测已确认，ACK 修复后证据后补。
-- 当前 Gate：**Gate 4 — Failure Recovery + IPv6/Security（已发布 / IN PROGRESS）**。
+- 当前 Gate：**Gate 4 — Failure Recovery + IPv6/Security（已实现 / USER-TESTED / EVIDENCE PENDING）**。
 - Gate 5：**NOT STARTED**。
 
 当前唯一指挥文件：`docs/CURRENT_GATE.md`。
@@ -101,7 +101,7 @@ Dashboard
 
 A：IPv6 地址模式、IPv6-over-IPv4 Tunnel、静态路由、远程管理、Port Security 与网络回归。B：断云本地自治、保留最后策略与自动重连。C：offline、hello/state_sync 恢复与安全拒绝补证。D：失联/重连展示、恢复真实状态和集成证据。
 
-按项目负责人 2026-09-16 决定，先发布 Gate 4 供 A/B/C/D 并行开工；Gate 3 保持 EVIDENCE PENDING，未正式 COMPLETE。A/B 独立验收 PASS、BCD 实测已确认；ACK 修复已提交 0749255，修复后 Dashboard Policy/Command ACK 与完整 Backend state/events 待补。C Gate 1 stability debt 保留，Gate 5 NOT STARTED。
+2026-09-17 当前审计：Gate4 已实现并有用户现场实测确认；B 离线 ON、真实 reconnect/hello/state_sync、Backend 恢复与 D 失联有截图，C 三项 Gate1 stability debt 清零。A N12-N15 用户确认已测，截图本次跳过后补；离线 OFF/Attributes、恢复后 Dashboard、G4 N1-N11 全量回归及 G3 修复后 ACK/完整 events 仍需归档。Gate4 为 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，未正式 COMPLETE；Gate5 NOT STARTED。
 
 ## 真实性边界
 
@@ -162,3 +162,7 @@ python -m unittest discover -s tests -v
 ## 范围边界
 
 Final Architecture v2 不引入 Kubernetes、MQ、数据库、多租户、复杂认证、第二套 IoT 场景或多 Edge 调度。新增能力必须服务于课程网络能力或双控制环验收，不做无关功能堆叠。
+
+## Gate4 当前归档索引（2026-09-17）
+
+报告见 `docs/gate4/`：A/B/C/D/BCD 报告、EVIDENCE_INDEX、VALIDATION_REPORT。Protocol 1.0 与冻结网络规划未改变。

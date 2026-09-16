@@ -431,7 +431,7 @@ INTERNET-SERVER（GUI）：HTTP Service = **On**；DNS Service = **On**，记录
 
 ## Gate 4：IPv6 / Tunnel / Port Security / Central Admin
 
-计划内容：
+原发布范围（用户于 2026-09-17 确认已实测，截图后补；下方归档记录为当前结论）：
 
 - HQ OFFICE SLAAC；
 - BR-OFFICE DHCPv6；
@@ -443,3 +443,17 @@ INTERNET-SERVER（GUI）：HTTP Service = **On**；DNS Service = **On**，记录
 - SW-ACCESS Fa0/1 sticky MAC / Port Security。
 
 权威逻辑规划始终以 `docs/NETWORK_PLAN.md` 为准。
+
+## 2026-09-17 Gate4 现场成果归档与更正
+
+本次 feat/edge 为用户指定归档分支，不从旧 main 覆盖工作树。详细配置输入与解释见 `docs/gate4/A_NETWORK_REPORT.md`。配置来自用户现场记录，未把提示中的建议冒充本次读取的 running-config；二进制未直接打开核验。A N12-N15 用户确认已实测，截图本次跳过后补，见 `evidence/network/gate4/README.md`；G4 N1-N11 全量回归需新记录。
+
+IPv6：SW-CORE VLAN10/30/Transit 为 2001:db8:10::1、30::1、100::1 /64；R-HQ Transit 100::2；Tunnel0 HQ ff::1 / Branch ff::2（IPv4 endpoints 203.0.113.1 / 198.51.100.2，ipv6ip）。Static routes 保证 Branch50↔HQ30，ISP IPv4-only、无 OSPFv3。BR-OFFICE DHCPv6 40::/64、BR-ADMIN Static 50::70、HQ-SERVICE 30::10。实际 DHCPv6 IOS 输出后补。
+
+Remote Admin：R-BRANCH/SW-BRANCH VTY-HQ-ADMIN 只 permit 192.168.30.20、deny any，VTY telnet/login/access-class；ADMIN Telnet .65/.66 与 OFFICE deny 用户报告已测。Port Security：SW-ACCESS Fa0/1 access VLAN10、sticky、maximum 1、restrict；正常 Secure-up 与非法 MAC violation/恢复用户报告已测，计数不编造。
+
+**N7 当前更正（取代历史最终 PASS 解读）**：用户最新实测 Branch 私网 ping 192.168.30.10 PASS，但 BR-OFFICE/BR-ADMIN http://192.168.30.10 FAIL；BR-OFFICE http://203.0.113.1 PASS。static TCP/80 让 192.168.30.10:80 同时承担 inside-local 与内部端点，导致 TCP/NAT 非对称。最终入口 203.0.113.1:80→192.168.30.10:80；G3-A-03c 只证明 static mapping 共存前历史阶段，不证明当前私网直连。未改变冻结地址或映射。
+
+B/C/D：G4-B-01 v2/33 策略基线；G4-B-02 离线 33.3 C ON；G4-B-03 与 G4-C-05 自动 reconnect/hello/state_sync 恢复 31.8/OFF/v2/33/1；G4-D-01 控制平面失联；G4-C-01/02/03/04/05 清零 C 三项 stability debt。离线 OFF/Attributes 与恢复 Dashboard 待补图；图的真实路径/改名 SHA-256 见 `docs/gate4/EVIDENCE_INDEX.md`。
+
+当前用户包 EdgeCampus.pkt：136138 bytes，SHA-256 74bfa6067dc8570b88c96c941101235d1cac4127c81fe5678483277767d6eb35；AI 未改动包内容。当前 Gate4 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，Gate5 NOT STARTED。
