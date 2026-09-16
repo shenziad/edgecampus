@@ -23,21 +23,21 @@
 | HQ Gate1 Regression after WAN | A | **PASS G2** | G2-A-07* | 每层继续回归 |
 | HQ OSPF | A | **PASS G3** | Area 0 双向 FULL；R-HQ 学到 HQ VLAN10/20/30；`G3-A-01/01b` | 冻结 |
 | WAN eBGP | A | **PASS G3** | AS65001/65000/65002 三会话 Established；显式 `network` 发布、**无 redistribute**；`G3-A-02/02b` | 冻结 |
-| Branch→HQ business | A | **PASS G3** | BR-OFFICE → HQ-SERVICE HTTP 允许；`G3-A-02c/03c` | G4 继续回归 |
+| Branch→HQ business | A | **PASS G3 + G4 修复** | BR-OFFICE → HQ-SERVICE HTTP 允许；G4 定位并修复 PT NAT 跨层冲突；`G3-A-03c` / `G4-A-07b` | 冻结 |
 | HQ Internet PAT / DNS / HTTP | A | **PASS G3** | HQ OFFICE 经 PAT 访问 Internet DNS/HTTP；`G3-A-04b/04c` | 冻结 |
-| Static TCP/80 mapping | A | **PASS G3** | `203.0.113.1:80 → 192.168.30.10:80` 实测；`G3-A-04d/04d2` | 冻结 |
+| Static TCP/80 mapping | A | **PASS G3 + G4 共存验证** | `203.0.113.1:80 → 192.168.30.10:80`；与 N7 同时成立；`G3-A-04d/04d2` / `G4-A-07b` | 冻结 |
 | WAN / Branch Business ACL | A | **PASS G3** | WAN-IN 权限矩阵；BR-OFFICE 禁 IOT / 管理设备 / Telnet·SSH；`G3-A-03*` | G4 继续回归 |
 | HQ ADMIN → Branch 管理可达 | A | **PASS G3** | ADMIN → `.65` / `.66` 可达；`G3-A-05` | G4 正式远程管理 |
 | Real Policy Loop | B+C+D | IN PROGRESS G3 | Dashboard→Backend→Edge→ACK | threshold 30→33 |
 | Real FAN Command | B+C+D | IN PROGRESS G3 | command→Edge→ACK | 保持 AUTO/MANUAL 语义 |
-| IPv6 address modes | A | NOT STARTED G4 | SLAAC + DHCPv6 + Static | G4 |
-| IPv6-over-IPv4 Overlay | A | NOT STARTED G4 | BR-ADMIN→HQ MGMT | G4 |
-| Central Network Admin | A | NOT STARTED G4 | HQ ADMIN→Branch devices | G4 |
-| Port Security / sticky MAC | A | NOT STARTED G4 | HQ OFFICE access | G4 |
+| IPv6 address modes | A | **PASS G4** | SLAAC（VLAN10）+ DHCPv6（VLAN40）+ 静态（VLAN30/50）；`G4-A-03*` | 冻结 |
+| IPv6-over-IPv4 Overlay | A | **PASS G4** | Tunnel0 `2001:db8:ff::/64`；BR-ADMIN → HQ-SERVICE IPv6 4/4；`G4-A-04*` | 冻结 |
+| Central Network Admin | A | **PASS G4** | HQ ADMIN → R-BRANCH / SW-BRANCH Telnet + VTY ACL；普通 Office 被拒；`G4-A-01*` | 冻结 |
+| Port Security / sticky MAC | A | **PASS G4** | `SW-ACCESS Fa0/1` sticky + violation restrict；Violation Count 5；`G4-A-02*` | 冻结 |
 | Cloud-off local autonomy | B | PASS LOCALLY / FINAL PENDING | G1/G2 local loop architecture | G4 full outage |
 | Cloud reconnect + State Sync | B+C+D | PASS FAKE / REAL PENDING | fake baseline | G4 real PT |
-| Repo canonical `.pkt`（`main`） | A | **G2 UPLOADED / 未含 G3** | `main` 上的 `.pkt` 由项目总指挥上传（blob `733ff34e`，118,556 字节），**不含 Gate 3 网络配置** | 合并时以 A 的 G3 版本为准 |
-| A Gate 3 canonical `.pkt` | A | **PUSHED ON `feat/network`** | blob `55605ee0`，120,703 字节；含 Gate 1 + 2 + 3 全部网络配置与 Edge 接线 | 合并 `main` 时**采用本版本**（二进制不可自动合并） |
+| Repo canonical `.pkt`（`main`） | A | **G2 UPLOADED / 未含 G3·G4** | `main` 上的 `.pkt` 由项目总指挥上传（118,556 字节），**不含 Gate 3 / Gate 4 网络配置** | 合并时以 A 的 Gate 4 版本为准 |
+| A Gate 4 canonical `.pkt` | A | **PUSHED ON `feat/network`** | 含 Gate 1 + 2 + 3 + 4 全部网络配置（OSPF / eBGP / NAT / ACL / IPv6 / Tunnel / Port Security） | 合并 `main` 时**采用本版本**（二进制不可自动合并） |
 
 ## Gate 状态
 
@@ -47,7 +47,7 @@
 | G1 四模块独立运行 | **CLOSED-WITH-PENDING-STABILITY** | A/B/D PASS；A+B PASS；C Core PASS，3项稳定性待补 |
 | G2 Real Telemetry + WAN Foundation | **COMPLETE** | A 网络基础 + B/C/D 真 TEMP→Dashboard 全部 PASS |
 | G3 Policy Loop + WAN Business | **IN PROGRESS** | **A 侧 PASS**（OSPF / eBGP / NAT / DNS / HTTP / Branch business，N5–N11）；B/C/D Policy-Command 闭环待完成 |
-| G4 Failure Recovery + IPv6/Security | NOT STARTED | 断云恢复；IPv6 Tunnel、Port Security、Central Admin |
+| G4 Failure Recovery + IPv6/Security | **IN PROGRESS** | **A 侧 PASS**（IPv6 三模式 / IPv6 Tunnel / Port Security / 中央远程管理 + 全量回归）；B/C/D 断云恢复与重连待完成 |
 | G5 Freeze + 3 Rehearsals | NOT STARTED | 清零 C 稳定性欠账、final `.pkt`、三轮彩排 |
 
 ## Gate 2 Integration Check
@@ -81,6 +81,21 @@ Truthfulness boundary                                       PRESERVED
 ```
 
 报告：`docs/gate3/A_NETWORK_REPORT.md`；配置记录：`packet_tracer/CONFIG_LOG.md`（Gate 3 段）。
+
+## Gate 4 Track A Integration Check
+
+```text
+A: IPv6 address modes (SLAAC / DHCPv6 / Static)              PASS
+A: IPv6-over-IPv4 Tunnel (BR-ADMIN → HQ MANAGEMENT)          PASS
+A: Central Administration (HQ ADMIN → Branch devices)        PASS
+A: Port Security / sticky MAC (SW-ACCESS Fa0/1)              PASS
+A: Full Regression N1–N11                                    PASS
+A: N7 ↔ Static Mapping 跨层冲突定位与修复                     PASS
+Public Contract drift                                        NONE
+Truthfulness boundary                                        PRESERVED
+```
+
+报告：`docs/gate4/A_NETWORK_REPORT.md`；配置记录：`packet_tracer/CONFIG_LOG.md`（Gate 4 段）。
 
 ## 当前 Critical Path — Gate 3
 
@@ -136,6 +151,7 @@ Business ACL + Regression
 | 2026-09-16 | D | G2 | 真 PT NORMAL/WARNING/FAN/Event UI | D PASS |
 | 2026-09-16 | 全组 | G2 | 两条轨道满足 DoD；报告/evidence 合并 main | **G2 COMPLETE，进入 G3** |
 | 2026-09-16 | A | G3 | OSPF / eBGP / WAN-IN ACL / PAT+DNS+HTTP / 静态映射全部 PASS；四层逐层 HQ regression PASS；21 张 evidence | **A 侧 G3 完成**（N5–N11 + ADMIN→Branch 可达） |
+| 2026-09-16 | A | G4 | IPv6 三模式（SLAAC / DHCPv6 / 静态）、IPv6-over-IPv4 Tunnel、中央远程管理、Port Security 全部 PASS；全量回归 N1–N15 通过；**定位并修复 N7 ↔ 静态映射的 PT NAT 跨层冲突** | **A 侧 G4 完成**；修复零偏离设计，无待追认 RFC |
 
 ## 课程覆盖追踪
 
@@ -145,7 +161,7 @@ Business ACL + Regression
 | VLAN / Trunk / SVI / EtherChannel / ROAS | G1/G2 | ✅ |
 | OSPF / BGP | G3 | ✅ HQ OSPF Area 0 + WAN eBGP 65001/65000/65002 PASS |
 | ACL / NAT/PAT / DNS/HTTP / static mapping | G1/G3 | ✅ HQ ACL；WAN/Branch ACL、PAT、DNS/HTTP、静态 TCP/80 映射均 PASS |
-| SLAAC / DHCPv6 / Static IPv6 / IPv6 route | G4 | NOT STARTED |
-| Port Security / sticky MAC | G4 | NOT STARTED |
-| IPv6-over-IPv4 Tunnel | G4 | NOT STARTED |
-| Remote management | G4 | NOT STARTED |
+| SLAAC / DHCPv6 / Static IPv6 / IPv6 route | G4 | ✅ 三种模式全部实测成立（含 DHCPv6 绑定验证） |
+| Port Security / sticky MAC | G4 | ✅ sticky + violation restrict，Violation Count 可展示 |
+| IPv6-over-IPv4 Tunnel | G4 | ✅ `tunnel mode ipv6ip`；BR-ADMIN → HQ-SERVICE IPv6 PASS |
+| Remote management | G4 | ✅ HQ ADMIN → Branch 设备 Telnet + VTY ACL；普通 Office 拒绝 |

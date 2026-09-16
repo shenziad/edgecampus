@@ -476,6 +476,9 @@ R-HQ#router bgp 65001
 | **N11** | Static Port Map | 外部节点 → `203.0.113.1:80` 映射到 HQ-SERVICE | 页面打开 + NAT 活动会话 | **PASS** | G3-A-04d / 04d2 |
 | — | HQ ADMIN → Branch 管理 | 可达 | `.65` 4/4；`.66` 2/4（跨 4 跳 ARP） | **PASS** | G3-A-05 |
 
+> **后续说明（Gate 4，2026-09-16）**：上表中 **N7** 的验证发生在**第 4 层加入静态端口映射之前**（第 3 层）。第 4 层加入静态映射后，N7 因 **Packet Tracer 静态 NAT 的 inside-local 反向匹配缺陷**而失效，且第 4 层回归未回头重测 N7，故本报告未记录到这一点。
+> Gate 4 已完成定位并修复（引入身份"遮蔽"条目），**N7 在最终配置下重新成立**。结论保持 **PASS**，适用前提与修复过程详见 `docs/gate4/A_NETWORK_REPORT.md`。
+
 ### 7.2 逐层 HQ Gate 1 Regression
 
 | 层 | 回归内容 | 结果 | 证据 |
