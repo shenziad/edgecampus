@@ -122,8 +122,8 @@ function render(state) {
     temperature == null
       ? "等待遥测"
       : warning
-        ? "WARNING · 达到阈值"
-        : "NORMAL · 边缘监控中";
+        ? "告警 · 达到阈值"
+        : "正常 · 边缘监控中";
 
   $("thermalState").className =
     `pill ${temperature == null ? "neutral" : warning ? "warning" : "normal"}`;
@@ -178,7 +178,7 @@ function renderAckState(events) {
 }
 
 function renderEvents(events) {
-  $("eventCount").textContent = `${events.length} events`;
+  $("eventCount").textContent = `${events.length} 条事件`;
 
   if (!events.length) {
     $("events").innerHTML = '<div class="empty">等待系统事件…</div>';

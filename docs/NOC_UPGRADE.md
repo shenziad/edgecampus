@@ -70,3 +70,20 @@ GET /api/security/state；POST /api/simulation/security（event 可选 PORT_SECU
 37 项 Python 测试通过，涵盖 HTTP 状态、ACL 来源拒绝、网络故障恢复、真实 WebSocket 关闭/拒绝重连、hello 不伪造同步、非默认策略恢复，以及原 Gate4/协议回归。三个 Node 验证通过：NOC 健康/不可用/降级，Edge ACK，断线恢复。check_contract.py 通过。
 浏览器连续验证了 33℃策略 v2 APPLIED、FAN ON；补验 36℃ v3 时 FAN OFF，再恢复 33℃ v4 时 FAN ON、Cloud OFFLINE、恢复按钮可用、实际重连 STATE_SYNC SUCCESS、Remote Management PASS、BGP/Tunnel DOWN 和非法 MAC 红色事件；使用本机 Fake Edge + Mock Network，不替代 PT 验收截图。
 未修改 .pkt、Protocol v1.0 或已有 Gate 状态；只作三个本地提交，不推送。
+
+
+## 中文界面与 Packet Tracer 连接
+
+界面导航、功能标题、操作按钮、提示和演练说明改为中文；保留 OSPF/BGP/IPv6/ACL/VTY、设备标识及必要协议状态码。API 和 Protocol 字段不变。
+
+PT 既有 Gate4 程序使用 `ws://127.0.0.1:8000/ws/edge`，必须与 Backend 端口一致。8017/8018 是独立软件演示端口，运行其服务不会自动让 PT 的 8000 地址可用。
+
+真实 PT 测试在仓库根目录运行：
+
+```powershell
+& .\runtime\noc-venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+```
+
+打开 http://127.0.0.1:8000，在 PT 的 EDGE-SBC-01 Programming 中运行已实测 Gate4 程序，并确认 WS_URL 与上面一致。若连接仍失败，检查 PT 的 External Network Access 是否允许，以及 SBC Console 的实际错误。不要同时把 Fake Edge 接到同一个 Backend；同一 Backend 当前只有一个 Edge 会话槽位。在 8018 运行的 Fake Edge 不占用 8000 Backend。
+
+可通过 `Invoke-RestMethod http://127.0.0.1:8000/healthz` 检查 Backend：status=ok 只说明服务可达，edge_online=true 才说明收到 Edge 消息；该标志本身不区分 Fake Edge 和 PT，因此真实测试不启动 Fake Edge。

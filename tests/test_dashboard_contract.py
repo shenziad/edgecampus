@@ -68,7 +68,7 @@ class DashboardContractTests(unittest.TestCase):
             self.js,
         )
         self.assertIn(
-            '"WARNING · 达到阈值"',
+            '"告警 · 达到阈值"',
             self.js,
         )
 

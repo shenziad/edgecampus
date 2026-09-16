@@ -10,7 +10,7 @@
     <div class="shell">
       <header>
         <div>
-          <p class="eyebrow">NETWORK & EDGE OPERATIONS CENTER</p>
+          <p class="eyebrow">网络与边缘运维中心</p>
           <h1>Edge<span>Campus</span></h1>
           <p class="subtitle">智慧园区边缘—云协同网络控制平台</p>
         </div>
@@ -18,10 +18,10 @@
       </header>
 
       <main>
-        <nav class="noc-nav" aria-label="Operations navigation">
-          <a href="#edgeControl">Edge Control</a><a href="#networkHealth">Network Health</a><a href="#securityCenter">Security Center</a><a href="#branchOperations">Branch Operations</a><a href="#policyCenter">Policy Center</a><a href="#simulationPanel">Simulation</a>
+        <nav class="noc-nav" aria-label="运维导航">
+          <a href="#edgeControl">边缘控制</a><a href="#networkHealth">网络健康</a><a href="#securityCenter">安全中心</a><a href="#branchOperations">分部运维</a><a href="#policyCenter">园区策略中心</a><a href="#simulationPanel">故障演练</a>
         </nav>
-<div id="edgeControl" class="section-caption"><h2>Edge Control</h2><span>Protocol v1.0 · 已连接 Edge 的遥测</span></div>
+<div id="edgeControl" class="section-caption"><h2>边缘控制</h2><span>Protocol v1.0 · 已连接 Edge 的遥测</span></div>
         <section class="summary-grid">
           <article class="hero-card temperature-card">
             <div class="card-label">环境温度 · TEMP01</div>
@@ -33,17 +33,17 @@
 
           <article class="hero-card">
             <div class="card-label">边缘节点 · EDGE-SBC-01</div>
-            <div class="node-row"><span>Connectivity</span><b id="edgeState">OFFLINE</b></div>
-            <div class="node-row"><span>Control Mode</span><b id="controlMode">AUTO</b></div>
-            <div class="node-row"><span>Cloud State</span><b id="cloudState">WAITING</b></div>
-            <div class="node-row"><span>Policy Version</span><b id="policyVersion">v1</b></div>
-            <div class="node-row"><span>Last Heartbeat</span><b id="heartbeat">—</b></div>
+            <div class="node-row"><span>连接状态</span><b id="edgeState">OFFLINE</b></div>
+            <div class="node-row"><span>控制模式</span><b id="controlMode">AUTO</b></div>
+            <div class="node-row"><span>云端状态</span><b id="cloudState">等待数据</b></div>
+            <div class="node-row"><span>策略版本</span><b id="policyVersion">v1</b></div>
+            <div class="node-row"><span>最近心跳</span><b id="heartbeat">—</b></div>
           </article>
 
           <article class="hero-card fan-card">
             <div class="card-label">冷却设备 · FAN01</div>
             <div id="fanVisual" class="fan-visual"><div class="fan">✣</div></div>
-            <div class="fan-state">最近状态 <strong id="fanState">UNKNOWN</strong></div>
+            <div class="fan-state">最近状态 <strong id="fanState">未知</strong></div>
             <div class="button-row">
               <button disabled data-edge-control data-action="ON">手动开启</button>
               <button disabled data-edge-control class="secondary" data-action="OFF">手动关闭</button>
@@ -52,37 +52,37 @@
         </section>
 
         <section id="networkHealth" class="panel network-panel" aria-labelledby="networkHeading">
-          <div class="panel-heading"><div><h2 id="networkHeading">Network Health</h2><p class="hint">Routing / IPv6 Overlay / Branch</p></div><span class="tag simulation-label">MOCK ADAPTER</span></div>
+          <div class="panel-heading"><div><h2 id="networkHeading">网络健康</h2><p class="hint">路由 / IPv6 隧道 / 分部连接</p></div><span class="tag simulation-label">模拟适配器</span></div>
           <div class="network-metrics">
-            <div><span>OSPF · Area 0</span><b id="nocOspf" class="noc-status unknown">WAITING</b></div>
-            <div><span>BGP · AS65001 / 65000</span><b id="nocBgp" class="noc-status unknown">WAITING</b></div>
-            <div><span>IPv6 · Tunnel0</span><b id="nocTunnel" class="noc-status unknown">WAITING</b></div>
-            <div><span>Branch Connectivity</span><b id="nocBranch" class="noc-status unknown">WAITING</b></div>
+            <div><span>OSPF · 区域 0</span><b id="nocOspf" class="noc-status unknown">等待数据</b></div>
+            <div><span>BGP · AS65001 / 65000</span><b id="nocBgp" class="noc-status unknown">等待数据</b></div>
+            <div><span>IPv6 · Tunnel0</span><b id="nocTunnel" class="noc-status unknown">等待数据</b></div>
+            <div><span>分部连接状态</span><b id="nocBranch" class="noc-status unknown">等待数据</b></div>
           </div>
           <p id="nocNetworkNotice" class="hint" role="status">正在读取 Network Agent。配置模拟状态，与真实 Edge 遥测独立。</p>
         </section>
         <section id="securityCenter" class="panel network-panel">
-<div class="panel-heading"><div><p class="eyebrow">SECURITY OPERATION</p><h2>Security Center</h2></div><span class="tag simulation-label">SIMULATED</span></div>
-<div class="network-metrics"><div><span>Port Security</span><b id="nocSecurity" class="noc-status unknown">WAITING</b></div><div><span>Violations · cumulative</span><b id="nocViolations">0</b></div><div><span>ACL</span><b id="nocAcl">WAITING</b></div><div><span>Port</span><b id="nocPort">WAITING</b></div></div>
-<p id="nocSecurityEvent" role="status">No security event</p>
-<div class="noc-actions"><button id="securityAttack">Simulate Security Attack</button><button id="securityRestore">Restore Security</button></div>
+<div class="panel-heading"><div><p class="eyebrow">安全运维</p><h2>安全中心</h2></div><span class="tag simulation-label">模拟数据</span></div>
+<div class="network-metrics"><div><span>端口安全</span><b id="nocSecurity" class="noc-status unknown">等待数据</b></div><div><span>累计违规次数</span><b id="nocViolations">0</b></div><div><span>ACL</span><b id="nocAcl">等待数据</b></div><div><span>端口状态</span><b id="nocPort">等待数据</b></div></div>
+<p id="nocSecurityEvent" role="status">暂无安全事件</p>
+<div class="noc-actions"><button id="securityAttack">模拟安全攻击</button><button id="securityRestore">恢复安全状态</button></div>
 <p id="securityActionResult" role="status"></p>
 </section>
 <div class="noc-center-grid">
-<section id="branchOperations" class="panel network-panel"><div class="panel-heading"><div><p class="eyebrow">REMOTE OPERATION</p><h2>Branch Operations</h2></div><span class="tag simulation-label">SIMULATED</span></div>
-<p>ADMIN-PC 192.168.30.20 → VTY ACL → Branch</p><div class="node-row"><span>R-BRANCH · 172.16.40.65</span><b id="routerStatus">WAITING</b></div><div class="node-row"><span>SW-BRANCH · 172.16.40.66</span><b id="switchStatus">WAITING</b></div><div class="noc-actions"><button id="checkRouter">Check Router</button><button id="checkSwitch">Check Switch</button></div><p id="branchResult" role="status">模拟 VTY 访问验证；不执行真实 SSH。</p></section>
-<section id="policyCenter" class="panel network-panel"><div class="panel-heading"><div><p class="eyebrow">CAMPUS POLICY</p><h2>Policy Center</h2></div></div><p>Campus Policy Version <b id="campusVersion">WAITING</b></p><div class="node-row"><span>Edge Policy</span><b id="campusThermal">WAITING</b></div><div class="node-row"><span>Network Policy</span><b id="campusNetwork">WAITING</b></div><div class="node-row"><span>Security Policy</span><b id="campusSecurity">WAITING</b></div><p class="notice">Edge 为既有底层策略；是否应用以 Policy ACK 为准。Network / Security 为配置展示层。</p><a href="#edgePolicyControls">修改 Temperature Policy ↓</a></section>
+<section id="branchOperations" class="panel network-panel"><div class="panel-heading"><div><p class="eyebrow">远程运维</p><h2>分部运维</h2></div><span class="tag simulation-label">模拟数据</span></div>
+<p>ADMIN-PC 192.168.30.20 → VTY ACL → 分部设备</p><div class="node-row"><span>R-BRANCH · 172.16.40.65</span><b id="routerStatus">等待数据</b></div><div class="node-row"><span>SW-BRANCH · 172.16.40.66</span><b id="switchStatus">等待数据</b></div><div class="noc-actions"><button id="checkRouter">检查路由器</button><button id="checkSwitch">检查交换机</button></div><p id="branchResult" role="status">模拟 VTY 访问验证；不执行真实 SSH。</p></section>
+<section id="policyCenter" class="panel network-panel"><div class="panel-heading"><div><p class="eyebrow">统一园区策略</p><h2>园区策略中心</h2></div></div><p>园区策略版本 <b id="campusVersion">等待数据</b></p><div class="node-row"><span>边缘策略</span><b id="campusThermal">等待数据</b></div><div class="node-row"><span>网络策略</span><b id="campusNetwork">等待数据</b></div><div class="node-row"><span>安全策略</span><b id="campusSecurity">等待数据</b></div><p class="notice">Edge 为既有底层策略；是否应用以 策略确认 ACK 为准。网络 / 安全策略 为配置展示层。</p><a href="#edgePolicyControls">修改温控策略 ↓</a></section>
 </div>
-<section id="simulationPanel" class="panel network-panel"><div class="panel-heading"><div><p class="eyebrow">FAILURE SIMULATION</p><h2>Simulation Panel</h2></div></div><div class="network-metrics"><div><span>Cloud Control Channel</span><b id="simCloud" class="noc-status unknown">WAITING</b></div><div><span>Edge Control</span><b id="simMode">WAITING</b></div><div><span>Fan</span><b id="simFan">WAITING</b></div><div><span>State Sync</span><b id="simSync">NOT_RUN</b></div></div><p id="fanObservation" class="notice"></p><div class="noc-actions"><button id="cloudFailure">Cloud Failure</button><button id="cloudRestore">Restore Cloud</button><button id="networkFailure">Network Failure</button><button id="networkRestore">Restore Network</button><button id="simAttack">Security Attack</button><button id="simSecurityRestore">Restore Security</button></div><p id="simulationResult" role="status"></p><p class="notice">Cloud 演练实际断开 Edge WebSocket，保留 HTTP 恢复入口；离线 FAN 是最后观测值。Network / Security 是 Mock Adapter 演练。</p></section>
+<section id="simulationPanel" class="panel network-panel"><div class="panel-heading"><div><p class="eyebrow">故障模拟与恢复</p><h2>故障演练面板</h2></div></div><div class="network-metrics"><div><span>云端控制通道</span><b id="simCloud" class="noc-status unknown">等待数据</b></div><div><span>边缘控制</span><b id="simMode">等待数据</b></div><div><span>风扇 FAN</span><b id="simFan">等待数据</b></div><div><span>状态同步</span><b id="simSync">尚未演练</b></div></div><p id="fanObservation" class="notice"></p><div class="noc-actions"><button id="cloudFailure">模拟云端故障</button><button id="cloudRestore">恢复云端连接</button><button id="networkFailure">模拟网络故障</button><button id="networkRestore">恢复网络连接</button><button id="simAttack">模拟安全攻击</button><button id="simSecurityRestore">恢复安全状态</button></div><p id="simulationResult" role="status"></p><p class="notice">云端演练实际断开 Edge WebSocket，保留 HTTP 恢复入口；离线 FAN 是最后观测值。网络和安全功能使用模拟适配器演练。</p></section>
         <section id="edgePolicyControls" class="lower-grid">
           <article class="panel">
             <div class="panel-heading">
-              <div><p class="eyebrow">CLOUD-TO-EDGE</p><h2>控制策略</h2></div>
-              <span class="tag">Policy as Intent</span>
+              <div><p class="eyebrow">云端策略下发</p><h2>控制策略</h2></div>
+              <span class="tag">策略意图与执行确认</span>
             </div>
             <form id="policyForm">
               <label>运行模式
-                <select id="policyMode"><option>AUTO</option><option>MANUAL</option></select>
+                <select id="policyMode"><option value="AUTO">自动 AUTO</option><option value="MANUAL">手动 MANUAL</option></select>
               </label>
               <label>启动阈值
                 <div class="input-unit"><input id="threshold" type="number" min="0" max="80" step="0.5" value="30" /><span>℃</span></div>
@@ -95,11 +95,11 @@
             <p id="policyHint" class="hint">AUTO 模式下，Edge 在断云时仍按最后有效策略运行。</p>
             <div class="ack-grid">
               <div class="ack-item">
-                <span>Policy ACK</span>
+                <span>策略确认 ACK</span>
                 <b id="policyAck">尚未收到</b>
               </div>
               <div class="ack-item">
-                <span>Command ACK</span>
+                <span>命令确认 ACK</span>
                 <b id="commandAck">尚未收到</b>
               </div>
             </div>
@@ -107,23 +107,23 @@
 
           <article class="panel events-panel">
             <div class="panel-heading">
-              <div><p class="eyebrow">OBSERVABILITY</p><h2>实时事件流</h2></div>
-              <span id="eventCount" class="tag">0 events</span>
+              <div><p class="eyebrow">实时监控</p><h2>实时事件流</h2></div>
+              <span id="eventCount" class="tag">0 条事件</span>
             </div>
-            <div class="event-head"><span>TIME</span><span>EVENT</span><span>SOURCE</span><span>DETAIL</span></div>
+            <div class="event-head"><span>时间</span><span>事件</span><span>来源</span><span>详情</span></div>
             <div id="events" class="events"><div class="empty">等待系统事件…</div></div>
           </article>
         </section>
 
         <section class="security-strip">
-          <div><p class="eyebrow">NETWORK SECURITY DOMAINS</p><h2>网络隔离</h2></div>
-          <div class="zone"><span>VLAN 10</span><b>OFFICE</b><small>仅访问 Dashboard</small></div>
-          <div class="zone accent"><span>VLAN 20</span><b>IoT</b><small>传感器与执行器</small></div>
-          <div class="zone"><span>VLAN 30</span><b>MANAGEMENT</b><small>控制平面与管理员</small></div>
+          <div><p class="eyebrow">网络安全域</p><h2>网络隔离</h2></div>
+          <div class="zone"><span>VLAN 10</span><b>办公网</b><small>仅访问运维面板</small></div>
+          <div class="zone accent"><span>VLAN 20</span><b>物联网 IoT</b><small>传感器与执行器</small></div>
+          <div class="zone"><span>VLAN 30</span><b>管理网</b><small>控制平面与管理员</small></div>
         </section>
       </main>
 
-      <footer><span>EdgeCampus Protocol v1.0</span><span>Local Loop + Global Loop</span></footer>
+      <footer><span>EdgeCampus Protocol v1.0</span><span>本地自治 + 云端协同</span></footer>
     </div>
     <div id="toast" class="toast"></div>
     <script src="/static/app.js"></script>
