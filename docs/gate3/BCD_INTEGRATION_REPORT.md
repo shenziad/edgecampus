@@ -1,6 +1,6 @@
 # Gate 3 B+C+D Integration Report
 
-> 日期：2026-09-16。状态：实测结果由项目负责人确认 PASS；仓库证据审核待补 Dashboard ACK / Backend events。全局 Gate 3 暂不关闭。
+> 日期：2026-09-16。状态：实测结果由项目负责人确认 PASS；仓库证据审核待补 Dashboard ACK / Backend events。全局 Gate 3 暂不关闭；按负责人决定 Gate 4 已提前发布，见 CURRENT_GATE。
 
 ## 1. Integration Objective
 
@@ -66,3 +66,9 @@ A Network Gate 3 PASS；B Edge-side Gate 3 PASS；C/D 与 BCD E2E 实测由项�
 正式关闭前补证：Dashboard Policy ACK APPLIED（v3/33 C 或注明后续真实递增版本）；Command ACK APPLIED 与 FAN/MANUAL；Backend POLICY_SENT/POLICY_ACK、COMMAND_SENT/COMMAND_ACK 的完整 events。不得为补证改图伪造版本，也不必重做 B 已完成的温度点。
 
 C Gate 1 stability debt 仍保留：malformed/unsupported/wrong-version 安全拒绝、disconnect→offline、reconnect+state_sync 的正式稳定性证据。后两项由 Gate 4 真实断云/恢复流程验收；自动单测不替代实测。
+
+## ACK 修复与阶段发布
+
+Backend 真实 events.jsonl 已记录本次 ON/OFF command_ack APPLIED（对应 Command 图中的 command_id），因此 ACK 确实到达 Backend。持续遥测曾将 ACK 挤出 100 条事件窗口，造成 Dashboard 显示尚未收到；0749255 已修复保留策略及新请求等待显示。19 项 Python 和 JavaScript 行为测试 PASS，真实修复后 Dashboard 截图仍待补。
+
+按项目负责人 2026-09-16 决定，先发布 Gate 4 供 A/B/C/D 并行开工；Gate 3 保持 EVIDENCE PENDING，未正式 COMPLETE。A/B 独立验收 PASS、BCD 实测已确认；ACK 修复已提交 0749255，修复后 Dashboard Policy/Command ACK 与完整 Backend state/events 待补。C Gate 1 stability debt 保留，Gate 5 NOT STARTED。

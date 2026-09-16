@@ -42,7 +42,9 @@ EdgeCampus 将 Packet Tracer 中的总部园区、企业 WAN、Internet 与异�
 - Gate 0：**COMPLETE**。
 - Gate 1：**CLOSED-WITH-PENDING-STABILITY**。A/B/D 与 A+B 集成通过；C 核心验收已补，仍有 malformed/offline/reconnect 三项稳定性证据须在 Gate 5 前清零。
 - Gate 2：**COMPLETE**。Branch/WAN IPv4 基础层以及真实 `TEMP01 → Dashboard` 全链路均已通过。
-- 当前 Gate：**Gate 3 — Policy Loop + WAN Business**。
+- Gate 3：**EVIDENCE PENDING**，实测已确认，ACK 修复后证据后补。
+- 当前 Gate：**Gate 4 — Failure Recovery + IPv6/Security（已发布 / IN PROGRESS）**。
+- Gate 5：**NOT STARTED**。
 
 当前唯一指挥文件：`docs/CURRENT_GATE.md`。
 
@@ -70,7 +72,7 @@ TEMP01 → MCU → EDGE-SBC-01
 
 Gate 2 集成报告：`docs/gate2/INTEGRATION_REPORT.md`。
 
-## Gate 3 主线
+## Gate 3 已整合能力（补证待完成）
 
 A Network：
 
@@ -93,7 +95,13 @@ policy_ack / command_ack
 Dashboard
 ```
 
-核心 Policy 验收目标：threshold 30→33、version 1→2；真实 32 C 时 FAN OFF、34 C 时 FAN ON。
+实际 Policy 核心证据为 v3/33 C，最终 Backend 图为 v5；连续联调版本正常递增。B 已验证 31.8 C FAN OFF、34.9 C FAN ON。Dashboard ACK 修复后证据待补。
+
+## Gate 4 开工任务
+
+A：IPv6 地址模式、IPv6-over-IPv4 Tunnel、静态路由、远程管理、Port Security 与网络回归。B：断云本地自治、保留最后策略与自动重连。C：offline、hello/state_sync 恢复与安全拒绝补证。D：失联/重连展示、恢复真实状态和集成证据。
+
+按项目负责人 2026-09-16 决定，先发布 Gate 4 供 A/B/C/D 并行开工；Gate 3 保持 EVIDENCE PENDING，未正式 COMPLETE。A/B 独立验收 PASS、BCD 实测已确认；ACK 修复已提交 0749255，修复后 Dashboard Policy/Command ACK 与完整 Backend state/events 待补。C Gate 1 stability debt 保留，Gate 5 NOT STARTED。
 
 ## 真实性边界
 

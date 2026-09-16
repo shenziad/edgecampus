@@ -95,7 +95,9 @@ Packet Tracer TEMP01
 
 ---
 
-# Gate 3 — IN PROGRESS
+# Gate 3 — EVIDENCE PENDING
+
+按项目负责人 2026-09-16 决定，先发布 Gate 4 供 A/B/C/D 并行开工；Gate 3 保持 EVIDENCE PENDING，未正式 COMPLETE。A/B 独立验收 PASS、BCD 实测已确认；ACK 修复已提交 0749255，修复后 Dashboard Policy/Command ACK 与完整 Backend state/events 待补。C Gate 1 stability debt 保留，Gate 5 NOT STARTED。
 
 ## B/C/D：真实双向 Policy / Command 闭环
 
@@ -145,7 +147,7 @@ Dashboard 向 `FAN01` 发 ON/OFF → Backend → Real Edge → 物理 FAN → `c
 
 ---
 
-# Gate 4 — NOT STARTED
+# Gate 4 — RELEASED / IN PROGRESS
 
 ## B/C/D：断云不断控 + 恢复同步
 

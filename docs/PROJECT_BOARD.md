@@ -36,8 +36,8 @@
 | Port Security / sticky MAC | A | NOT STARTED G4 | HQ OFFICE access | G4 |
 | Cloud-off local autonomy | B | PASS LOCALLY / FINAL PENDING | G1/G2 local loop architecture | G4 full outage |
 | Cloud reconnect + State Sync | B+C+D | PASS FAKE / REAL PENDING | fake baseline | G4 real PT |
-| Repo canonical `.pkt`（`main`） | A | **G2 UPLOADED / 未含 G3** | `main` 上的 `.pkt` 由项目总指挥上传（blob `733ff34e`，118,556 字节），**不含 Gate 3 网络配置** | 合并时以 A 的 G3 版本为准 |
-| A Gate 3 canonical `.pkt` | A | **PUSHED ON `feat/network`** | blob `55605ee0`，120,703 字节；含 Gate 1 + 2 + 3 全部网络配置与 Edge 接线 | 合并 `main` 时**采用本版本**（二进制不可自动合并） |
+| Repo canonical `.pkt`（`main`） | A | **G3 NETWORK BASELINE** | 采用 feat/network blob `55605ee0`，120,703 字节 | G4 增量修改与回归；不声称已嵌入 G3 SBC 程序 |
+| A Gate 3 canonical `.pkt` | A | **PUSHED ON `feat/network`** | blob `55605ee0`，120,703 字节；含 Gate 1 + 2 + 3 全部网络配置与 Edge 接线 | 已采用本版本；后续由 A 维护 canonical |
 
 ## Gate 状态
 
@@ -46,8 +46,8 @@
 | G0 Contract Freeze | **COMPLETE** | 软件契约、HQ Core、PT→Real Host 通道 |
 | G1 四模块独立运行 | **CLOSED-WITH-PENDING-STABILITY** | A/B/D PASS；A+B PASS；C Core PASS，3项稳定性待补 |
 | G2 Real Telemetry + WAN Foundation | **COMPLETE** | A 网络基础 + B/C/D 真 TEMP→Dashboard 全部 PASS |
-| G3 Policy Loop + WAN Business | **IN PROGRESS** | **A 侧 PASS**（OSPF / eBGP / NAT / DNS / HTTP / Branch business，N5–N11）；B/C/D Policy-Command 闭环待完成 |
-| G4 Failure Recovery + IPv6/Security | NOT STARTED | 断云恢复；IPv6 Tunnel、Port Security、Central Admin |
+| G3 Policy Loop + WAN Business | **EVIDENCE PENDING** | **A 侧 PASS**（OSPF / eBGP / NAT / DNS / HTTP / Branch business，N5–N11）；B/C/D Policy-Command 闭环待完成 |
+| G4 Failure Recovery + IPv6/Security | **RELEASED / IN PROGRESS** | 断云恢复；IPv6 Tunnel、Port Security、Central Admin |
 | G5 Freeze + 3 Rehearsals | NOT STARTED | 清零 C 稳定性欠账、final `.pkt`、三轮彩排 |
 
 ## Gate 2 Integration Check
@@ -82,37 +82,15 @@ Truthfulness boundary                                       PRESERVED
 
 报告：`docs/gate3/A_NETWORK_REPORT.md`；配置记录：`packet_tracer/CONFIG_LOG.md`（Gate 3 段）。
 
-## 当前 Critical Path — Gate 3
+## 当前 Critical Path — Gate 4
 
-软件 / IoT：
+按项目负责人 2026-09-16 决定，先发布 Gate 4 供 A/B/C/D 并行开工；Gate 3 保持 EVIDENCE PENDING，未正式 COMPLETE。A/B 独立验收 PASS、BCD 实测已确认；ACK 修复已提交 0749255，修复后 Dashboard Policy/Command ACK 与完整 Backend state/events 待补。C Gate 1 stability debt 保留，Gate 5 NOT STARTED。
 
-```text
-D Dashboard Policy/Command
-          ↓
-C Backend forward
-          ↓
-B Real Edge receive/apply
-          ↓
-policy_ack / command_ack
-          ↓
-C → D 展示结果
-```
+A：IPv6 modes → Tunnel → static IPv6 routes → Remote Admin → Port Security → N1-N15 regression。
 
-网络：
+B+C+D：记录真实 AUTO 策略 → 停真实 Backend → 跨迟滞阈值验证 FAN → 重启 Backend → reconnect/hello/state_sync → Backend/Dashboard 恢复一致真实状态。
 
-```text
-A OSPF
-  ↓
-eBGP
-  ↓
-Branch→HQ Business
-  ↓
-PAT / DNS / HTTP / Static Mapping
-  ↓
-Business ACL + Regression
-```
-
-两条 Track 可独立推进，Gate 3 收口时统一验收。
+正式任务见 `docs/CURRENT_GATE.md`。Gate 3 补证与 Gate 4 开发并行，不改变验收标准。
 
 ## Owner 边界
 
@@ -150,3 +128,9 @@ Business ACL + Regression
 | IPv6-over-IPv4 Tunnel | G4 | NOT STARTED |
 | Remote management | G4 | NOT STARTED |
 
+
+## Gate 4 Release Decision — 2026-09-16
+
+按项目负责人 2026-09-16 决定，先发布 Gate 4 供 A/B/C/D 并行开工；Gate 3 保持 EVIDENCE PENDING，未正式 COMPLETE。A/B 独立验收 PASS、BCD 实测已确认；ACK 修复已提交 0749255，修复后 Dashboard Policy/Command ACK 与完整 Backend state/events 待补。C Gate 1 stability debt 保留，Gate 5 NOT STARTED。
+
+ACK 修复回归：19 项 Python 测试、JavaScript ACK 行为测试、compileall 与 contract 检查 PASS。各 Owner 同步 origin/main 后开工，保留现有 feature 分支。

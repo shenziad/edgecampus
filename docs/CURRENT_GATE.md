@@ -1,217 +1,60 @@
-# EdgeCampus 当前阶段指挥文件
+# Gate 4 — Failure Recovery + IPv6/Security
 
-> 当前 Gate：**Gate 3 — Policy Loop + WAN Business**  
-> 状态：**IN PROGRESS**  
-> 发布日期：2026-09-16  
-> 架构基线：**Final Architecture v2 / Gate 2 Integrated Baseline**  
-> 总原则：**A 推进 OSPF/eBGP/NAT/业务链；B/C/D 打通真实 Policy / Command 双向闭环；任何人不得破坏 Gate 2 已验证能力。**
+> 状态：RELEASED / IN PROGRESS
+> 发布日期：2026-09-16
 
----
+按项目负责人 2026-09-16 决定，先发布 Gate 4 供 A/B/C/D 并行开工；Gate 3 保持 EVIDENCE PENDING，未正式 COMPLETE。A/B 独立验收 PASS、BCD 实测已确认；ACK 修复已提交 0749255，修复后 Dashboard Policy/Command ACK 与完整 Backend state/events 待补。C Gate 1 stability debt 保留，Gate 5 NOT STARTED。
 
-## 0. 开工前必须先读
+## 基线与边界
 
-1. `docs/AI_CONTEXT.md`
-2. `docs/CURRENT_GATE.md`
-3. `docs/CONTRIBUTING.md`
-4. `docs/ARCHITECTURE.md`
-5. `docs/PROTOCOL.md`
-6. `docs/NETWORK_PLAN.md`
-7. `docs/ACCEPTANCE.md`
+基于 Gate 3 A 网络 canonical 拓扑与 BCD 控制器/Backend/Dashboard。保持 Protocol 1.0、设备 ID、WS/API 路径、默认 Policy 格式、冻结网络地址/AS/接口及 Gate 1/2/3 能力。A 唯一维护 canonical .pkt。PT 网络为模拟数据平面；RealWSClient → FastAPI 是宿主机带外通道。
 
----
+## A — IPv6 Overlay + Access Security
 
-## 1. 已关闭阶段
+按冻结 NETWORK_PLAN 逐层实施，每层验收后再叠加下一层：
 
-### Gate 0 — COMPLETE
+1. HQ OFFICE SLAAC，BR-OFFICE DHCPv6，管理域 Static IPv6；实际核验 PT 9.0.1 支持及地址/参数，不擅自替换 DHCPv6 验收。
+2. ISP Underlay 继续 IPv4-only，禁止原生 IPv6。
+3. R-HQ ↔ R-BRANCH IPv6-over-IPv4 Tunnel；验证 IPv4 endpoint 可达后再验证 Tunnel。
+4. IPv6 静态路由，BR-ADMIN ↔ HQ MANAGEMENT 管理路径，验证双向返回路由；不新增 OSPFv3。
+5. HQ ADMIN 可管理 Branch 网络设备；普通 OFFICE 禁止管理。先验证路由，再验证管理服务/VTY ACL，不把 G3 ping 可达当作正式远程管理 PASS。
+6. SW-ACCESS Fa0/1 sticky MAC / Port Security，验证正常终端、非法 MAC、violation 计数和恢复；按冻结建议 maximum 1 / restrict。
+7. 全量回归 N1-N11、HQ Core、OSPF、eBGP、PAT、Branch、ACL、DNS/HTTP、Static mapping，并验收 N12 IPv6 modes、N13 Tunnel、N14 Remote Admin、N15 Port Security。
 
-软件契约、HQ Core 规划、PT → Real Host RealWSClient 通道已冻结并实测。
+## B+C+D — 断云不断控 + 恢复同步
 
-### Gate 1 — CLOSED-WITH-PENDING-STABILITY
+1. 正常连接，记录真实 temperature、fan_state、最后有效 AUTO Policy 和 Policy Version。若 G3 最终停于 MANUAL，先提交递增版本切回 AUTO，记录真实值，不能假定 v2。
+2. 真正停止 FastAPI/Uvicorn。Dashboard 显示控制平面 disconnected，Edge 检测 Cloud disconnect。
+3. Backend 关闭期间改变真实 TEMP01 温度，跨越最后有效策略的启动阈值和迟滞关闭阈值，真实 FAN 正确 ON/OFF，Local Loop 不停止。
+4. 重启 Backend，Edge 自动 reconnect，发送 hello + state_sync。
+5. Backend/Dashboard 从真实 Edge 恢复 temperature、fan_state、Policy、Policy Version；不能回退默认 v1/30 C。验证最终 Dashboard 与 Edge 一致。
+6. R1 Cloud Failure、R2 Reconnect 均须真实 PT 证据，fake 测试只作为开发补充。
 
-- A Network：PASS。
-- B Edge：PASS。
-- D UI：PASS。
-- A+B canonical integration：PASS。
-- C Control Plane：核心独立验收已提交，`/healthz`、fake edge、`/api/state`、AUTO event 已有证据；仍缺 malformed-message / offline / reconnect+state_sync 三项稳定性补证。
+## 分工与产物
 
-C 的三项遗留不阻塞 Gate 3，但必须在 Gate 5 Freeze 前清零。不得把 C Gate 1 写成完整 PASS。
+| Owner | 任务 | 产物 |
+|---|---|---|
+| B | disconnect 检测、Local Loop、保留最后策略、自动 reconnect、hello + state_sync，携带真实温度/FAN/Policy | Gate 4 Edge report + R1/R2 Edge evidence |
+| C | socket disconnect→EDGE_OFFLINE、向 Dashboard 广播 offline snapshot；Backend 重启恢复；hello/state_sync 更新真实状态；Protocol validation | Backend report，disconnect/reconnect/state_sync、malformed/unsupported/wrong-version 拒绝证据 |
+| D | Backend/WS down、重连状态可视化，恢复真实 temperature/FAN/Policy/version；集成证据 | Dashboard report + BCD recovery integration report/evidence |
+| A | IPv6/Overlay/管理/Port Security及 N1-N15 回归，canonical 拓扑 | Network report、CONFIG_LOG、canonical .pkt、network evidence |
 
-### Gate 2 — COMPLETE
+完整 Backend down 时其进程不能广播 snapshot；D 必须依靠 WS 断开显示控制平面失联。C 的 Edge disconnect→offline snapshot 在 Backend 仍运行的断连场景单独验收。
 
-Gate 2 两条并行轨道均已通过：
+## DoD 与债务
 
-```text
-软件 / IoT：
-TEMP01 → MCU → SBC → RealWSClient → Backend → Dashboard
+- [ ] A：N12-N15 PASS，N1-N11 回归 PASS，IPv4 基线无退化。
+- [ ] BCD：真实 Backend-off 下最后有效 AUTO Policy 仍控 FAN，R1 PASS。
+- [ ] BCD：自动 reconnect + hello + state_sync，恢复真实状态与策略且无版本回退，R2 PASS。
+- [ ] C：malformed/unsupported/wrong-version 安全拒绝、disconnect→offline、reconnect+state_sync 稳定性证据齐全。三项全部完成后才清零 Gate 1 debt。
+- [ ] Protocol 1.0 无 drift，真实性边界保持，报告/evidence 可追溯。
 
-网络：
-HQ Core → R-HQ → R-ISP → R-BRANCH → SW-BRANCH
-                    |
-             INTERNET-SERVER
-```
+Gate 5 为 Freeze + 3 Rehearsals，暂不启动。其硬条件：C debt 清零、final canonical .pkt、Protocol 无 drift、HQ Core/G2/G3/G4 PASS、完整流程连续三次成功。只允许 bug fix、必要可读性、日志/错误处理、报告/证据和 final .pkt；不新增协议、设备、业务场景或架构。
 
-已验证：
+## 开工基线与分支
 
-- A：Branch VLAN40/50、ROAS、DHCP/管理地址、IPv4 WAN Underlay、HQ Gate1 regression。
-- B：真实 TEMP01 Telemetry、Local AUTO、FAN Status、Heartbeat，Cloud 不作为本地控制前置条件。
-- C：真实 PT Telemetry 更新 Backend `/api/state`，无协议漂移。
-- D：真实 PT 正常/告警状态进入 Dashboard；约 27.9 C 为 NORMAL/FAN OFF，约 34.1 C 为 WARNING/FAN ON。
-- B+C+D：真实 `TEMP01 → Dashboard` 端到端链路 PASS。
+各成员先 fetch origin，将 origin/main 合入自己的 feat/network、feat/edge、feat/backend、feat/dashboard 分支，再按各自 Owner 范围开发；有未提交修改先保存，不做强制 reset。分支保留。A canonical 拓扑采用 Gate 3 网络版本，B 的 SBC 源码独立管理；装载运行情况需实测确认。
 
-Gate 2 集成记录见 `docs/gate2/INTEGRATION_REPORT.md`。
+Gate 3 补证由 D 协同 B/C 完成：Dashboard Policy ACK、Command ACK 与当前真实状态；保存完整 /api/state JSON，包括 SENT/ACK events。版本如实递增，不重拍 B 的温度点，不把启动前 OFFLINE 图当作 ONLINE 证据。
 
----
-
-## 2. 不可破坏基线
-
-### 2.1 HQ Gate 1 Core
-
-```text
-VLAN10 OFFICE      192.168.10.0/24  GW 192.168.10.1
-VLAN20 IOT         192.168.20.0/24  GW 192.168.20.1
-VLAN30 MANAGEMENT  192.168.30.0/24  GW 192.168.30.1
-
-EDGE-SBC-01 = 192.168.20.10
-BACKEND-STUB = 192.168.30.10
-ADMIN-PC = 192.168.30.20
-```
-
-HQ 既有 EtherChannel、Trunk、SVI、DHCP、ACL 和 IoT 接线不得为 Gate 3 重构。
-
-### 2.2 Gate 2 Network Foundation
-
-```text
-SW-CORE Gi1/0/24  10.255.0.1/30  ↔ R-HQ G0/0 10.255.0.2/30
-R-HQ G0/1          203.0.113.1/30 ↔ R-ISP G0/0 203.0.113.2/30
-R-ISP G0/1         198.51.100.1/30↔ R-BRANCH G0/0 198.51.100.2/30
-R-ISP G0/2         192.0.2.1/24    ↔ INTERNET-SERVER 192.0.2.10/24
-
-VLAN40 BR-OFFICE   172.16.40.0/26  GW 172.16.40.1
-VLAN50 BR-MGMT     172.16.40.64/27 GW 172.16.40.65
-SW-BRANCH VLAN50   172.16.40.66/27
-BR-ADMIN-PC        172.16.40.70/27
-```
-
-### 2.3 Gate 2 Edge Foundation
-
-```text
-TEMP01 A0 → IO-MCU-01 A0
-IO-MCU-01 USB0 → EDGE-SBC-01 USB0
-EDGE-SBC-01 D0 → FAN01 D0
-```
-
-真实 Telemetry、Status、Heartbeat 与 Local AUTO 已验证；Gate 3 只能增量加入下行 Policy/Command。
-
----
-
-## 3. Public Contract 继续冻结
-
-- Protocol `1.0`
-- Edge WS `/ws/edge`
-- Dashboard WS `/ws/dashboard`
-- `EDGE-SBC-01` / `TEMP01` / `FAN01`
-- 温度单位 `C`
-- Policy：`policy_id` / `version` / `mode` / `threshold_c` / `hysteresis_c`
-- 默认 Policy：AUTO / 30.0 C / hysteresis 1.0 C / version 1
-- FAN 协议状态只用 `ON/OFF`
-
-本 Gate 不修改 `docs/PROTOCOL.md`。
-
-### 真实性边界
-
-Packet Tracer 的 VLAN / ACL / Routing / OSPF / BGP / NAT / Tunnel 是模拟企业数据平面；真实 FastAPI 控制通道仍是：
-
-```text
-EDGE-SBC-01
-  ↓ External Network Access / RealWSClient
-ws://127.0.0.1:8000/ws/edge
-  ↓
-Real FastAPI
-```
-
-禁止表述真实 WebSocket 经过 R-HQ、R-ISP、BGP、NAT 或 PT VLAN20/30。
-
----
-
-# 4. Gate 3 Track A — Network Owner
-
-目标：在 Gate 2 Underlay 上建立企业动态路由、跨站业务与 Internet 出口。
-
-按层实施，每层完成后先验证再进入下一层：
-
-1. **HQ OSPF Area 0**：仅 SW-CORE ↔ R-HQ；确认邻居 FULL，R-HQ 学到 HQ VLAN10/20/30，SW-CORE 获得所需出口路由。
-2. **WAN eBGP**：R-HQ AS65001 ↔ R-ISP AS65000 ↔ R-BRANCH AS65002；发布冻结前缀，禁止无解释的全量 redistribution。
-3. **Branch Business**：验证 `BR-OFFICE-PC → HQ-SERVICE / BACKEND-STUB` 的 IPv4 企业 WAN 业务流。
-4. **HQ Internet PAT**：R-HQ G0/0 inside、G0/1 outside；默认只为 HQ OFFICE 提供 PAT；IOT 不做通用 Internet NAT；站点间业务必须避免被 NAT。
-5. **DNS / HTTP**：INTERNET-SERVER 提供 DNS + HTTP，验证 HQ OFFICE 通过 PAT 访问。
-6. **Static TCP/80 Mapping**：按冻结设计验证 `203.0.113.1:80 → 192.168.30.10:80`，若 PT 行为与模板不同必须实测记录。
-7. **WAN / Branch ACL**：路由先通再施加业务权限，不能用 ACL 掩盖路由错误。
-8. **Regression**：每层后复查 HQ EtherChannel/Trunk/VLAN/SVI/ACL、Branch VLAN/ROAS/DHCP 和新增业务流。
-
-Gate 3 不做 IPv6 Tunnel、Port Security、SLAAC/DHCPv6 或中央远程管理；这些属于 Gate 4。
-
----
-
-# 5. Gate 3 Track B — Edge Owner
-
-目标：在已验证的 Gate 2 控制器上加入真实 Cloud → Edge 下行。
-
-优先顺序：
-
-1. 单独验证 Packet Tracer 9.0.1 `RealWSClient` 能稳定接收服务器下发消息；callback 内禁止阻塞/`delay()`。
-2. 接收并解析 Protocol v1 `policy`。
-3. Policy `version` 必须严格递增；合法策略更新运行时 `mode/threshold_c/hysteresis_c/version`。
-4. Local AUTO 必须使用当前运行时策略，不再只依赖硬编码默认值。
-5. 返回合法 `policy_ack`。
-6. 接收 `command` 控制 `FAN01`，保持 AUTO/MANUAL 语义清晰，返回 `command_ack`；远程手动状态来源使用 `REMOTE-MANUAL`。
-7. Local Loop 仍优先于 Cloud，新增接收逻辑不得破坏 Gate 2 Telemetry/Status/Heartbeat。
-
-核心 Policy 验收：
-
-```text
-Dashboard: threshold 30 → 33, version 1 → 2
-Edge ACK: APPLIED
-真实温度 32 C → FAN OFF
-真实温度 34 C → FAN ON
-```
-
-正式 Cloud-off/reconnect/state_sync 故障恢复留 Gate 4。
-
----
-
-# 6. Gate 3 Track C — Control Plane Owner
-
-1. 保持 Protocol v1 不变。
-2. 将 Dashboard 的合法 `policy` / `command` 转发给当前真实 Edge WebSocket。
-3. 接收 `policy_ack` / `command_ack`，更新事件与 Dashboard snapshot。
-4. Edge 不在线时维持 `EDGE_OFFLINE` 语义。
-5. fake edge 仍可作为独立开发替身。
-6. 可顺手补 Gate 1 三项稳定性欠账，但不得用 Gate 3 成功自动替代它们。
-
----
-
-# 7. Gate 3 Track D — UI & Integration Owner
-
-1. 使用既有 Policy 表单真实发送 Policy，不创造新协议字段。
-2. 显示新 threshold、policy version、ACK/result 与可解释事件。
-3. 配合 B/C 完成真实 Edge Policy 闭环。
-4. 完成真实 FAN Command 演示与 ACK（若按本 Gate 全量验收）。
-5. 不做主题、登录页、动画等非验收功能扩张。
-
----
-
-# 8. Gate 3 Definition of Done
-
-- [ ] A：OSPF 邻居与 HQ 路由学习 PASS。
-- [ ] A：eBGP 两段邻接与路由传播 PASS。
-- [ ] A：`BR-OFFICE → HQ-SERVICE` PASS。
-- [ ] A：HQ OFFICE → PAT → Internet DNS/HTTP PASS。
-- [ ] A：Static TCP/80 mapping 与业务 ACL 按设计完成并留证。
-- [ ] B+C+D：Dashboard Policy → Backend → 真实 Edge → `policy_ack` → Dashboard PASS。
-- [ ] Policy 由 30 C / v1 改为 33 C / v2 后，32 C FAN OFF、34 C FAN ON。
-- [ ] B+C+D：真实 FAN Command → `command_ack` PASS。
-- [ ] Gate 2 Telemetry、Local Loop、Dashboard 与网络基础回归无退化。
-- [ ] 所有新增阶段报告与 evidence 完整。
-- [ ] 无 Protocol drift；真实性边界保持。
-
-满足后才正式关闭 Gate 3。
+开始前阅读 AI_CONTEXT、CURRENT_GATE、CONTRIBUTING、ARCHITECTURE、PROTOCOL、NETWORK_PLAN、ACCEPTANCE。软件检查：compileall backend edge tests；unittest discover -s tests -v；node tests/test_dashboard_ack.cjs；python scripts/check_contract.py。

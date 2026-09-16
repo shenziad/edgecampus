@@ -52,7 +52,7 @@ Gate 2 已真实打通上行：
 TEMP01 → MCU → SBC → RealWSClient → FastAPI → Dashboard
 ```
 
-Gate 3 当前目标是打通下行：
+Gate 3 已整合下行能力，实测确认但修复后证据待补：
 
 ```text
 Dashboard → FastAPI → SBC → policy_ack / command_ack → Dashboard
@@ -127,24 +127,28 @@ Real FastAPI
 - G0：COMPLETE。
 - G1：`CLOSED-WITH-PENDING-STABILITY`。A/B/D PASS，A+B integration PASS；C Core PASS，但 malformed/offline/reconnect+state_sync 三项证据须 Gate5 前补齐。
 - G2：COMPLETE。A 的 Branch/WAN Foundation 与 B/C/D 的真实 PT Telemetry 全链路均 PASS。
-- 当前：**G3 — Policy Loop + WAN Business**。
+- G3：**EVIDENCE PENDING**，A/B PASS，BCD 实测已确认，修复后 ACK/state/events 待补。
+- 当前：**G4 — Failure Recovery + IPv6/Security（RELEASED / IN PROGRESS）**。
+- G5：NOT STARTED。
+
+按项目负责人 2026-09-16 决定，先发布 Gate 4 供 A/B/C/D 并行开工；Gate 3 保持 EVIDENCE PENDING，未正式 COMPLETE。A/B 独立验收 PASS、BCD 实测已确认；ACK 修复已提交 0749255，修复后 Dashboard Policy/Command ACK 与完整 Backend state/events 待补。C Gate 1 stability debt 保留，Gate 5 NOT STARTED。
 
 当前唯一指挥文件：`docs/CURRENT_GATE.md`。
 
-## Gate 3 Owner 边界
+## Gate 3 已整合 Owner 边界（历史基线）
 
 - **A Network**：`packet_tracer/`、network evidence、唯一 canonical `.pkt` Owner。顺序：OSPF → eBGP → Branch→HQ → PAT/DNS/HTTP → static mapping → ACL → regression。
 - **B Edge**：`edge/`。先验证 RealWSClient 下行消息，再实现 Policy/Command/ACK；Local Loop 必须优先，callback 禁止阻塞。
 - **C Control Plane**：`backend/`。转发 Policy/Command，处理 ACK/事件与 EDGE_OFFLINE；fake edge 仍须可用。
 - **D UI & Integration**：`dashboard/`、`tests/`、集成 evidence。使用既有表单完成真实 Policy/Command 闭环，不创造新传输字段。
 
-## Gate 3 核心验收
+## Gate 3 验收依据（补证待完成）
 
 软件：
 
 ```text
 threshold 30 → 33
-version 1 → 2
+核心图 v3，最终图 v5（连续递增）
 policy_ack = APPLIED
 真实 32 C → FAN OFF
 真实 34 C → FAN ON
@@ -185,3 +189,7 @@ static TCP/80 + business ACL PASS
 待联调项：
 建议截图证据：
 ```
+
+## Gate 4 当前任务
+
+A：N12-N15（地址模式、Tunnel、管理、Port Security），回归 N1-N11；ISP IPv4-only。B：真实 Backend-off 保留 AUTO 策略控 FAN、自动 reconnect + hello/state_sync。C：disconnect/offline snapshot、真实状态恢复、协议安全拒绝，补齐 Gate1 debt。D：Backend/WS down 和恢复状态展示，R1/R2 集成证据，并协同补 Gate3 ACK/state/events。完整任务、DoD 与 Gate5 门禁见 CURRENT_GATE。
