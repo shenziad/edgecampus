@@ -98,27 +98,22 @@ TEMP01
 
 Dashboard 展示的 Gate2 温度来自真实 Packet Tracer TEMP01，而不是 fake edge。
 
-## 7. A+B Gate2 canonical package
+## 7. A+B Gate2 Packet Tracer package
 
-项目 Owner 于 2026-09-16 提供 A+B Gate2 整合包，并归档为：
-
-```text
-packet_tracer/EdgeCampus.pkt
-```
-
-归档文件 SHA-256：
+项目 Owner 于 2026-09-16 提供 A+B Gate2 整合包。上传文件在当前会话工作区的校验信息为：
 
 ```text
-8a299abad7ec701bcc17505cc1dd9f578eb9f11dbe0af448c4bc0d2077ebdae6
+SHA-256 = 8a299abad7ec701bcc17505cc1dd9f578eb9f11dbe0af448c4bc0d2077ebdae6
+size    = 117338 bytes
 ```
 
-Git blob：
+由于当前 GitHub 连接器无法可靠地把该二进制附件作为完整 Git blob 写入仓库，本次合并**没有把不完整上传冒充 canonical `.pkt`**。仓库中的 `packet_tracer/EdgeCampus.pkt` 暂时保留 A Gate2 已提交且可追溯的 canonical 网络文件；项目 Owner 提供的 A+B 整合包应在本地工作副本中替换该文件后正常 `git add/commit/push`，再由 A 继续作为唯一 canonical `.pkt` Owner。
 
-```text
-60178352dd495107f6854d218a766abaf6d631a1
-```
+因此：
 
-说明：该二进制包由项目 Owner 明确指定为 A+B Gate2 整合包，因此作为后续 Gate3 canonical 起点归档；本次仓库合并不把“无法直接从 Git 文本审计 `.pkt` 内部语义”等同于额外功能验证。Gate2 功能结论仍由 A/B/C/D 的实测报告与截图证据支撑。
+- Gate2 功能结论仍由 A/B/C/D 的真实实测报告与 evidence 支撑；
+- A+B 整合包的来源和 SHA-256 已记录；
+- 在二进制正式推送前，不声称 GitHub 当前 `EdgeCampus.pkt` 已包含该会话附件的全部字节。
 
 ## 8. Public Contract / Truthfulness Check
 
