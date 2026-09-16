@@ -53,21 +53,9 @@ Gate1 NORMAL / WARNING / OFFLINE / RECONNECT evidence 已归档；Dashboard cont
 
 ### C Control Plane — CORE PASS / STABILITY PENDING
 
-已提交：
+已提交：unit tests、`/ws/edge` fake edge、`/healthz`、`/api/state` telemetry/temperature、AUTO FAN events。
 
-- unit tests；
-- `/ws/edge` fake edge connection；
-- `/healthz`；
-- `/api/state` telemetry / temperature；
-- AUTO FAN events。
-
-仍欠：
-
-- malformed / wrong-version / unsupported message 拒绝且服务不崩；
-- Edge 停止后 offline；
-- reconnect + `state_sync`。
-
-管理状态：**CLOSED-WITH-PENDING-STABILITY**。三项欠账 Gate5 前必须清零。
+仍欠：malformed 安全拒绝、Edge offline、reconnect + `state_sync`。管理状态为 **CLOSED-WITH-PENDING-STABILITY**，Gate5 前必须清零。
 
 ## 4. Gate 2 — COMPLETE
 
@@ -75,7 +63,7 @@ Gate1 NORMAL / WARNING / OFFLINE / RECONNECT evidence 已归档；Dashboard cont
 
 已验证：
 
-- 新增 7 条冻结链路与接口映射；
+- 7 条新增冻结链路与接口映射；
 - Branch VLAN40 / VLAN50；
 - SW-BRANCH trunk / access / management SVI；
 - R-BRANCH Router-on-a-Stick；
@@ -88,21 +76,13 @@ Gate1 NORMAL / WARNING / OFFLINE / RECONNECT evidence 已归档；Dashboard cont
 
 ### B Edge Real Telemetry — PASS
 
-已验证：
-
-- RealWSClient connected；
-- Protocol v1 hello；
-- 固定 telemetry；
-- 真实 TEMP01 telemetry；
-- Local AUTO + Telemetry + FAN Status + Heartbeat 同时运行；
-- 高温真实 FAN01 PT state=2，协议状态为 `ON`；
-- Cloud 通信不作为 Local Loop 前置条件。
+已验证 RealWSClient、Protocol v1 hello、固定 telemetry、真实 TEMP01 telemetry、Local AUTO、FAN Status、Heartbeat，以及高温真实 FAN01 PT state=2 ↔ Protocol `ON`。Cloud 通信不作为 Local Loop 前置条件。
 
 证据：`docs/gate2/B_EDGE_REPORT.md`、`edge/packet_tracer/evidence/gate2/`。
 
 ### C Control Plane Real Telemetry — PASS
 
-真实 PT 环境升温后观察到：
+真实 PT 环境升温后：
 
 ```text
 TEMP01 ≈ 32 C
@@ -141,32 +121,26 @@ TEMP01
 
 这是带外 Edge–Cloud 控制通道，不经过 PT WAN。
 
-### Gate 2 canonical package
+### Gate 2 Packet Tracer 文件状态
 
-2026-09-16 项目 Owner 提供 A+B Gate2 整合 `.pkt`，作为 Gate2 canonical 基线归档到 `packet_tracer/EdgeCampus.pkt`。该包在仓库层作为后续 G3/G4 的 canonical 起点；PT 内部功能结论仍以 A/B 各自实测报告和证据为依据。
+A 分支提交的 Gate2 canonical 网络文件已保留在仓库 `packet_tracer/EdgeCampus.pkt`，并与 A 的 Gate2 网络 evidence/CONFIG_LOG 对应。
+
+2026-09-16 项目 Owner 另提供 A+B Gate2 整合 `.pkt`：
+
+```text
+SHA-256 = 8a299abad7ec701bcc17505cc1dd9f578eb9f11dbe0af448c4bc0d2077ebdae6
+size    = 117338 bytes
+```
+
+当前 GitHub 连接器无法可靠写入该完整二进制附件，因此仓库没有用截断内容覆盖 canonical 文件。该 A+B 整合包应由 A 在本地正常替换并 `git add/commit/push` 后成为新的 canonical `.pkt`。Gate2 功能 PASS 结论来自四位 Owner 的实测报告/evidence，不依赖对二进制文件内容的文本推断。
 
 Gate2 集成记录：`docs/gate2/INTEGRATION_REPORT.md`。
 
 ## 5. Gate 3 — IN PROGRESS
 
-待验证网络项：
+待验证网络项：HQ OSPF、WAN eBGP、BR-OFFICE→HQ-SERVICE、HQ OFFICE PAT→Internet、DNS/HTTP、Static TCP/80、业务 ACL 及每层 regression。
 
-- HQ OSPF Area0；
-- WAN eBGP AS65001/65000/65002；
-- BR-OFFICE → HQ-SERVICE；
-- HQ OFFICE PAT → Internet；
-- DNS / HTTP；
-- Static TCP/80 mapping；
-- WAN / Branch business ACL；
-- 每层后的 HQ/Branch regression。
-
-待验证软件 / IoT 项：
-
-- RealWSClient 服务端下行消息；
-- Dashboard Policy → Backend → real Edge → `policy_ack`；
-- threshold 30→33 / version 1→2；
-- 32 C FAN OFF / 34 C FAN ON；
-- Dashboard Command → real FAN → `command_ack`。
+待验证软件 / IoT 项：RealWSClient 服务端下行、Dashboard Policy → Backend → real Edge → `policy_ack`、threshold 30→33/version 1→2、32 C FAN OFF / 34 C FAN ON，以及真实 Command → `command_ack`。
 
 ## 6. Gate 4 尚未验证
 
