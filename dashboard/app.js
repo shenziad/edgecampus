@@ -2,6 +2,8 @@ const $ = (id) => document.getElementById(id);
 const protocolVersion = "1.0";
 let socket;
 let latestState = { policy: { version: 1, threshold_c: 30, hysteresis_c: 1, mode: "AUTO" } };
+let policyFormDirty = false;
+let pendingPolicy = null;
 
 function envelope(type, fields) {
   return {
@@ -37,13 +39,40 @@ function connect() {
   socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
     if (message.type === "snapshot") render(message);
-    if (message.type === "error") showToast(`${message.code}: ${message.message}`);
+    if (message.type === "error") {
+      if (pendingPolicy) {
+        pendingPolicy = null;
+        policyFormDirty = true;
+      }
+      showToast(`${message.code}: ${message.message}`);
+    }
   };
 }
 
 function formatTime(value) {
   if (!value) return "—";
   return new Date(value).toLocaleTimeString("zh-CN", { hour12: false });
+}
+
+function policyMatchesPending(policy) {
+  if (!pendingPolicy) return false;
+  return Number(policy.version) >= pendingPolicy.version
+    && policy.mode === pendingPolicy.mode
+    && Number(policy.threshold_c) === pendingPolicy.threshold_c
+    && Number(policy.hysteresis_c) === pendingPolicy.hysteresis_c;
+}
+
+function syncPolicyForm(policy) {
+  if (pendingPolicy) {
+    if (!policyMatchesPending(policy)) return;
+    pendingPolicy = null;
+  }
+
+  if (policyFormDirty) return;
+
+  $("policyMode").value = policy.mode;
+  $("threshold").value = policy.threshold_c;
+  $("hysteresis").value = policy.hysteresis_c;
 }
 
 function render(state) {
@@ -65,9 +94,7 @@ function render(state) {
   $("fanState").textContent = state.fan_state;
   $("fanVisual").classList.toggle("running", state.fan_state === "ON");
 
-  $("policyMode").value = state.policy.mode;
-  $("threshold").value = state.policy.threshold_c;
-  $("hysteresis").value = state.policy.hysteresis_c;
+  syncPolicyForm(state.policy);
   document.querySelectorAll("button").forEach((button) => button.disabled = !state.edge_online);
 
   const events = state.events || [];
@@ -113,16 +140,34 @@ document.querySelectorAll("button[data-action]").forEach((button) => {
   });
 });
 
+$("policyForm").addEventListener("input", () => {
+  policyFormDirty = true;
+});
+
+$("policyForm").addEventListener("change", () => {
+  policyFormDirty = true;
+});
+
 $("policyForm").addEventListener("submit", (event) => {
   event.preventDefault();
   const version = Number(latestState.policy.version || 0) + 1;
-  socket.send(JSON.stringify(envelope("policy", {
+  const policy = {
     policy_id: "thermal-01",
     version,
     mode: $("policyMode").value,
     threshold_c: Number($("threshold").value),
     hysteresis_c: Number($("hysteresis").value),
-  })));
+  };
+
+  pendingPolicy = {
+    version: policy.version,
+    mode: policy.mode,
+    threshold_c: policy.threshold_c,
+    hysteresis_c: policy.hysteresis_c,
+  };
+  policyFormDirty = false;
+
+  socket.send(JSON.stringify(envelope("policy", policy)));
   $("policyAck").textContent = `等待 ACK · v${version}`;
   showToast(`策略 v${version} 已下发`);
 });
