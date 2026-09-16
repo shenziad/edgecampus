@@ -1,6 +1,8 @@
 const $ = (id) => document.getElementById(id);
 const protocolVersion = "1.0";
 let socket;
+let policyDirty = false;
+let pendingPolicyVersion = null;
 let latestState = { policy: { version: 1, threshold_c: 30, hysteresis_c: 1, mode: "AUTO" } };
 
 function envelope(type, fields) {
@@ -46,6 +48,12 @@ function formatTime(value) {
   return new Date(value).toLocaleTimeString("zh-CN", { hour12: false });
 }
 
+function syncPolicyForm(policy) {
+  $("policyMode").value = policy.mode;
+  $("threshold").value = policy.threshold_c;
+  $("hysteresis").value = policy.hysteresis_c;
+}
+
 function render(state) {
   latestState = state;
   const temperature = state.temperature_c;
@@ -65,9 +73,13 @@ function render(state) {
   $("fanState").textContent = state.fan_state;
   $("fanVisual").classList.toggle("running", state.fan_state === "ON");
 
-  $("policyMode").value = state.policy.mode;
-  $("threshold").value = state.policy.threshold_c;
-  $("hysteresis").value = state.policy.hysteresis_c;
+  if (pendingPolicyVersion !== null && state.policy.version >= pendingPolicyVersion) {
+    pendingPolicyVersion = null;
+    policyDirty = false;
+  }
+  if (!policyDirty && pendingPolicyVersion === null) {
+    syncPolicyForm(state.policy);
+  }
   document.querySelectorAll("button").forEach((button) => button.disabled = !state.edge_online);
   renderEvents(state.events || []);
 }
@@ -98,17 +110,28 @@ document.querySelectorAll("button[data-action]").forEach((button) => {
   });
 });
 
+["policyMode", "threshold", "hysteresis"].forEach((id) => {
+  ["input", "change"].forEach((type) => {
+    $(id).addEventListener(type, () => {
+      policyDirty = true;
+    });
+  });
+});
+
 $("policyForm").addEventListener("submit", (event) => {
   event.preventDefault();
   const version = Number(latestState.policy.version || 0) + 1;
-  socket.send(JSON.stringify(envelope("policy", {
+  const policy = {
     policy_id: "thermal-01",
     version,
     mode: $("policyMode").value,
     threshold_c: Number($("threshold").value),
     hysteresis_c: Number($("hysteresis").value),
-  })));
-  showToast(`策略 v${version} 已下发`);
+  };
+  pendingPolicyVersion = version;
+  policyDirty = true;
+  socket.send(JSON.stringify(envelope("policy", policy)));
+  showToast(`策略 v${version} 下发中 · ${policy.threshold_c}°C`);
 });
 
 connect();
