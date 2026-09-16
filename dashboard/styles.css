@@ -119,3 +119,20 @@ footer { display: flex; justify-content: space-between; padding: 18px 0 26px; co
   .event-head, .event-row { grid-template-columns: 70px 1fr 1fr; }
   .event-head span:last-child, .event-row .detail { display: none; }
 }
+
+/* Additive NOC surfaces, preserving the Edge UI theme. */
+.noc-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.noc-nav a { color: var(--muted); text-decoration: none; padding: 9px 14px; border: 1px solid var(--line); border-radius: 8px; }
+.noc-nav a:hover, .noc-nav a:focus-visible { color: var(--cyan); border-color: var(--cyan); }
+.network-panel { min-height: auto; margin-bottom: 22px; }
+.network-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding-top: 22px; }
+.network-metrics span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.noc-status { font: 700 16px/1.4 Consolas, monospace; overflow-wrap: anywhere; }
+.noc-status::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; margin-right: 8px; }
+.noc-status.good { color: var(--cyan); }.noc-status.bad { color: var(--red); }.noc-status.unknown { color: var(--muted); }
+.simulation-label { color: var(--amber); border-color: rgba(255,180,84,.3); white-space: nowrap; }
+.section-caption { display: flex; align-items: baseline; flex-wrap: wrap; gap: 14px; margin: 20px 0 14px; }
+.section-caption span { color: var(--muted); font-size: 12px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+@media(max-width:620px) { .network-metrics { grid-template-columns: 1fr 1fr; gap: 24px 12px; } }
+@media(prefers-reduced-motion:reduce) { .fan-visual.running .fan { animation: none; } *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }

@@ -62,3 +62,7 @@ Gate 3 补证由 D 协同 B/C 完成：Dashboard Policy ACK、Command ACK 与当
 ## Gate4 当前归档索引（2026-09-17）
 
 报告见 `gate4/`：A/B/C/D/BCD 报告、EVIDENCE_INDEX、VALIDATION_REPORT。Protocol 1.0 与冻结网络规划未改变。
+
+## NOC Upgrade — IN PROGRESS
+
+用户授权在最新本地 feat/edge 上进行 NOC 增量开发，三段完成 Network Health、Security Center、Remote Operations/Campus Policy/Failure Simulation。独立 NetworkProvider/mock adapter 与 REST API，不修改 Protocol 1.0、Edge Policy/ACK 或 canonical .pkt。当前 Gate4 与 Gate5 状态保持；详见 `docs/NOC_UPGRADE.md`。

@@ -13,6 +13,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .protocol import ProtocolError, envelope, validate_message
 from .state import SystemState
+from .noc import router as noc_router
 
 
 logging.basicConfig(
@@ -26,6 +27,7 @@ RUNTIME = ROOT / "runtime"
 EVENT_LOG = RUNTIME / "events.jsonl"
 
 app = FastAPI(title="EdgeCampus Control Plane", version="0.1.0")
+app.include_router(noc_router)
 app.mount("/static", StaticFiles(directory=DASHBOARD), name="static")
 
 state = SystemState()

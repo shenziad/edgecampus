@@ -18,6 +18,20 @@
       </header>
 
       <main>
+        <nav class="noc-nav" aria-label="Operations navigation">
+          <a href="#edgeControl">Edge Control</a><a href="#networkHealth">Network Health</a>
+        </nav>
+        <section id="networkHealth" class="panel network-panel" aria-labelledby="networkHeading">
+          <div class="panel-heading"><div><h2 id="networkHeading">Network Health</h2><p class="hint">Routing / IPv6 Overlay / Branch</p></div><span class="tag simulation-label">MOCK ADAPTER</span></div>
+          <div class="network-metrics">
+            <div><span>OSPF · Area 0</span><b id="nocOspf" class="noc-status unknown">WAITING</b></div>
+            <div><span>BGP · AS65001 / 65000</span><b id="nocBgp" class="noc-status unknown">WAITING</b></div>
+            <div><span>IPv6 · Tunnel0</span><b id="nocTunnel" class="noc-status unknown">WAITING</b></div>
+            <div><span>Branch Connectivity</span><b id="nocBranch" class="noc-status unknown">WAITING</b></div>
+          </div>
+          <p id="nocNetworkNotice" class="hint" role="status">正在读取 Network Agent。配置模拟状态，与真实 Edge 遥测独立。</p>
+        </section>
+        <div id="edgeControl" class="section-caption"><h2>Edge Control</h2><span>Protocol v1.0 · 实际连接的 Edge</span></div>
         <section class="summary-grid">
           <article class="hero-card temperature-card">
             <div class="card-label">环境温度 · TEMP01</div>
@@ -100,5 +114,6 @@
     </div>
     <div id="toast" class="toast"></div>
     <script src="/static/app.js"></script>
+    <script src="/static/noc.js"></script>
   </body>
 </html>

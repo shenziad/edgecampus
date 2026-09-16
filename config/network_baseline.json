@@ -1,0 +1,21 @@
+{
+  "provider": "mock",
+  "routing": {
+    "ospf": {"status": "FULL", "neighbor": "10.255.0.1", "area": "0"},
+    "bgp": {"status": "ESTABLISHED", "neighbor": "203.0.113.2", "local_as": 65001, "remote_as": 65000}
+  },
+  "ipv6": {
+    "tunnel": {"name": "Tunnel0", "status": "UP", "local": "2001:DB8:FF::1", "remote": "2001:DB8:FF::2", "underlay": "IPv4-only"}
+  },
+  "branch": {"status": "ONLINE"},
+  "security": {"port_security": "SECURE", "violations": 0, "acl": "ACTIVE", "port": "SW-ACCESS Fa0/1"},
+  "management": {
+    "allowed_source": "192.168.30.20",
+    "devices": {"R-BRANCH": "172.16.40.65", "SW-BRANCH": "172.16.40.66"}
+  },
+  "campus_policy": {
+    "version": 1,
+    "network": {"branch_access": "ALLOW", "iot_isolation": true},
+    "security": {"port_security": "STRICT"}
+  }
+}
