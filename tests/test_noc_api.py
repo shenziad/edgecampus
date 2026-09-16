@@ -98,3 +98,20 @@ class NocApiTests(unittest.IsolatedAsyncioTestCase):
                 await asyncio.sleep(.01)
             self.assertEqual(noc.sync_status, "SUCCESS")
             self.assertEqual(gate4.backend.state.policy, policy)
+
+    async def test_controller_configuration_and_live_simulation_guard(self):
+        _, unconfigured = await self.request("/api/controller/state")
+        self.assertFalse(unconfigured["configured"])
+        class FixtureController:
+            def snapshot(self):
+                return {"configured": True, "status": "CONNECTED", "devices": []}
+        from backend.app import noc
+        noc.agent.controller = FixtureController()
+        _, network = await self.request("/api/network/state")
+        self.assertEqual(network["source"]["kind"], "PT_CONTROLLER")
+        self.assertEqual(network["ospf"], "UNKNOWN")
+        code, _ = await self.request("/api/simulation/network", {})
+        self.assertEqual(code, 409)
+        _, combined = await self.request("/api/noc/state")
+        self.assertEqual(combined["network"]["controller"]["status"], "CONNECTED")
+        self.assertEqual(combined["branch"]["source"], "SIMULATED")

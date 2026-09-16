@@ -149,3 +149,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 .noc-center-grid .node-row {grid-template-columns:minmax(0,1fr) minmax(0,2fr);}
 @media(max-width:620px){.noc-center-grid .node-row {grid-template-columns:1fr;} .noc-center-grid .node-row b {text-align:left;} .section-caption {flex-wrap:wrap;}}
+
+.controller-table-wrap {overflow-x:auto;margin:16px 0;}
+.controller-table {border-collapse:collapse;width:100%;text-align:left;}
+.controller-table th,.controller-table td {border-bottom:1px solid var(--line);padding:12px;overflow-wrap:anywhere;}
+.controller-table th {color:var(--muted);font-size:12px;}
+#controllerTopology {white-space:pre-wrap;overflow-wrap:anywhere;max-height:320px;overflow:auto;}
+#controllerCenter summary {cursor:pointer;padding:12px 0;color:var(--cyan);}

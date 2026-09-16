@@ -19,7 +19,7 @@
 
       <main>
         <nav class="noc-nav" aria-label="运维导航">
-          <a href="#edgeControl">边缘控制</a><a href="#networkHealth">网络健康</a><a href="#securityCenter">安全中心</a><a href="#branchOperations">分部运维</a><a href="#policyCenter">园区策略中心</a><a href="#simulationPanel">故障演练</a>
+          <a href="#edgeControl">边缘控制</a><a href="#networkHealth">网络健康</a><a href="#controllerCenter">网络控制器</a><a href="#securityCenter">安全中心</a><a href="#branchOperations">分部运维</a><a href="#policyCenter">园区策略中心</a><a href="#simulationPanel">故障演练</a>
         </nav>
 <div id="edgeControl" class="section-caption"><h2>边缘控制</h2><span>Protocol v1.0 · 已连接 Edge 的遥测</span></div>
         <section class="summary-grid">
@@ -52,7 +52,7 @@
         </section>
 
         <section id="networkHealth" class="panel network-panel" aria-labelledby="networkHeading">
-          <div class="panel-heading"><div><h2 id="networkHeading">网络健康</h2><p class="hint">路由 / IPv6 隧道 / 分部连接</p></div><span class="tag simulation-label">模拟适配器</span></div>
+          <div class="panel-heading"><div><h2 id="networkHeading">网络健康</h2><p class="hint">路由 / IPv6 隧道 / 分部连接</p></div><span id="networkSourceBadge" class="tag simulation-label">模拟适配器</span></div>
           <div class="network-metrics">
             <div><span>OSPF · 区域 0</span><b id="nocOspf" class="noc-status unknown">等待数据</b></div>
             <div><span>BGP · AS65001 / 65000</span><b id="nocBgp" class="noc-status unknown">等待数据</b></div>
@@ -61,6 +61,14 @@
           </div>
           <p id="nocNetworkNotice" class="hint" role="status">正在读取 Network Agent。配置模拟状态，与真实 Edge 遥测独立。</p>
         </section>
+        <section id="controllerCenter" class="panel network-panel">
+<div class="panel-heading"><div><p class="eyebrow">Packet Tracer 实际数据</p><h2>网络控制器</h2></div><b id="controllerStatus" class="noc-status unknown">等待数据</b></div>
+<p id="controllerNotice" class="notice" role="status">正在检查控制器配置。</p>
+<p id="controllerTime" class="hint"></p>
+<div class="controller-table-wrap"><table class="controller-table"><thead><tr><th>设备</th><th>管理 IP</th><th>类型</th><th>控制器报告状态</th></tr></thead><tbody id="controllerDevices"></tbody></table></div>
+<details><summary>查看控制器物理拓扑数据</summary><pre id="controllerTopology">暂无数据</pre></details>
+<p class="notice">仅查询设备清单和拓扑，不写入设备配置；控制器的管理可达性不等同于 ADMIN-PC 的 VTY ACL 验收。</p>
+</section>
         <section id="securityCenter" class="panel network-panel">
 <div class="panel-heading"><div><p class="eyebrow">安全运维</p><h2>安全中心</h2></div><span class="tag simulation-label">模拟数据</span></div>
 <div class="network-metrics"><div><span>端口安全</span><b id="nocSecurity" class="noc-status unknown">等待数据</b></div><div><span>累计违规次数</span><b id="nocViolations">0</b></div><div><span>ACL</span><b id="nocAcl">等待数据</b></div><div><span>端口状态</span><b id="nocPort">等待数据</b></div></div>

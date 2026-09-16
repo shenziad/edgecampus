@@ -87,3 +87,7 @@ PT 既有 Gate4 程序使用 `ws://127.0.0.1:8000/ws/edge`，必须与 Backend �
 打开 http://127.0.0.1:8000，在 PT 的 EDGE-SBC-01 Programming 中运行已实测 Gate4 程序，并确认 WS_URL 与上面一致。若连接仍失败，检查 PT 的 External Network Access 是否允许，以及 SBC Console 的实际错误。不要同时把 Fake Edge 接到同一个 Backend；同一 Backend 当前只有一个 Edge 会话槽位。在 8018 运行的 Fake Edge 不占用 8000 Backend。
 
 可通过 `Invoke-RestMethod http://127.0.0.1:8000/healthz` 检查 Backend：status=ok 只说明服务可达，edge_online=true 才说明收到 Edge 消息；该标志本身不区分 Fake Edge 和 PT，因此真实测试不启动 Fake Edge。
+
+
+## PT Controller 只读接入增量
+已实现真实控制器认证、设备清单/拓扑采集与 Dashboard 展示；使用 scripts/start_pt_backend.ps1 输入控制器账户并启动。配置与边界见 [PT_CONTROLLER_SETUP.md](PT_CONTROLLER_SETUP.md)。尚需用户配置 NC-HQ 后进行实际 PT 联调，不能将本机 HTTP fixture 测试认定为 PT 验收通过。

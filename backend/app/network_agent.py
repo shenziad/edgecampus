@@ -24,8 +24,9 @@ class MockNetworkProvider:
 
 
 class NetworkAgent:
-    def __init__(self, provider: NetworkProvider | None = None) -> None:
+    def __init__(self, provider: NetworkProvider | None = None, controller=None) -> None:
         self.provider = provider or MockNetworkProvider()
+        self.controller = controller
         self.events: list[dict[str, Any]] = []
         self.sequence = 0
         self.network_failed = False
@@ -35,7 +36,12 @@ class NetworkAgent:
 
     def snapshot(self) -> dict[str, Any]:
         baseline = self.provider.get_state()
-        if self.network_failed:
+        controller = self.controller.snapshot() if self.controller is not None else None
+        if controller is not None:
+            baseline["routing"] = {name: {"status": "UNKNOWN", "reason": "NOT_OBSERVED"} for name in ("ospf", "bgp")}
+            baseline["ipv6"] = {"tunnel": {"name": "Tunnel0", "status": "UNKNOWN", "reason": "NOT_OBSERVED"}}
+            baseline["branch"] = {"status": "UNKNOWN", "reason": "NOT_OBSERVED"}
+        if self.network_failed and controller is None:
             baseline["routing"]["bgp"]["status"] = "DOWN"
             baseline["ipv6"]["tunnel"]["status"] = "DOWN"
             baseline["branch"]["status"] = "OFFLINE"
@@ -45,11 +51,12 @@ class NetworkAgent:
         branch = baseline["branch"]["status"]
         return {
             "type": "network_state",
-            "network": "healthy" if (ospf, bgp, tunnel, branch) == ("FULL", "ESTABLISHED", "UP", "ONLINE") else "degraded",
+            "network": "unknown" if controller is not None else "healthy" if (ospf, bgp, tunnel, branch) == ("FULL", "ESTABLISHED", "UP", "ONLINE") else "degraded",
             "ospf": ospf, "bgp": bgp, "ipv6_tunnel": tunnel, "branch_status": branch,
             "routing": baseline["routing"], "ipv6": baseline["ipv6"],
             "branch": baseline["branch"],
-            "source": {"kind": "SIMULATED", "provider": "mock", "detail": "Configuration-backed adapter; not live PT telemetry"},
+            "source": {"kind": "PT_CONTROLLER", "provider": "pt-controller", "detail": "Live inventory/topology only; routing protocol state not exposed"} if controller is not None else {"kind": "SIMULATED", "provider": "mock", "detail": "Configuration-backed adapter; not live PT telemetry"},
+            "controller": controller,
         }
 
     def event_history(self) -> list[dict[str, Any]]:
@@ -93,7 +100,7 @@ class NetworkAgent:
     def check_device(self, device, source):
         management = self.provider.get_state()["management"]
         allowed = source == management["allowed_source"]
-        reachable = self.snapshot()["branch_status"] == "ONLINE"
+        reachable = not self.network_failed and self.provider.get_state()["branch"]["status"] == "ONLINE"
         return {"device": device, "ip": management["devices"][device], "source_ip": source,
                 "management": "PASS" if allowed and reachable else "DENIED" if not allowed else "UNAVAILABLE",
                 "acl": "ALLOW" if allowed else "DENY", "status": "AVAILABLE" if reachable else "UNAVAILABLE",

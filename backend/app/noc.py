@@ -1,14 +1,16 @@
 """NOC REST APIs; no extension to Protocol v1.0 messages."""
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+from starlette.concurrency import run_in_threadpool
+from .pt_controller import controller_from_environment
 from .network_agent import NetworkAgent
 
 router = APIRouter(prefix="/api", tags=["NOC"])
-agent = NetworkAgent()
+agent = NetworkAgent(controller=controller_from_environment())
 
 
 @router.get("/network/state")
 async def network_state():
-    return agent.snapshot()
+    return await run_in_threadpool(agent.snapshot)
 
 
 @router.get("/network/events")
@@ -64,10 +66,14 @@ async def campus_policy():
 
 @router.post("/simulation/network")
 async def network_failure():
+    if agent.controller is not None:
+        raise HTTPException(409, "真实控制器模式不允许用模拟故障覆盖观测结果")
     return agent.set_network_failure(True)
 
 @router.post("/simulation/network/restore")
 async def network_restore():
+    if agent.controller is not None:
+        raise HTTPException(409, "真实控制器模式没有模拟网络故障需要恢复")
     return agent.set_network_failure(False)
 
 @router.get("/simulation/state")
@@ -107,6 +113,14 @@ async def cloud_restore():
 
 @router.get("/noc/state")
 async def noc_state():
-    return {"network": agent.snapshot(), "security": agent.security_snapshot(),
+    return {"network": await run_in_threadpool(agent.snapshot), "security": agent.security_snapshot(),
             "branch": await branch_state(), "policy": await campus_policy(),
             "simulation": await simulation_state(), "events": agent.event_history()}
+
+
+@router.get("/controller/state")
+async def controller_state():
+    if agent.controller is None:
+        return {"configured": False, "status": "NOT_CONFIGURED", "devices": [], "topology": None,
+                "source": "PT_CONTROLLER", "error": "设置 PT_CONTROLLER_URL、PT_CONTROLLER_USERNAME、PT_CONTROLLER_PASSWORD 后重启 Backend"}
+    return await run_in_threadpool(agent.controller.snapshot)
