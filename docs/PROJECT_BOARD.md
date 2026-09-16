@@ -14,7 +14,7 @@
 | HQ VLAN/IP / SVI / DHCP | A | **PASS G1** | A G1 evidence | 冻结 Core |
 | HQ EtherChannel / Trunk | A | **PASS G1** | Po1 / trunk evidence | 每层网络变更 regression |
 | HQ ACL | A | **PASS G1** | OFFICE→IOT deny 等 | G3 继续回归 |
-| Edge Local Loop | B | **PASS G1 + G2 REGRESSION** | TEMP→MCU→SBC→FAN | G3 使用运行时 Policy |
+| Edge Local Loop | B | **PASS G1 + G2 + G3 REGRESSION** | TEMP→MCU→SBC→FAN；`docs/gate3/B_EDGE_REPORT.md` | 保持运行时 Policy；B+C+D formal integration pending |
 | A+B Gate1 canonical integration | A+B | **PASS G1** | `docs/gate1/AB_INTEGRATION_REPORT.md` | 历史基线 |
 | PT → Real Host RealWSClient | A+B+C | VERIFIED | G0 + G2 真 Telemetry | G3 真下行 |
 | Real PT Telemetry | B+C+D | **PASS G2** | TEMP01→Dashboard 真链路 | 保持回归 |
@@ -27,8 +27,8 @@
 | HQ Internet PAT / DNS / HTTP | A | NOT STARTED G3 | OFFICE→Internet | 路由后实施 |
 | Static TCP/80 mapping | A | NOT STARTED G3 | 203.0.113.1:80→192.168.30.10:80 | 实测留证 |
 | WAN / Branch Business ACL | A | NOT STARTED G3 | 权限矩阵 | 路由通后实施 |
-| Real Policy Loop | B+C+D | IN PROGRESS G3 | Dashboard→Backend→Edge→ACK | threshold 30→33 |
-| Real FAN Command | B+C+D | IN PROGRESS G3 | command→Edge→ACK | 保持 AUTO/MANUAL 语义 |
+| Real Policy Loop | B+C+D | IN PROGRESS G3；B Edge-side **PASS LOCALLY** | `docs/gate3/B_EDGE_REPORT.md`；threshold 30→33 + policy_ack | B+C+D formal integration PENDING |
+| Real FAN Command | B+C+D | IN PROGRESS G3；B Edge-side **PASS LOCALLY** | 真实 FAN ON/OFF + REMOTE-MANUAL + command_ack | B+C+D formal integration PENDING |
 | IPv6 address modes | A | NOT STARTED G4 | SLAAC + DHCPv6 + Static | G4 |
 | IPv6-over-IPv4 Overlay | A | NOT STARTED G4 | BR-ADMIN→HQ MGMT | G4 |
 | Central Network Admin | A | NOT STARTED G4 | HQ ADMIN→Branch devices | G4 |
@@ -119,6 +119,8 @@ Business ACL + Regression
 | 2026-09-16 | 全组 | G2 | 两条轨道满足 DoD；报告/evidence 合并 main | **G2 COMPLETE，进入 G3** |
 
 ## 课程覆盖追踪
+
+B Gate 3 本地记录（2026-09-16）：Policy / MANUAL Command / Gate 2 regression **PASS LOCALLY / READY FOR B+C+D INTEGRATION**。B+C+D formal integration **PENDING**；Global Gate 3 **IN PROGRESS**。
 
 | 课程能力 | Gate | 状态 |
 |---|---|---|
