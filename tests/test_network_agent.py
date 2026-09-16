@@ -24,3 +24,15 @@ class NetworkAgentTests(unittest.TestCase):
                 state["routing"]["bgp"]["status"] = "DOWN"
                 return state
         self.assertEqual(NetworkAgent(DownProvider()).snapshot()["network"], "degraded")
+
+class SecurityTests(unittest.TestCase):
+    def test_attack_restore_preserves_audit(self):
+        agent = NetworkAgent()
+        self.assertEqual(agent.security_snapshot()["violations"], 0)
+        event = agent.security_attack("PORT_SECURITY_VIOLATION")
+        self.assertEqual(event["security"]["port_status"], "BLOCKED")
+        self.assertIn("Unauthorized MAC detected", event["detail"])
+        restored = agent.restore_security()
+        self.assertFalse(restored["active"])
+        self.assertEqual(restored["violations"], 1)
+        self.assertEqual(agent.event_history()[0]["event"], "SECURITY_RESTORED")

@@ -37,3 +37,6 @@ Network Agent 在 backend/app/network_agent.py，NetworkProvider 可替换；当
 ## 第一段验证
 
 Network Agent adapter 隔离/替换测试、真实 HTTP network state 与原 Edge snapshot 分离测试、Dashboard 健康/不可用/降级渲染，另运行现有 Gate4/ACK/contract 回归。后续段落随实际完成更新。
+
+## 第二段：Security Center
+GET /api/security/state；POST /api/simulation/security（event 可选 PORT_SECURITY_VIOLATION / ACL_BLOCK_EVENT）；POST /api/simulation/security/restore。攻击显示红色告警、阻断状态和累计次数；恢复保留审计记录。全部为模拟，不实际关闭交换机端口。

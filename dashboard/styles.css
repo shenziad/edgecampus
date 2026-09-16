@@ -136,3 +136,6 @@ footer { display: flex; justify-content: space-between; padding: 18px 0 26px; co
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
 @media(max-width:620px) { .network-metrics { grid-template-columns: 1fr 1fr; gap: 24px 12px; } }
 @media(prefers-reduced-motion:reduce) { .fan-visual.running .fan { animation: none; } *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
+
+.noc-actions {display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;}
+.security-alert {background:#492431;border-left:4px solid #ff6689;padding:16px;color:#ffc5d3;}

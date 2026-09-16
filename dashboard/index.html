@@ -19,7 +19,7 @@
 
       <main>
         <nav class="noc-nav" aria-label="Operations navigation">
-          <a href="#edgeControl">Edge Control</a><a href="#networkHealth">Network Health</a>
+          <a href="#edgeControl">Edge Control</a><a href="#networkHealth">Network Health</a><a href="#securityCenter">Security Center</a>
         </nav>
         <section id="networkHealth" class="panel network-panel" aria-labelledby="networkHeading">
           <div class="panel-heading"><div><h2 id="networkHeading">Network Health</h2><p class="hint">Routing / IPv6 Overlay / Branch</p></div><span class="tag simulation-label">MOCK ADAPTER</span></div>
@@ -31,7 +31,14 @@
           </div>
           <p id="nocNetworkNotice" class="hint" role="status">正在读取 Network Agent。配置模拟状态，与真实 Edge 遥测独立。</p>
         </section>
-        <div id="edgeControl" class="section-caption"><h2>Edge Control</h2><span>Protocol v1.0 · 实际连接的 Edge</span></div>
+        <section id="securityCenter" class="panel network-panel">
+<div class="panel-heading"><div><p class="eyebrow">SECURITY OPERATION</p><h2>Security Center</h2></div><span class="tag simulation-label">SIMULATED</span></div>
+<div class="network-metrics"><div><span>Port Security</span><b id="nocSecurity" class="noc-status unknown">WAITING</b></div><div><span>Violations · cumulative</span><b id="nocViolations">0</b></div><div><span>ACL</span><b id="nocAcl">WAITING</b></div><div><span>Port</span><b id="nocPort">WAITING</b></div></div>
+<p id="nocSecurityEvent" role="status">No security event</p>
+<div class="noc-actions"><button id="securityAttack">Simulate Security Attack</button><button id="securityRestore">Restore Security</button></div>
+<p id="securityActionResult" role="status"></p>
+</section>
+<div id="edgeControl" class="section-caption"><h2>Edge Control</h2><span>Protocol v1.0 · 实际连接的 Edge</span></div>
         <section class="summary-grid">
           <article class="hero-card temperature-card">
             <div class="card-label">环境温度 · TEMP01</div>

@@ -28,6 +28,9 @@ class NetworkAgent:
         self.provider = provider or MockNetworkProvider()
         self.events: list[dict[str, Any]] = []
         self.sequence = 0
+        self.security_active = False
+        self.violations = 0
+        self.last_security_event = None
 
     def snapshot(self) -> dict[str, Any]:
         baseline = self.provider.get_state()
@@ -46,3 +49,31 @@ class NetworkAgent:
 
     def event_history(self) -> list[dict[str, Any]]:
         return deepcopy(self.events)
+
+    def record(self, category, event, detail):
+        self.sequence += 1
+        item = {"id": self.sequence, "timestamp": datetime.now(timezone.utc).isoformat(),
+                "type": category, "event": event, "detail": detail, "source": "SIMULATED"}
+        self.events.insert(0, item)
+        del self.events[100:]
+        return deepcopy(item)
+
+    def security_snapshot(self):
+        baseline = self.provider.get_state()["security"]
+        return {**baseline, "port_security": "VIOLATION" if self.security_active else "SECURE",
+                "port_status": "BLOCKED" if self.security_active else "FORWARDING",
+                "violations": self.violations, "active": self.security_active,
+                "last_event": deepcopy(self.last_security_event), "source": "SIMULATED"}
+
+    def security_attack(self, event):
+        self.security_active = True
+        self.violations += 1
+        detail = "Unauthorized MAC detected · Port blocked" if event == "PORT_SECURITY_VIOLATION" else "Unauthorized traffic detected · ACL blocked traffic"
+        item = self.record("SECURITY", event, detail)
+        self.last_security_event = item
+        return {**item, "security": self.security_snapshot()}
+
+    def restore_security(self):
+        self.security_active = False
+        self.record("SECURITY", "SECURITY_RESTORED", "Simulated port recovered; cumulative violation count retained")
+        return self.security_snapshot()
