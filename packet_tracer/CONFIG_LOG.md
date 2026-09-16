@@ -157,12 +157,12 @@ interface port-channel 1
 
 ---
 
-# Final Architecture v2 — 待实施配置区
+# Final Architecture v2 — 逐层实施区
 
-> **当前状态：DESIGN FROZEN / NOT YET CONFIGURED。**  
-> A 从 Gate 2 起逐层填充本节。不要在配置完成前把下面项目改成 PASS。
+> **Gate 2 已实施并验证通过；Gate 3 / Gate 4 仍待实施。**  
+> 本节按 Gate 逐层填充；**未实测内容不得写成 PASS**。
 
-## Gate 2：Branch LAN + IPv4 Underlay
+## Gate 2：Branch LAN + IPv4 Underlay — ✅ 已实施并验证通过
 
 计划接口 / 地址：
 
@@ -186,7 +186,102 @@ SW-BRANCH VLAN50 172.16.40.66/27
 BR-ADMIN-PC       172.16.40.70/27
 ```
 
-实施后在此追加真实命令、输出、问题与截图路径。
+实施记录（2026-09-15，**已实测**）：
+
+**基线**：本 Gate 在 A 维护的 canonical `packet_tracer/EdgeCampus.pkt` 上实施；起点为队长提供的 **87,390 字节**版本，其 HQ Gate 1 配置经本次回归验证**完整保留**，**未修改 HQ Core 任何既有配置**。
+
+### SW-BRANCH（2960-24TT）
+
+```text
+hostname SW-BRANCH
+vlan 40
+ name BR-OFFICE
+vlan 50
+ name BR-MGMT
+interface gigabitEthernet 0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 40,50
+interface fastEthernet 0/1
+ switchport mode access
+ switchport access vlan 40
+interface fastEthernet 0/2
+ switchport mode access
+ switchport access vlan 50
+interface vlan 50
+ ip address 172.16.40.66 255.255.255.224
+ no shutdown
+ip default-gateway 172.16.40.65
+```
+
+验证：VLAN40 `BR-OFFICE`（Fa0/1）、VLAN50 `BR-MGMT`（Fa0/2）均 active；`Gi0/1` trunk，allowed / active / forwarding 均为 `40,50`；`Vlan50 = 172.16.40.66` up/up。
+说明：2960 为**二层**设备，管理出口使用 `ip default-gateway`，**未启用** `ip routing`。
+
+### R-BRANCH（2911）
+
+```text
+hostname R-BRANCH
+interface gigabitEthernet 0/1
+ no shutdown
+interface gigabitEthernet 0/1.40
+ encapsulation dot1Q 40
+ ip address 172.16.40.1 255.255.255.192
+interface gigabitEthernet 0/1.50
+ encapsulation dot1Q 50
+ ip address 172.16.40.65 255.255.255.224
+interface gigabitEthernet 0/0
+ ip address 198.51.100.2 255.255.255.252
+ no shutdown
+ip dhcp excluded-address 172.16.40.1
+ip dhcp pool BR-OFFICE
+ network 172.16.40.0 255.255.255.192
+ default-router 172.16.40.1
+```
+
+验证：`G0/1.40 = 172.16.40.1`、`G0/1.50 = 172.16.40.65` 均 up/up；`show ip route` 出现 `C 172.16.40.0/26`、`C 172.16.40.64/27` 两条直连路由；`show ip dhcp binding` 出现 `172.16.40.2 / 00E0.B002.9A06 / Automatic`。
+
+### IPv4 Underlay（四段新增链路）
+
+```text
+SW-CORE
+interface gigabitEthernet 1/0/24
+ no switchport
+ ip address 10.255.0.1 255.255.255.252
+ no shutdown
+
+R-HQ      G0/0  10.255.0.2/30       G0/1  203.0.113.1/30
+R-ISP     G0/0  203.0.113.2/30      G0/1  198.51.100.1/30    G0/2  192.0.2.1/24
+R-BRANCH  G0/0  198.51.100.2/30
+INTERNET-SERVER（GUI） Fa0 192.0.2.10/24  Gateway 192.0.2.1
+```
+
+说明：3650 的 `Gi1/0/24` 通过 **`no switchport`** 转为**路由口**承载 HQ Transit，Packet Tracer 9.0.1 **实测通过**。
+
+### 新增终端地址
+
+| 设备 | IPv4 | 掩码 | 网关 | 方式 |
+|---|---|---|---|---|
+| BR-OFFICE-PC | 172.16.40.2（实测租约） | 255.255.255.192 | 172.16.40.1 | DHCP |
+| BR-ADMIN-PC | 172.16.40.70 | 255.255.255.224 | 172.16.40.65 | 静态 |
+| SW-BRANCH（VLAN50） | 172.16.40.66 | 255.255.255.224 | 172.16.40.65 | 静态 |
+
+### Gate 2 验证结果
+
+| 日期 | 测试 | 预期 | 实际 | 证据 |
+|---|---|---|---|---|
+| 2026-09-15 | Topology Check（7 条新增链路） | 与冻结表一致 | CDP 双向确认 4 条；主机链路 3 条 up/connected | `G2-A-01…01d` |
+| 2026-09-15 | Branch VLAN / Trunk | VLAN40/50 + trunk 40,50 | PASS | `G2-A-02-branch-vlan-trunk-pass.png` |
+| 2026-09-15 | Router-on-a-Stick | 两个子接口 up/up + 两条直连路由 | PASS | `G2-A-03-branch-roas-pass.png` |
+| 2026-09-15 | Branch DHCP / 管理地址 | 终端获址、管理地址可达 | BR-OFFICE-PC `172.16.40.2`；BR-ADMIN → `.65`/`.66` 通 | `G2-A-04-branch-dhcp-ping-pass.png` |
+| 2026-09-15 | IPv4 Underlay 地址 | 四个网段地址正确 | PASS（含 `no switchport` 实测） | `G2-A-05…05e` |
+| 2026-09-15 | 相邻三层可达 | 四段链路相邻 ping 通 | Server→ISP 4/4；三个 WAN 段各 4/5（首包 ARP） | `G2-A-06…06d` |
+| 2026-09-15 | HQ Gate 1 Regression | Core 无退化 | 五条 show 全部正常 + 三个行为测试符合预期 | `G2-A-07…07f` |
+
+### Gate 2 实施中的问题与说明
+
+1. **SW-ACCESS `show access-lists` 无输出**：属**正常现象**——ACL 仅配置在三层核心 `SW-CORE` 的 SVI 上，2960 为二层设备本就不承载 ACL。
+2. **ACL deny 命中计数与实际包数不完全对应**：本次回归中 deny 规则计数为 `2 match(es)`，而测试发送了 4 个 ICMP 请求。判定以**实际拦截效果**（100% 丢包 + `Destination host unreachable`）为准，**不虚报命中次数**。
+3. **相邻 ping 首包超时**：四段链路首次 ping 均出现 1 个包超时（成功率 80%），原因为 ARP 解析期，**非故障**。
+4. **本 Gate 不涉及路由协议**：OSPF / eBGP / NAT / IPv6 均留给 Gate 3 / Gate 4，当前只完成地址与相邻可达。
 
 ## Gate 3：OSPF / eBGP / NAT / DNS / HTTP
 

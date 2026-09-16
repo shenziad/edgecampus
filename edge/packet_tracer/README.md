@@ -139,23 +139,50 @@ Real FastAPI Backend
 
 不得在报告中写成“Telemetry 经过 Packet Tracer WAN”。正确表述是：真实 PT 传感器产生数据，SBC 通过 RealWSClient 带外送入真实 Backend；模拟 WAN 负责验证企业网络对 HQ/Branch/Internet 业务的承载。
 
-## 7. Gate 2 增量任务
+## 7. Gate 2 实测结果 — B Edge-side PASS
 
-当前目标：在**不重写 Gate 1 Local Loop**的基础上，把真实 PT 状态映射到 Protocol v1.0。
+正式实现：`sbc_gate2_controller.py`
 
-需要：
+在**不重写 Gate 1 Local Loop**的基础上，真实 PT 状态已成功映射到 Protocol v1.0：
 
-1. 继续读取真实 USB 温度并执行本地 AUTO。
-2. 使用已验证 RealWSClient 连接 `/ws/edge`。
-3. 发送合法 `telemetry`：`EDGE-SBC-01` / `TEMP01` / `temperature` / `C`。
-4. Fan 实际状态变化时发送 `status`，协议值仍为 `ON/OFF`，source 为 `EDGE-AUTO`。
-5. hello / heartbeat 按 `docs/PROTOCOL.md` 发送。
-6. WebSocket 不可用时不得阻塞本地控制。
-7. Gate 2 通过后，Dashboard 显示的温度必须能够追溯到真实 TEMP01，而不是 fake edge。
+| Gate 2 能力 | 状态 |
+|---|---|
+| RealWSClient | VERIFIED |
+| Protocol hello | VERIFIED |
+| Fixed telemetry | VERIFIED |
+| Real TEMP telemetry | VERIFIED |
+| FAN status | VERIFIED |
+| Heartbeat | VERIFIED |
+| Physical FAN ON | VERIFIED |
+
+最终程序执行顺序：
+
+```text
+USB real temperature
+→ Local AUTO + hysteresis
+→ physical FAN write
+→ Cloud connected check
+→ telemetry / status / heartbeat
+```
+
+因此 Local Loop 的执行优先级高于 Cloud 通信。WebSocket 不可用时，连接状态不会成为温度读取、本地决策或 FAN 执行的前置条件。
+
+证据索引与完整实验过程见 `docs/gate2/B_EDGE_REPORT.md`；截图位于 `evidence/gate2/`。
 
 Policy / Command 的真实 PT 应用属于 Gate 3，不要在 Gate 2 为了“多做一点”破坏 Local Loop。
 
-## 8. 调试经验
+## 8. Gate 2 RealWSClient callback 限制
+
+Packet Tracer 9.0.1 实测中，若在 `onConnectionChange` callback 内调用 `delay()`，会出现：
+
+```text
+SuspensionError:
+Cannot call a function that blocks or suspends here
+```
+
+因此 callback 只记录连接状态。hello、telemetry、status、heartbeat 以及所有 `delay()` 均在主循环中执行。
+
+## 9. 调试经验
 
 ### 温度初始接近 -0.5 C
 

@@ -1,159 +1,183 @@
 # 验证记录 — Final Architecture v2
 
-## 1. 软件基线已通过的历史验证
+## 1. 软件基线历史验证
 
-仓库初始化与 fake 链路阶段已验证：
+初始化 / fake 阶段已验证：
 
 - Python 全量语法编译；
-- Protocol v1.0 错误字段 / 版本 / 范围校验单元测试；
+- Protocol v1.0 字段 / 版本 / 范围校验；
 - Edge 迟滞控制、MANUAL 保持、Policy 更新；
-- Backend 状态与 State Sync；
+- Backend 状态 / State Sync；
 - 公共契约漂移检查；
-- Dashboard JavaScript 语法检查；
-- Backend + Fake Edge + Dashboard WebSocket 真实进程联调；
-- Dashboard 下发 Policy / Command，Fake Edge 返回 ACK；
-- 停止 Cloud 后 Fake Edge 持续本地控制；
-- Cloud 恢复后 fake Edge 重连并发送 `state_sync`。
+- Backend + Fake Edge + Dashboard WebSocket 联调；
+- Dashboard Policy / Command → Fake Edge → ACK；
+- fake Cloud 停止后本地控制继续；
+- fake Cloud 恢复后重连 + `state_sync`。
 
-这些结果说明软件基线存在，但不替代后续真实 Packet Tracer Gate 验收。
+这些是开发基线，不替代真实 PT Gate 验收。
 
-## 2. Gate 0 已实机验证
+## 2. Gate 0 — COMPLETE
 
-- Packet Tracer 设备型号 / HQ 端口映射确认；
-- `EDGE-SBC-01` FastEthernet 模块确认；
-- External Network Access / RealWSClient → `ws://127.0.0.1:8000/ws/edge` 成功；
-- SBC 显示 CONNECTED；
-- FastAPI 日志出现 Edge connected；
-- `/api/state` 出现 `edge_online=true` / connected 状态；
-- 保存、关闭、重新打开 `.pkt` 后再次连接成功。
+已实机验证：
 
-结论：G0 COMPLETE。
+- Packet Tracer 设备型号 / HQ 端口；
+- `EDGE-SBC-01` FastEthernet 模块；
+- External Network Access / RealWSClient → `ws://127.0.0.1:8000/ws/edge`；
+- FastAPI 接受 Edge connection；
+- `/api/state` connected；
+- 保存关闭再打开 `.pkt` 后可再次连接。
 
-## 3. Gate 1 已验证
+## 3. Gate 1
 
 ### A Network — PASS
 
-已归档 / 实测：
-
-- VLAN10/20/30；
-- Access 端口；
-- LACP EtherChannel / Po1；
-- Trunk；
-- HQ SVI / `ip routing`；
-- OFFICE DHCP；
-- VLAN10 / VLAN20 inbound ACL；
-- OFFICE→ADMIN 允许；
-- OFFICE→IOT 拒绝；
-- MANAGEMENT→EDGE 允许。
+VLAN10/20/30、Access、LACP EtherChannel、Trunk、SVI/IP routing、OFFICE DHCP、HQ ACL 与关键行为矩阵均通过。
 
 ### B Edge — PASS
 
-真实 Packet Tracer Local Loop 已验证：
+真实 PT Local Loop：
 
 ```text
-TEMP01 A0 → IO-MCU-01 A0
-IO-MCU-01 USB0 → EDGE-SBC-01 USB0
-EDGE-SBC-01 D0 → FAN01 D0
+TEMP01 A0 → IO-MCU-01 A0 → USB0 → EDGE-SBC-01 → D0 → FAN01
 ```
 
-迟滞序列：
-
-```text
-30.2 C → TURN_ON  → FAN ON
-29.4 C → HOLD     → FAN ON
-28.6 C → TURN_OFF → FAN OFF
-```
-
-Backend 端口不可达时，本地循环继续运行。
+迟滞和 Backend-off local autonomy 已验证。
 
 ### A+B Integration — PASS
 
-合入 canonical 网络基线后重新验证：
-
-- Po1 / Trunk / VLAN 正常；
-- SVI / route / ACL 正常；
-- HQ 关键通信矩阵无退化；
-- Edge Local Loop / hysteresis / backend-off autonomy 无退化。
-
-证据：`docs/gate1/AB_INTEGRATION_REPORT.md` 及对应 network / edge evidence。
+canonical 基线合入后网络与 Edge regression 无退化。
 
 ### D Dashboard — PASS
 
-已归档：
+Gate1 NORMAL / WARNING / OFFLINE / RECONNECT evidence 已归档；Dashboard contract tests 5/5 PASS。
+
+### C Control Plane — CORE PASS / STABILITY PENDING
+
+已提交：
+
+- unit tests；
+- `/ws/edge` fake edge connection；
+- `/healthz`；
+- `/api/state` telemetry / temperature；
+- AUTO FAN events。
+
+仍欠：
+
+- malformed / wrong-version / unsupported message 拒绝且服务不崩；
+- Edge 停止后 offline；
+- reconnect + `state_sync`。
+
+管理状态：**CLOSED-WITH-PENDING-STABILITY**。三项欠账 Gate5 前必须清零。
+
+## 4. Gate 2 — COMPLETE
+
+### A Network Foundation — PASS
+
+已验证：
+
+- 新增 7 条冻结链路与接口映射；
+- Branch VLAN40 / VLAN50；
+- SW-BRANCH trunk / access / management SVI；
+- R-BRANCH Router-on-a-Stick；
+- BR-OFFICE DHCP、BR-ADMIN 管理地址；
+- HQ Transit、HQ↔ISP、ISP↔Branch、Internet LAN IPv4 Underlay；
+- 四段相邻三层连通；
+- HQ Gate1 EtherChannel / trunk / VLAN / SVI / ACL / 行为 regression 无退化。
+
+证据：`docs/gate2/A_NETWORK_REPORT.md` 与 `evidence/network/G2-A-*`。
+
+### B Edge Real Telemetry — PASS
+
+已验证：
+
+- RealWSClient connected；
+- Protocol v1 hello；
+- 固定 telemetry；
+- 真实 TEMP01 telemetry；
+- Local AUTO + Telemetry + FAN Status + Heartbeat 同时运行；
+- 高温真实 FAN01 PT state=2，协议状态为 `ON`；
+- Cloud 通信不作为 Local Loop 前置条件。
+
+证据：`docs/gate2/B_EDGE_REPORT.md`、`edge/packet_tracer/evidence/gate2/`。
+
+### C Control Plane Real Telemetry — PASS
+
+真实 PT 环境升温后观察到：
 
 ```text
-G1-D-01-dashboard-normal-pass.png
-G1-D-02-dashboard-warning-pass.png
-G1-D-03-edge-offline-pass.png
-G1-D-04-reconnect-state-sync-pass.png
+TEMP01 ≈ 32 C
+→ SBC TX TELEMETRY ≈31.8 C
+→ FastAPI /api/state SENSOR event ≈31.8 C
+→ FAN ON
 ```
 
-以及 `docs/gate1/D_DASHBOARD_REPORT.md`。
+未修改 Backend 业务代码和 Protocol v1。
 
-### C Control Plane — OWNER EVIDENCE PENDING
+证据：`evidence/backend/G2-C-*`、`evidence/backend/GATE2_C_REPORT.md`。
 
-C 的专属 Gate 1 报告和人工证据尚未正式提交。为避免阻塞项目：
+### D Dashboard Real PT — PASS
 
-- 已建立 `docs/gate1/C_BACKEND_REPORT.md` placeholder；
-- 已建立 `evidence/backend/gate1/README.md` 证据槽位；
-- Gate 2 允许继续；
-- **不得把 placeholder 当作 PASS**；
-- Gate 5 Freeze 前必须补齐 fake-edge/API-state/invalid-message/offline/reconnect 验收。
-
-Gate 1 管理状态：`CLOSED-WITH-PLACEHOLDER`。
-
-## 4. Final Architecture v2 已冻结但尚未验证的新增项
-
-截至 v2 Re-baseline，下面是**设计已冻结 / 实际配置待 A 实施**：
-
-- SW-CORE Gi1/0/24 ↔ R-HQ；
-- R-HQ ↔ R-ISP ↔ R-BRANCH；
-- INTERNET-SERVER；
-- SW-BRANCH / VLAN40 / VLAN50；
-- Router-on-a-Stick；
-- Branch IPv4 DHCP / 管理地址；
-- HQ OSPF；
-- WAN eBGP；
-- Branch→HQ business flow；
-- HQ PAT；
-- DNS / HTTP；
-- TCP/80 static mapping；
-- SLAAC / DHCPv6 / Static IPv6；
-- IPv6-over-IPv4 Tunnel；
-- IPv6 static routes；
-- HQ central management of Branch；
-- Port Security / sticky MAC final acceptance。
-
-这些内容目前必须标记为 `PLANNED / NOT YET VALIDATED`，直到 A 在 Packet Tracer 9.0.1 中完成真实配置和证据。
-
-## 5. Gate 2 尚需验证
-
-### B/C/D
+真实 PT 两组浏览器证据：
 
 ```text
-真实 TEMP01
-→ MCU
-→ SBC
-→ RealWSClient
-→ FastAPI
+≈27.9 C → NORMAL  → FAN OFF
+≈34.1 C → WARNING → FAN ON
+```
+
+Edge ONLINE、AUTO、CONNECTED、Policy v1、SENSOR events 正常；提交时 repository tests 14/14 PASS，Dashboard contract tests 5/5 PASS。
+
+证据：`docs/gate2/D_DASHBOARD_REPORT.md`、`evidence/dashboard/gate2/`。
+
+### B+C+D End-to-End — PASS
+
+```text
+TEMP01
+→ IO-MCU-01
+→ EDGE-SBC-01
+→ External Network Access / RealWSClient
+→ Real FastAPI
 → Dashboard
 ```
 
-必须证明 Dashboard 值来自真实 PT，而不是 fake edge。
+这是带外 Edge–Cloud 控制通道，不经过 PT WAN。
 
-### A
+### Gate 2 canonical package
 
-- Branch VLAN40/50 + ROAS；
-- Branch DHCP / 管理地址；
-- HQ Transit / HQ-ISP / ISP-Branch / Internet LAN 相邻 IPv4 可达；
-- HQ Gate 1 regression 无退化。
+2026-09-16 项目 Owner 提供 A+B Gate2 整合 `.pkt`，作为 Gate2 canonical 基线归档到 `packet_tracer/EdgeCampus.pkt`。该包在仓库层作为后续 G3/G4 的 canonical 起点；PT 内部功能结论仍以 A/B 各自实测报告和证据为依据。
 
-## 6. 真实性声明
+Gate2 集成记录：`docs/gate2/INTEGRATION_REPORT.md`。
 
-项目当前只承诺已验证事实。
+## 5. Gate 3 — IN PROGRESS
 
-特别是：
+待验证网络项：
 
-> Packet Tracer 的 VLAN / OSPF / BGP / NAT / Tunnel 是模拟数据平面。真实 FastAPI WebSocket 使用 External Network Access / RealWSClient 带外连接，不经过 Packet Tracer WAN。
+- HQ OSPF Area0；
+- WAN eBGP AS65001/65000/65002；
+- BR-OFFICE → HQ-SERVICE；
+- HQ OFFICE PAT → Internet；
+- DNS / HTTP；
+- Static TCP/80 mapping；
+- WAN / Branch business ACL；
+- 每层后的 HQ/Branch regression。
 
-任何最终报告、演示稿、AI 输出都必须遵守该边界。
+待验证软件 / IoT 项：
+
+- RealWSClient 服务端下行消息；
+- Dashboard Policy → Backend → real Edge → `policy_ack`；
+- threshold 30→33 / version 1→2；
+- 32 C FAN OFF / 34 C FAN ON；
+- Dashboard Command → real FAN → `command_ack`。
+
+## 6. Gate 4 尚未验证
+
+- SLAAC / DHCPv6 / Static IPv6；
+- IPv6-over-IPv4 Tunnel + static IPv6 routes；
+- HQ central administration of Branch；
+- Port Security / sticky MAC；
+- real Cloud-off → local autonomy → reconnect → state_sync 完整恢复。
+
+## 7. 真实性声明
+
+Packet Tracer 的 VLAN / ACL / OSPF / BGP / NAT / Tunnel 是模拟企业数据平面。真实 FastAPI WebSocket 通过 Packet Tracer External Network Access / RealWSClient 带外连接，不经过 Packet Tracer WAN。
+
+任何最终报告、演示稿或 AI 输出都必须维持该边界，只把已有 evidence 支持的能力写成已验证。
