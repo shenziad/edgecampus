@@ -52,14 +52,15 @@
         </section>
 
         <section id="networkHealth" class="panel network-panel" aria-labelledby="networkHeading">
-          <div class="panel-heading"><div><h2 id="networkHeading">网络健康</h2><p class="hint">路由 / IPv6 隧道 / 分部连接</p></div><span id="networkSourceBadge" class="tag simulation-label">模拟适配器</span></div>
-          <div class="network-metrics">
-            <div><span>OSPF · 区域 0</span><b id="nocOspf" class="noc-status unknown">等待数据</b></div>
-            <div><span>BGP · AS65001 / 65000</span><b id="nocBgp" class="noc-status unknown">等待数据</b></div>
-            <div><span>IPv6 · Tunnel0</span><b id="nocTunnel" class="noc-status unknown">等待数据</b></div>
-            <div><span>分部连接状态</span><b id="nocBranch" class="noc-status unknown">等待数据</b></div>
+          <div class="panel-heading"><div><h2 id="networkHeading">网络健康</h2><p class="hint">真实 NC 设备健康 · 管理状态</p></div><span id="networkSourceBadge" class="tag">PT 控制器 · 实际数据</span></div>
+          <div id="networkDeviceCards" class="network-device-cards"></div>
+          <p id="nocNetworkNotice" class="hint" role="status">正在读取真实 NC 设备清单。</p>
+          <div class="network-metrics protocol-collection">
+            <div><span>OSPF</span><b id="nocOspf" class="noc-status unknown">NOT COLLECTED</b></div>
+            <div><span>BGP</span><b id="nocBgp" class="noc-status unknown">NOT COLLECTED</b></div>
+            <div><span>IPv6 · Tunnel0</span><b id="nocTunnel" class="noc-status unknown">NOT COLLECTED</b></div>
           </div>
-          <p id="nocNetworkNotice" class="hint" role="status">正在读取 Network Agent。配置模拟状态，与真实 Edge 遥测独立。</p>
+          <p class="hint">路由协议与隧道状态未采集；设备 Managed 映射为 ONLINE，仅表示控制器管理状态。</p>
         </section>
         <section id="controllerCenter" class="panel network-panel">
 <div class="panel-heading"><div><p class="eyebrow">Packet Tracer 实际数据</p><h2>网络控制器</h2></div><b id="controllerStatus" class="noc-status unknown">等待数据</b></div>

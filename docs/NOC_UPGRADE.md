@@ -91,3 +91,7 @@ PT 既有 Gate4 程序使用 `ws://127.0.0.1:8000/ws/edge`，必须与 Backend �
 
 ## PT Controller 只读接入增量
 已实现真实控制器认证、设备清单/拓扑采集与 Dashboard 展示；使用 scripts/start_pt_backend.ps1 输入控制器账户并启动。配置与边界见 [PT_CONTROLLER_SETUP.md](PT_CONTROLLER_SETUP.md)。尚需用户配置 NC-HQ 后进行实际 PT 联调，不能将本机 HTTP fixture 测试认定为 PT 验收通过。
+
+
+## Network Health 当前行为
+按用户确认的实际 NC API 字段显示真实设备健康卡片，collectionStatus=Managed 映射 ONLINE。OSPF/BGP/Tunnel 为 NOT COLLECTED。Network Health 不再显示模拟数据或 UNKNOWN；无真实采集结果时清空卡片。此更新替代前述历史 Mock Network 演示，模拟网络按钮禁用且接口返回 409；安全与分部模拟模块保持独立。

@@ -66,15 +66,11 @@ async def campus_policy():
 
 @router.post("/simulation/network")
 async def network_failure():
-    if agent.controller is not None:
-        raise HTTPException(409, "真实控制器模式不允许用模拟故障覆盖观测结果")
-    return agent.set_network_failure(True)
+    raise HTTPException(409, "Network Health 仅显示真实 NC 数据，不支持模拟网络状态")
 
 @router.post("/simulation/network/restore")
 async def network_restore():
-    if agent.controller is not None:
-        raise HTTPException(409, "真实控制器模式没有模拟网络故障需要恢复")
-    return agent.set_network_failure(False)
+    raise HTTPException(409, "Network Health 仅显示真实 NC 数据，没有模拟状态需要恢复")
 
 @router.get("/simulation/state")
 async def simulation_state():

@@ -156,3 +156,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .controller-table th {color:var(--muted);font-size:12px;}
 #controllerTopology {white-space:pre-wrap;overflow-wrap:anywhere;max-height:320px;overflow:auto;}
 #controllerCenter summary {cursor:pointer;padding:12px 0;color:var(--cyan);}
+
+.network-device-cards {display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:16px 0;}
+.network-device-card {padding:18px;border:1px solid var(--line);background:var(--panel-2);border-radius:12px;overflow-wrap:anywhere;}
+.network-device-card h3 {margin:0 0 10px;}
+.network-device-card p {margin:6px 0;color:var(--muted);}
+.protocol-collection {grid-template-columns:repeat(3,minmax(0,1fr));margin-top:20px;}
+@media(max-width:620px){.protocol-collection {grid-template-columns:1fr;} .network-device-cards {grid-template-columns:1fr;}}

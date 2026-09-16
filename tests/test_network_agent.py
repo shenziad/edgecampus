@@ -3,27 +3,25 @@ from backend.app.network_agent import MockNetworkProvider, NetworkAgent
 
 
 class NetworkAgentTests(unittest.TestCase):
-    def test_baseline_is_healthy_and_explicitly_simulated(self):
+    def test_no_controller_never_returns_mock_health(self):
         state = NetworkAgent().snapshot()
-        self.assertEqual((state["ospf"], state["bgp"], state["ipv6_tunnel"], state["branch_status"]),
-                         ("FULL", "ESTABLISHED", "UP", "ONLINE"))
-        self.assertEqual(state["source"]["kind"], "SIMULATED")
-        self.assertEqual(state["routing"]["bgp"]["neighbor"], "203.0.113.2")
+        self.assertEqual((state["ospf"], state["bgp"], state["ipv6_tunnel"]), ("NOT COLLECTED",) * 3)
+        self.assertFalse(state["controller"]["configured"])
+        self.assertEqual(state["controller"]["devices"], [])
+        self.assertEqual(state["source"]["kind"], "PT_CONTROLLER")
+        self.assertNotIn("neighbor", state["routing"]["bgp"])
 
-    def test_adapter_and_snapshot_do_not_share_mutable_state(self):
+    def test_mock_adapter_snapshot_is_copy_isolated(self):
         provider = MockNetworkProvider()
-        agent = NetworkAgent(provider)
-        state = agent.snapshot()
+        state = provider.get_state()
         state["routing"]["ospf"]["status"] = "DOWN"
-        self.assertEqual(agent.snapshot()["ospf"], "FULL")
+        self.assertEqual(provider.get_state()["routing"]["ospf"]["status"], "FULL")
 
-    def test_provider_is_replaceable(self):
-        class DownProvider:
+    def test_network_health_does_not_read_mock_provider(self):
+        class UnreadableProvider:
             def get_state(self):
-                state = MockNetworkProvider().get_state()
-                state["routing"]["bgp"]["status"] = "DOWN"
-                return state
-        self.assertEqual(NetworkAgent(DownProvider()).snapshot()["network"], "degraded")
+                raise AssertionError("Network Health must not use mock configuration")
+        self.assertEqual(NetworkAgent(UnreadableProvider()).snapshot()["bgp"], "NOT COLLECTED")
 
 class SecurityTests(unittest.TestCase):
     def test_attack_restore_preserves_audit(self):

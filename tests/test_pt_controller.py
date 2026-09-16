@@ -9,7 +9,7 @@ from backend.app.network_agent import NetworkAgent
 class ControllerTests(unittest.TestCase):
     def setUp(self):
         self.calls = []
-        self.inventory = [{"id": "r1", "hostname": "R-HQ", "managementIpAddress": "192.168.30.1", "reachabilityStatus": "Reachable", "password": "never-export"}]
+        self.inventory = [{"id": "r1", "hostname": "R-HQ", "managementIpAddress": "192.168.30.1", "reachabilityStatus": "Reachable", "collectionStatus": "Managed", "password": "never-export"}]
         self.inventory_code = 200
         self.topology_code = 200
         self.reject_once = False
@@ -52,6 +52,7 @@ class ControllerTests(unittest.TestCase):
         result = self.client.snapshot()
         self.assertEqual(result["status"], "CONNECTED")
         self.assertEqual(result["devices"][0]["hostname"], "R-HQ")
+        self.assertEqual(result["devices"][0]["collectionStatus"], "Managed")
         self.assertEqual(result["topology"]["nodes"][0]["id"], "r1")
         self.assertNotIn("never-export", json.dumps(result))
         self.assertEqual(self.calls, [("POST", "/api/v1/ticket"), ("GET", "/api/v1/network-device"), ("GET", "/api/v1/topology/physical-topology")])
@@ -71,8 +72,8 @@ class ControllerTests(unittest.TestCase):
         self.assertIsNone(result["observed_at"])
         state = NetworkAgent(controller=self.client).snapshot()
         self.assertEqual(state["source"]["kind"], "PT_CONTROLLER")
-        self.assertEqual(state["bgp"], "UNKNOWN")
-        self.assertEqual(state["network"], "unknown")
+        self.assertEqual(state["bgp"], "NOT COLLECTED")
+        self.assertEqual(state["network"], "controller_inventory")
 
     def test_topology_failure_does_not_hide_valid_inventory(self):
         self.topology_code = 501

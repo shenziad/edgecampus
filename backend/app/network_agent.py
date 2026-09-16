@@ -35,27 +35,18 @@ class NetworkAgent:
         self.last_security_event = None
 
     def snapshot(self) -> dict[str, Any]:
-        baseline = self.provider.get_state()
-        controller = self.controller.snapshot() if self.controller is not None else None
-        if controller is not None:
-            baseline["routing"] = {name: {"status": "UNKNOWN", "reason": "NOT_OBSERVED"} for name in ("ospf", "bgp")}
-            baseline["ipv6"] = {"tunnel": {"name": "Tunnel0", "status": "UNKNOWN", "reason": "NOT_OBSERVED"}}
-            baseline["branch"] = {"status": "UNKNOWN", "reason": "NOT_OBSERVED"}
-        if self.network_failed and controller is None:
-            baseline["routing"]["bgp"]["status"] = "DOWN"
-            baseline["ipv6"]["tunnel"]["status"] = "DOWN"
-            baseline["branch"]["status"] = "OFFLINE"
-        ospf = baseline["routing"]["ospf"]["status"]
-        bgp = baseline["routing"]["bgp"]["status"]
-        tunnel = baseline["ipv6"]["tunnel"]["status"]
-        branch = baseline["branch"]["status"]
+        controller = self.controller.snapshot() if self.controller is not None else {
+            "configured": False, "source": "PT_CONTROLLER", "status": "NOT_CONFIGURED",
+            "devices": [], "topology": None, "observed_at": None,
+        }
         return {
-            "type": "network_state",
-            "network": "unknown" if controller is not None else "healthy" if (ospf, bgp, tunnel, branch) == ("FULL", "ESTABLISHED", "UP", "ONLINE") else "degraded",
-            "ospf": ospf, "bgp": bgp, "ipv6_tunnel": tunnel, "branch_status": branch,
-            "routing": baseline["routing"], "ipv6": baseline["ipv6"],
-            "branch": baseline["branch"],
-            "source": {"kind": "PT_CONTROLLER", "provider": "pt-controller", "detail": "Live inventory/topology only; routing protocol state not exposed"} if controller is not None else {"kind": "SIMULATED", "provider": "mock", "detail": "Configuration-backed adapter; not live PT telemetry"},
+            "type": "network_state", "network": "controller_inventory",
+            "ospf": "NOT COLLECTED", "bgp": "NOT COLLECTED", "ipv6_tunnel": "NOT COLLECTED",
+            "branch_status": "NOT COLLECTED",
+            "routing": {name: {"status": "NOT COLLECTED"} for name in ("ospf", "bgp")},
+            "ipv6": {"tunnel": {"name": "Tunnel0", "status": "NOT COLLECTED"}},
+            "branch": {"status": "NOT COLLECTED"},
+            "source": {"kind": "PT_CONTROLLER", "provider": "pt-controller", "detail": "Real NC inventory only; protocol state not collected"},
             "controller": controller,
         }
 

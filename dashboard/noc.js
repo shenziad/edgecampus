@@ -5,26 +5,23 @@
   function status(id, value, healthy) {
     const node = el(id);
     node.textContent = value;
-    node.className = `noc-status ${healthy ? "good" : ["UNAVAILABLE", "UNKNOWN", "NOT_CONFIGURED"].includes(value) ? "unknown" : "bad"}`;
+    node.className = `noc-status ${healthy ? "good" : ["UNAVAILABLE", "UNKNOWN", "NOT_CONFIGURED", "NOT COLLECTED"].includes(value) ? "unknown" : "bad"}`;
   }
   function renderNetwork(state) {
-    status("nocOspf", state.ospf, state.ospf === "FULL");
-    status("nocBgp", state.bgp, state.bgp === "ESTABLISHED");
-    status("nocTunnel", state.ipv6_tunnel, state.ipv6_tunnel === "UP");
-    status("nocBranch", state.branch_status, state.branch_status === "ONLINE");
-    const live = state.source && state.source.kind === "PT_CONTROLLER";
-    el("networkSourceBadge").textContent = live ? "PT 控制器 · 实际读取" : "模拟适配器";
-    el("nocNetworkNotice").textContent = live ? "已选择真实控制器模式；设备清单与拓扑见下方。OSPF/BGP/Tunnel/分部业务连接尚无直接观测，显示 UNKNOWN。" : "模拟适配器 · 配置模拟状态；不代表实时读取 PT 路由器。";
-    el("networkFailure").disabled = live;
-    el("networkRestore").disabled = live;
-    renderController(state.controller);
+    ["nocOspf", "nocBgp", "nocTunnel"].forEach(id => status(id, "NOT COLLECTED", false));
+    el("networkSourceBadge").textContent = "PT 控制器 · 实际数据";
+    el("networkFailure").disabled = true;
+    el("networkRestore").disabled = true;
+    renderController(state.source && state.source.kind === "PT_CONTROLLER" ? state.controller : null);
   }
   function renderController(controller) {
     const target = el("controllerDevices");
     target.textContent = "";
-    if (!controller || !controller.configured) {
+    el("networkDeviceCards").textContent = "";
+    if (!controller || !controller.configured || controller.source !== "PT_CONTROLLER") {
       status("controllerStatus", "NOT_CONFIGURED", false);
-      el("controllerNotice").textContent = "尚未接入控制器。配置 PT_CONTROLLER_URL、用户名和密码后重启 Backend；目前网络状态为模拟数据。";
+      el("controllerNotice").textContent = "尚未接入控制器。配置 PT_CONTROLLER_URL、用户名和密码后重启 Backend；网络健康仅接收真实 NC 数据，不显示模拟状态。";
+      el("nocNetworkNotice").textContent = "尚未配置真实 NC；没有设备健康数据。";
       el("controllerTime").textContent = "";
       el("controllerTopology").textContent = "暂无控制器数据";
       return;
@@ -33,9 +30,22 @@
     const errors = {MISSING_CREDENTIALS:"未设置控制器用户名或密码",AUTH_FAILED:"控制器认证失败，请检查账户",CONNECTION_FAILED:"无法连接控制器，请检查 Real World Access 和端口",INVALID_INVENTORY_RESPONSE:"设备清单响应格式不兼容",INVALID_AUTH_RESPONSE:"登录响应中没有有效票据",INVALID_JSON:"控制器返回了无效 JSON"};
     el("controllerNotice").textContent = controller.error ? `${errors[controller.error] || controller.error}；未使用模拟数据替代。` : `实际读取 ${controller.devices.length} 台设备 · ${controller.url}${controller.devices.length ? "" : " · 清单为空，请先执行设备发现"}${controller.topology_error ? " · 拓扑暂不可用" : ""}`;
     el("controllerTime").textContent = `采集时间：${controller.observed_at || "未成功采集"} · 后端最多每 5 秒查询一次`;
-    controller.devices.forEach(device => {
+    el("nocNetworkNotice").textContent = el("controllerNotice").textContent;
+    const devices = controller.status === "CONNECTED" && controller.source === "PT_CONTROLLER" ? controller.devices : [];
+    devices.forEach(device => {
+      const name = device.hostname || device.name || device.id || "未命名";
+      const ip = device.managementIpAddress || device.ipAddress || "未提供";
+      const collection = device.collectionStatus || "NOT COLLECTED";
+      const online = collection === "Managed";
+      const card = document.createElement("article"); card.className = "network-device-card";
+      [["h3", name], ["p", `管理 IP：${ip}`], ["p", `控制器状态：${collection}`], ["b", online ? "ONLINE" : collection]].forEach(([tag, value]) => {
+        const node = document.createElement(tag); node.textContent = String(value);
+        if (tag === "b") node.className = `noc-status ${online ? "good" : "unknown"}`;
+        card.appendChild(node);
+      });
+      el("networkDeviceCards").appendChild(card);
       const row = document.createElement("tr");
-      [device.hostname || device.name || device.id || "未命名", device.managementIpAddress || device.ipAddress || "未提供", device.type || device.deviceType || device.family || "未提供", device.reachabilityStatus || device.collectionStatus || "UNKNOWN（接口未提供）"].forEach(value => {
+      [device.hostname || device.name || device.id || "未命名", device.managementIpAddress || device.ipAddress || "未提供", device.type || device.deviceType || device.family || "未提供", online ? "ONLINE · Managed" : collection].forEach(value => {
         const cell = document.createElement("td"); cell.textContent = String(value); row.appendChild(cell);
       });
       target.appendChild(row);
@@ -114,7 +124,8 @@
       renderSecurity(data.security);
       renderCenters(data);
     } catch (error) {
-      ["nocOspf", "nocBgp", "nocTunnel", "nocBranch"].forEach(id => status(id, "UNAVAILABLE", false));
+      ["nocOspf", "nocBgp", "nocTunnel"].forEach(id => status(id, "NOT COLLECTED", false));
+      el("networkDeviceCards").textContent = "";
       ["nocSecurity", "nocViolations", "nocAcl", "nocPort", "routerStatus", "switchStatus", "campusVersion", "campusThermal", "campusNetwork", "campusSecurity", "simCloud", "simMode", "simFan", "simSync"].forEach(id => { el(id).textContent = "UNAVAILABLE"; });
       status("controllerStatus", "UNAVAILABLE", false);
       el("controllerNotice").textContent = "Backend 不可用，无法确认控制器最新状态";

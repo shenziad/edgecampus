@@ -63,9 +63,9 @@ Invoke-RestMethod http://127.0.0.1:8000/api/network/state | ConvertTo-Json -Dept
 ## 4. 数据真实性与范围
 
 - GET /api/controller/state 单独返回控制器状态；GET /api/network/state 和 /api/noc/state 包含同一次缓存采集结果。
-- PT_CONTROLLER_URL 设置后采用 PT_CONTROLLER 来源，真实失败不回退 Mock；未设置时原模拟演示仍可使用，并明确标注。
-- OSPF/BGP/Tunnel/分部业务状态仍为 UNKNOWN：本版 inventory/topology 不直接提供这些协议的验收结果。不把管理可达等同于协议建立，不把已发现等同于当前在线。
-- 真实模式下 Network Failure / Restore Network 按钮禁用，接口返回 409，不混入模拟路由状态。
+- Network Health 仅采用 PT_CONTROLLER 来源；真实失败不回退 Mock，未配置控制器时没有设备健康数据。
+- OSPF/BGP/Tunnel/分部业务状态为 NOT COLLECTED：本版 inventory/topology 不直接提供这些协议的验收结果。不把管理可达等同于协议建立，不把已发现等同于当前在线。
+- Network Failure / Restore Network 按钮禁用，接口返回 409，不混入模拟路由状态。
 - Security Center、分部 VTY 检查、Campus Network/Security 策略仍为模拟/配置展示，保留其来源标签，与真实控制器区分开。SBC/FAN 仍使用既有真实 Edge 通道。
 - 控制器端口 58000 与 Backend/SBC 端口 8000 不同。真实主机地址为 localhost:58000，不能用 PT 内部 192.168.30.30 地址替代。
 - 只向本机 HTTP 控制器地址发送登录信息；不跟随重定向，不使用系统代理，页面与 API 不返回密码或认证票据。
@@ -80,3 +80,12 @@ Invoke-RestMethod http://127.0.0.1:8000/api/network/state | ConvertTo-Json -Dept
 
 ## 本地验证
 46 项 Python 测试、3 项 Node 前端验证及 Protocol contract 检查通过；PowerShell 启动脚本通过语法解析。Controller fixture 覆盖实际 HTTP 认证/读取、401 重登录、500 后清空旧数据、501 拓扑降级、空清单、响应格式错误、缓存隔离和凭据不外泄。前端验证覆盖实际来源标签、UNKNOWN 状态、设备文本渲染、认证失败和模拟网络按钮禁用。尚未宣称 NC-HQ 实机联调通过。
+
+
+## 设备健康展示更新
+
+Network Health 展示 NC 实际设备清单中的 hostname/name、managementIpAddress/ipAddress 与 collectionStatus。只有 collectionStatus 严格等于 Managed 时映射 ONLINE（绿色）；其他值保留控制器原值，字段缺失显示 NOT COLLECTED，不通过 reachabilityStatus 推断 Managed。此 ONLINE 是控制器管理状态，不证明所有业务流或路由协议已正常。
+
+OSPF/BGP/Tunnel 均显示 NOT COLLECTED，移除原 UNKNOWN 与模拟分部连接展示。设备卡片和表格都只接受 PT_CONTROLLER 来源且 CONNECTED 的采集结果；读取失败、未配置、Backend 失联时清空设备，不能保留旧 ONLINE 卡片或模拟替代。
+
+本次验证：46 项 Python、3 项 Node 与协议检查通过。只读检查当前 8000 /api/controller/state 时返回 UNAVAILABLE，因此没有将该时刻记为真实卡片在线验收；用户已确认此前 NC API 能返回设备及 collectionStatus。恢复控制器连接后可继续现场检查 Managed → ONLINE。
