@@ -35,7 +35,8 @@
 | Port Security / sticky MAC | A | NOT STARTED G4 | HQ OFFICE access | G4 |
 | Cloud-off local autonomy | B | PASS LOCALLY / FINAL PENDING | G1/G2 local loop architecture | G4 full outage |
 | Cloud reconnect + State Sync | B+C+D | PASS FAKE / REAL PENDING | fake baseline | G4 real PT |
-| Canonical `.pkt` | A | **G2 INTEGRATED BASELINE** | owner-provided A+B Gate2 package archived | G3 网络叠加 |
+| Repo canonical `.pkt` | A | **G2 A NETWORK BASELINE** | 与 A Gate2 report/evidence 可追溯 | A+B 整合包待本地正常 push |
+| Owner-provided A+B G2 `.pkt` | A+B | **PACKAGE VERIFIED LOCALLY** | SHA-256 `8a299abad7ec701bcc17505cc1dd9f578eb9f11dbe0af448c4bc0d2077ebdae6` | 由 A 本地替换 canonical 后 push |
 
 ## Gate 状态
 
@@ -115,7 +116,7 @@ Business ACL + Regression
 | 2026-09-15 | B | G2 | RealWSClient + real telemetry + local loop + status/heartbeat | B PASS |
 | 2026-09-16 | C | G2 | 真 PT TEMP 进入 Backend state | C PASS |
 | 2026-09-16 | D | G2 | 真 PT NORMAL/WARNING/FAN/Event UI | D PASS |
-| 2026-09-16 | 全组 | G2 | 两条轨道均满足 DoD；A+B 集成 `.pkt` 归档 | **G2 COMPLETE，进入 G3** |
+| 2026-09-16 | 全组 | G2 | 两条轨道满足 DoD；报告/evidence 合并 main | **G2 COMPLETE，进入 G3** |
 
 ## 课程覆盖追踪
 
