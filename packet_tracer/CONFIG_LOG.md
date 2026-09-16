@@ -283,18 +283,151 @@ INTERNET-SERVER（GUI） Fa0 192.0.2.10/24  Gateway 192.0.2.1
 3. **相邻 ping 首包超时**：四段链路首次 ping 均出现 1 个包超时（成功率 80%），原因为 ARP 解析期，**非故障**。
 4. **本 Gate 不涉及路由协议**：OSPF / eBGP / NAT / IPv6 均留给 Gate 3 / Gate 4，当前只完成地址与相邻可达。
 
-## Gate 3：OSPF / eBGP / NAT / DNS / HTTP
+## Gate 3：OSPF / eBGP / NAT / DNS / HTTP — ✅ 已实施并验证通过
 
-计划内容：
+实施记录（2026-09-16，**已实测**）：
 
-- SW-CORE ↔ R-HQ：OSPF Area 0；
-- R-HQ/R-ISP/R-BRANCH：eBGP 65001/65000/65002；
-- R-HQ IPv4 static default route → ISP，并向 HQ OSPF 发布默认出口；
-- BR-OFFICE → HQ-SERVICE；
-- HQ OFFICE → PAT → Internet；
-- DNS / HTTP；
-- `203.0.113.1:80 → 192.168.30.10:80` static TCP mapping；
-- WAN/Branch ACL。
+**基线**：在 Gate 2 基线上继续逐层叠加。HQ Gate 1 Core 与 Gate 2 成果均未修改，仅有一处**增量配置**（DHCP 池新增 DNS 选项，见第 4 层说明）。
+
+### 第 1 层：HQ OSPF Area 0
+
+```text
+! SW-CORE
+router ospf 1
+ router-id 10.255.0.1
+ network 10.255.0.0 0.0.0.3 area 0
+ network 192.168.10.0 0.0.0.255 area 0
+ network 192.168.20.0 0.0.0.255 area 0
+ network 192.168.30.0 0.0.0.255 area 0
+
+! R-HQ
+router ospf 1
+ router-id 10.255.0.2
+ network 10.255.0.0 0.0.0.3 area 0
+```
+
+验证：两端 `show ip ospf neighbor` 均为 **FULL**；R-HQ `show ip route ospf` 出现三条 O 路由（`192.168.10.0/24`、`192.168.20.0/24`、`192.168.30.0/24`），下一跳 `10.255.0.1`。
+
+说明：只发布 HQ Transit 段与 HQ 三个 `/24`，**不发布** `203.0.113.0/30`；**不把 BGP 表重分发进 OSPF**。SW-CORE 为 DR、R-HQ 为 BDR（DR 选举不抢占，先启动者当选），两端 FULL 即正常。
+
+### 第 2 层：HQ 默认出口 + WAN eBGP
+
+```text
+! R-HQ：默认出口 + 向 OSPF 发布默认路由
+ip route 0.0.0.0 0.0.0.0 203.0.113.2
+router ospf 1
+ default-information originate
+
+! R-HQ（AS 65001）
+router bgp 65001
+ bgp log-neighbor-changes
+ neighbor 203.0.113.2 remote-as 65000
+ network 192.168.30.0 mask 255.255.255.0
+
+! R-ISP（AS 65000）
+router bgp 65000
+ bgp log-neighbor-changes
+ neighbor 203.0.113.1 remote-as 65001
+ neighbor 198.51.100.2 remote-as 65002
+ network 192.0.2.0 mask 255.255.255.0
+ network 203.0.113.0 mask 255.255.255.252
+ network 198.51.100.0 mask 255.255.255.252
+
+! R-BRANCH（AS 65002）
+router bgp 65002
+ bgp log-neighbor-changes
+ neighbor 198.51.100.1 remote-as 65000
+ network 172.16.40.0 mask 255.255.255.192
+ network 172.16.40.64 mask 255.255.255.224
+```
+
+验证：
+
+- 三个 eBGP 会话全部 **Established**（`show ip bgp summary` 的 `State/PfxRcd` 显示前缀数）；
+- R-HQ 学到 `B 172.16.40.0/26`、`B 172.16.40.64/27`、`B 192.0.2.0/24`、`B 198.51.100.0/30`；
+- R-BRANCH 学到 `B 192.168.30.0/24`、`B 192.0.2.0/24`、`B 203.0.113.0/30`；
+- SW-CORE 通过 OSPF 学到 **`O*E2 0.0.0.0/0`**（默认出口，via `10.255.0.2`）；
+- `BR-OFFICE-PC ping 192.168.30.10` **通** —— 跨站点业务首次打通。
+
+### 第 3 层：WAN-IN 业务与隔离 ACL（R-HQ G0/1 inbound）
+
+```text
+ip access-list extended WAN-IN
+ permit ip 172.16.40.64 0.0.0.31 192.168.30.0 0.0.0.255
+ permit tcp 172.16.40.0 0.0.0.63 host 192.168.30.10 eq 80
+ permit icmp 172.16.40.0 0.0.0.63 host 192.168.30.10
+ deny ip 172.16.40.0 0.0.0.63 192.168.20.0 0.0.0.255
+ deny ip 172.16.40.64 0.0.0.31 192.168.20.0 0.0.0.255
+ deny ip 172.16.40.0 0.0.0.63 192.168.30.0 0.0.0.255
+ deny tcp 172.16.40.0 0.0.0.63 any eq 23
+ deny tcp 172.16.40.0 0.0.0.63 any eq 22
+ permit ip any any
+
+interface gigabitEthernet 0/1
+ ip access-group WAN-IN in
+```
+
+验证（6 项行为测试）：
+
+| 测试 | 结果 | 对应验收 |
+|---|---|---|
+| BR-OFFICE → `192.168.30.10` | 4/4 通 | 业务服务允许 |
+| BR-OFFICE → `http://192.168.30.10` | 页面打开 | **N7** |
+| BR-OFFICE → `192.168.20.10` | 100% 丢包 | **N8** |
+| BR-OFFICE → `192.168.30.20` | 100% 丢包 | **N8** |
+| BR-ADMIN → `192.168.30.20` | 4/4 通 | 运维允许 |
+| BR-ADMIN → `192.168.20.10` | 100% 丢包 | IOT 拒绝 |
+
+> **隔离机制说明**：HQ IOT 的隔离由**双重保障**实现——① BGP 层面 R-HQ **不对外发布 IOT 前缀**，Branch 无路由可达；② `WAN-IN` 的 deny 规则作为**纵深防御**。由 ping 的 `unreachable` **来源地址**可分辨：来自 `172.16.40.1` / `.65`（R-BRANCH）= 无路由；来自 `203.0.113.1`（R-HQ）= ACL 主动拒绝。
+
+### 第 4 层：NAT/PAT + 静态映射 + DNS/HTTP
+
+```text
+! R-HQ
+interface gigabitEthernet 0/0
+ ip nat inside
+interface gigabitEthernet 0/1
+ ip nat outside
+ip access-list standard NAT-INSIDE
+ permit 192.168.10.0 0.0.0.255
+ip nat inside source list NAT-INSIDE interface gigabitEthernet 0/1 overload
+ip nat inside source static tcp 192.168.30.10 80 203.0.113.1 80
+
+! SW-CORE：为使 HQ OFFICE 能使用 Internet DNS（NETWORK_PLAN §7.2）而新增
+ip dhcp pool OFFICE
+ dns-server 192.0.2.10
+```
+
+INTERNET-SERVER（GUI）：HTTP Service = **On**；DNS Service = **On**，记录 `www.edgecampus.net → 192.0.2.10`、`status.edgecampus.net → 203.0.113.1`。
+
+验证：
+
+- **N9**：OFFICE-PC `ping 192.0.2.10` 通；`show ip nat translations` 出现静态表项 `203.0.113.1:80 ↔ 192.168.30.10:80` 与 PAT 会话；
+- **N10**：OFFICE-PC 浏览器打开 `http://www.edgecampus.net`（DNS 解析 + PAT + HTTP 全链路）；
+- **N11**：INTERNET-SERVER 浏览器打开 `http://203.0.113.1`，命中 HQ-SERVICE 页面；NAT 表出现 `192.0.2.10:1025` 活动会话。
+
+> **增量说明**：`dns-server 192.0.2.10` 是既有 `ip dhcp pool OFFICE` 中的**新增选项**，未改变 VLAN / IPv4 网段 / 端口映射 / Trunk / EtherChannel / ACL / 路由等任何冻结项，地址分配范围不变。仅在 OSPF 范围内标注为增量配置。
+
+### Gate 3 验证结果
+
+| 日期 | 测试 | 预期 | 实际 | 证据 |
+|---|---|---|---|---|
+| 2026-09-16 | **N5** OSPF | FULL / HQ routes 正确 | 双向 FULL；R-HQ 学到三条 O 路由 | `G3-A-01` / `01b` |
+| 2026-09-16 | **N6** eBGP | Established / prefixes 正确 | 三会话 Established，路由双向交换 | `G3-A-02` / `02b` |
+| 2026-09-16 | **N7** Branch Business | BR-OFFICE → HQ-SERVICE HTTP 允许 | HTTP 页面打开 | `G3-A-03c` |
+| 2026-09-16 | **N8** Branch Isolation | → HQ IOT / 管理设备 拒绝 | 均 100% 丢包 | `G3-A-03b` / `03d` |
+| 2026-09-16 | **N9** PAT | 成功且有 NAT translation | 通 + NAT 转换表有记录 | `G3-A-04b` |
+| 2026-09-16 | **N10** DNS/HTTP | `www.edgecampus.net` 解析并访问成功 | 页面打开 | `G3-A-04c` |
+| 2026-09-16 | **N11** Static Port Map | 外部节点 → `203.0.113.1:80` → HQ-SERVICE | 页面打开 + NAT 会话 | `G3-A-04d` / `04d2` |
+| 2026-09-16 | HQ ADMIN → Branch 管理 | 可达 | `.65` 4/4；`.66` 2/4（跨 4 跳 ARP） | `G3-A-05` |
+| 2026-09-16 | 四层回归 | HQ Gate1 Core 无退化 | 每层后均通过 | `G3-A-01c/02d/02e/03e/04e/04f` |
+
+### Gate 3 实施中的问题与说明
+
+1. **Packet Tracer 不会自动续租**：SW-CORE 的 DHCP 池新增 `dns-server` 后，OFFICE-PC 仍持旧租约、`DNS Server` 为空，导致 `www.edgecampus.net` 无法解析。**解法**：在 PC 的 IP Configuration 中先切 Static、再切回 DHCP 触发重新请求。**非配置错误**。
+2. **配置模式层级导致的 `Invalid input`**：在特权模式（`R-HQ#`）下直接输入 `router bgp 65001` 会报错；必须先 `configure terminal` 进入 `(config)`。属操作规范问题，已记录以避免复现。
+3. **IOT 隔离的双重机制**：见第 3 层说明——BGP 不发布前缀（无路由）+ ACL deny（纵深防御）。报告与答辩中应如实说明，不宜简化为"配了 ACL 所以不通"。
+4. **跨跳 ARP 首包超时**：ADMIN-PC → SW-BRANCH（跨 4 跳）首次 ping 出现 50% 丢包，后两个包 TTL=251 正常返回；属 ARP 解析期，**非故障**。
 
 ## Gate 4：IPv6 / Tunnel / Port Security / Central Admin
 

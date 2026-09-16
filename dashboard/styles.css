@@ -86,6 +86,10 @@ form > button { grid-column: 1 / -1; }
 .input-unit { position: relative; }
 .input-unit span { position: absolute; right: 12px; top: 18px; color: var(--muted); }
 .hint { color: var(--muted); margin-top: 13px; font-size: 11px; }
+.ack-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.ack-item { padding: 11px 12px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.025); }
+.ack-item span { display: block; margin-bottom: 4px; color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: 1px; }
+.ack-item b { color: var(--cyan); font-size: 11px; }
 .event-head, .event-row { display: grid; grid-template-columns: 92px 1.1fr 1.1fr 1.8fr; gap: 12px; align-items: center; }
 .event-head { color: #567182; padding: 12px 8px; font-size: 10px; font-weight: 800; }
 .events { max-height: 210px; overflow: auto; }
@@ -110,7 +114,7 @@ footer { display: flex; justify-content: space-between; padding: 18px 0 26px; co
 @media (max-width: 620px) {
   .shell { width: min(100% - 24px, 1480px); }
   header { align-items: flex-start; padding: 24px 0; gap: 18px; flex-direction: column; }
-  .security-strip, form { grid-template-columns: 1fr; }
+  .security-strip, form, .ack-grid { grid-template-columns: 1fr; }
   form > button { grid-column: auto; }
   .event-head, .event-row { grid-template-columns: 70px 1fr 1fr; }
   .event-head span:last-child, .event-row .detail { display: none; }
