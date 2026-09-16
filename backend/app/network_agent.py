@@ -28,12 +28,17 @@ class NetworkAgent:
         self.provider = provider or MockNetworkProvider()
         self.events: list[dict[str, Any]] = []
         self.sequence = 0
+        self.network_failed = False
         self.security_active = False
         self.violations = 0
         self.last_security_event = None
 
     def snapshot(self) -> dict[str, Any]:
         baseline = self.provider.get_state()
+        if self.network_failed:
+            baseline["routing"]["bgp"]["status"] = "DOWN"
+            baseline["ipv6"]["tunnel"]["status"] = "DOWN"
+            baseline["branch"]["status"] = "OFFLINE"
         ospf = baseline["routing"]["ospf"]["status"]
         bgp = baseline["routing"]["bgp"]["status"]
         tunnel = baseline["ipv6"]["tunnel"]["status"]
@@ -60,8 +65,9 @@ class NetworkAgent:
 
     def security_snapshot(self):
         baseline = self.provider.get_state()["security"]
-        return {**baseline, "port_security": "VIOLATION" if self.security_active else "SECURE",
-                "port_status": "BLOCKED" if self.security_active else "FORWARDING",
+        port_blocked = self.security_active and self.last_security_event["event"] == "PORT_SECURITY_VIOLATION"
+        return {**baseline, "port_security": "VIOLATION" if port_blocked else "SECURE",
+                "port_status": "BLOCKED" if port_blocked else "FORWARDING",
                 "violations": self.violations, "active": self.security_active,
                 "last_event": deepcopy(self.last_security_event), "source": "SIMULATED"}
 
@@ -77,3 +83,18 @@ class NetworkAgent:
         self.security_active = False
         self.record("SECURITY", "SECURITY_RESTORED", "Simulated port recovered; cumulative violation count retained")
         return self.security_snapshot()
+
+    def set_network_failure(self, failed):
+        if self.network_failed != failed:
+            self.network_failed = failed
+            self.record("NETWORK", "BRANCH_LINK_DOWN" if failed else "BRANCH_LINK_RESTORED", "Mock branch link transition")
+        return self.snapshot()
+
+    def check_device(self, device, source):
+        management = self.provider.get_state()["management"]
+        allowed = source == management["allowed_source"]
+        reachable = self.snapshot()["branch_status"] == "ONLINE"
+        return {"device": device, "ip": management["devices"][device], "source_ip": source,
+                "management": "PASS" if allowed and reachable else "DENIED" if not allowed else "UNAVAILABLE",
+                "acl": "ALLOW" if allowed else "DENY", "status": "AVAILABLE" if reachable else "UNAVAILABLE",
+                "source": "SIMULATED", "path": "ADMIN-PC → VTY ACL → Branch"}

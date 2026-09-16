@@ -28,7 +28,7 @@ function setSocketStatus(status, label) {
 }
 
 function setControlButtonsEnabled(enabled) {
-  document.querySelectorAll("button").forEach((button) => {
+  document.querySelectorAll("[data-edge-control]").forEach((button) => {
     button.disabled = !enabled;
   });
 }

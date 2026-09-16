@@ -139,3 +139,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 .noc-actions {display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;}
 .security-alert {background:#492431;border-left:4px solid #ff6689;padding:16px;color:#ffc5d3;}
+
+.noc-center-grid {display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;}
+.network-panel {margin-bottom:20px;scroll-margin-top:20px;}
+.noc-center-grid .node-row {flex-wrap:wrap;gap:10px;}
+.noc-center-grid b {overflow-wrap:anywhere;text-align:right;}
+#simMode,#simFan,#simSync {font-size:15px;}
+@media(max-width:900px){.noc-center-grid{grid-template-columns:1fr;}}
+
+.noc-center-grid .node-row {grid-template-columns:minmax(0,1fr) minmax(0,2fr);}
+@media(max-width:620px){.noc-center-grid .node-row {grid-template-columns:1fr;} .noc-center-grid .node-row b {text-align:left;} .section-caption {flex-wrap:wrap;}}

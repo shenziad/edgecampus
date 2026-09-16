@@ -13,6 +13,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .protocol import ProtocolError, envelope, validate_message
 from .state import SystemState
+from . import noc
 from .noc import router as noc_router
 
 
@@ -76,6 +77,9 @@ async def api_state() -> dict[str, Any]:
 async def edge_websocket(socket: WebSocket) -> None:
     global edge_socket
     await socket.accept()
+    if noc.cloud_failed:
+        await socket.close(code=1013, reason="Cloud failure drill")
+        return
     edge_socket = socket
     LOGGER.info("edge connected")
     try:
@@ -90,7 +94,12 @@ async def edge_websocket(socket: WebSocket) -> None:
             except ProtocolError as exc:
                 await send_error(socket, "INVALID_MESSAGE", str(exc))
                 continue
+            if noc.cloud_failed or edge_socket is not socket:
+                continue
             state.apply_edge_message(message)
+            if message["type"] == "state_sync" and noc.sync_status == "WAITING_FOR_STATE_SYNC":
+                noc.sync_status = "SUCCESS"
+                noc.agent.record("CLOUD", "STATE_SYNC_SUCCESS", "Actual Edge state_sync received")
             append_event_log(message)
             await broadcast_snapshot()
     except WebSocketDisconnect:

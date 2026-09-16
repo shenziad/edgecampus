@@ -12,7 +12,7 @@ let responseState = {ospf: 'FULL', bgp: 'ESTABLISHED', ipv6_tunnel: 'UP', branch
 const intervals = [];
 const context = vm.createContext({document: {getElementById: el},
   AbortSignal: {timeout: () => ({})}, setInterval: fn => intervals.push(fn),
-  fetch: async () => { if (fail) throw Error('offline'); return {ok: true, json: async () => responseState}; },
+  fetch: async () => { if (fail) throw Error('offline'); return {ok: true, json: async () => ({network: responseState, security: {port_security: "SECURE", active: false, violations: 0, acl: "ACTIVE", port_status: "FORWARDING"}, branch: {devices: [{device:"R-BRANCH",status:"AVAILABLE"}]}, policy: {campus_version:"campus-1 / thermal-v3",thermal:{policy_id:"thermal-01",version:3,threshold_c:33,mode:"AUTO"},network:{branch_access:"ALLOW",iot_isolation:true},security:{port_security:"STRICT"}}, simulation:{cloud:"ONLINE",edge_connected:true,edge_mode:"AUTO",fan:"ON",state_sync:"NOT_RUN",fan_observation:"LIVE"}})}; },
 });
 vm.runInContext(fs.readFileSync('dashboard/noc.js', 'utf8'), context);
 const settle = () => new Promise(resolve => setImmediate(resolve));

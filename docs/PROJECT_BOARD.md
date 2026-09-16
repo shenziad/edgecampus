@@ -141,6 +141,8 @@ ACK 修复回归：19 项 Python 测试、JavaScript ACK 行为测试、compilea
 
 实际分支 feat/edge；9 张软件截图已逐张核验并统一命名。详细证据/待补项见 `docs/gate4/EVIDENCE_INDEX.md`。
 
-## NOC Upgrade — IN PROGRESS
+## NOC Upgrade — IMPLEMENTED / LOCAL VERIFIED
 
 用户授权在最新本地 feat/edge 上进行 NOC 增量开发，三段完成 Network Health、Security Center、Remote Operations/Campus Policy/Failure Simulation。独立 NetworkProvider/mock adapter 与 REST API，不修改 Protocol 1.0、Edge Policy/ACK 或 canonical .pkt。当前 Gate4 与 Gate5 状态保持；详见 `docs/NOC_UPGRADE.md`。
+
+NOC 五功能已完成并通过本地 HTTP/WS/浏览器验证；详细接口、模拟边界和六步演示见 [NOC_UPGRADE.md](NOC_UPGRADE.md)。此结果不改变 Gate4 证据待补状态。
