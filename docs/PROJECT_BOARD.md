@@ -10,14 +10,14 @@
 | Backend 软件基线 | C | AVAILABLE | main 已有 FastAPI / state / events / fake 基线 | C 补 Gate1 owner 证据 + G2 真 Telemetry |
 | C Gate1 Owner 验收 | C | **PLACEHOLDER** | `docs/gate1/C_BACKEND_REPORT.md` | Gate5 前必须清零 |
 | Fake Edge | B+C | DONE | 可独立开发/联调 | 保留，不替代 PT 真链路 |
-| Dashboard 基线 | D | **PASS G1** | `docs/gate1/D_DASHBOARD_REPORT.md` + 4 张 evidence | G2 接真 PT Telemetry |
+| Dashboard 基线 | D | **PASS G1 + G2** | `docs/gate1/D_DASHBOARD_REPORT.md` + `docs/gate2/D_DASHBOARD_REPORT.md` + G1/G2 evidence | G3 Policy / Command 真闭环 |
 | HQ VLAN/IP / SVI / DHCP | A | **PASS G1** | A Gate1 报告 / network evidence | 冻结 Core |
 | HQ EtherChannel / Trunk | A | **PASS G1** | Po1 + trunk evidence | 新 WAN 后持续 regression |
 | HQ ACL | A | **PASS G1** | OFFICE→IOT deny 等 | 新 WAN 不得破坏 |
 | Edge Local Loop | B | **PASS G1** | TEMP→MCU→SBC→FAN / hysteresis / backend-off | G2 增量加 Telemetry |
 | A+B canonical integration | A+B | **PASS G1** | `docs/gate1/AB_INTEGRATION_REPORT.md` | 作为 HQ Core baseline |
 | PT → Real Host RealWSClient | A+B+C | VERIFIED | Gate0 实机 + 重开复测 | G2 承载真 Telemetry |
-| Real PT Telemetry | B+C+D | IN PROGRESS | G2 主 Critical Path | TEMP→Dashboard |
+| Real PT Telemetry | B+C+D | **PASS G2** | 真实 TEMP01→MCU→SBC→RealWSClient→Backend→Dashboard；D 报告及 B/C/D 联调证据 | G3 Policy / Command |
 | Branch LAN / ROAS | A | NOT STARTED | Final Architecture v2 | G2 |
 | IPv4 WAN Underlay | A | NOT STARTED | Final Architecture v2 | G2 |
 | HQ OSPF | A | NOT STARTED | Area0 SW-CORE↔R-HQ | G3 |
@@ -46,6 +46,8 @@
 | G5 Freeze + 3 Rehearsals | NOT STARTED | 清零 placeholder、final `.pkt`、三轮完整彩排 |
 
 ## 当前 Critical Path
+
+B+C+D 软件 / IoT 主线已于 2026-09-16 PASS；Gate 2 全局剩余项主要为 A 网络基础线及最终 DoD 汇总。
 
 ```text
 B: PT real temperature + local fan
@@ -87,6 +89,7 @@ G4 IPv6 Tunnel / Port Security
 | 2026-09-15 | D | G1 | NORMAL/WARNING/OFFLINE/RECONNECT evidence archived | D PASS |
 | 2026-09-15 | C | G1 | 软件 baseline 已存在，但 Owner 专属证据未提交 | 建立 placeholder；不阻塞 G2；G5 前必须补 |
 | 2026-09-15 | 全组 | Re-baseline | Final Architecture v2 冻结：HQ + ISP/Internet + Branch；保留双控制环与 Protocol v1 | 进入 G2 |
+| 2026-09-16 | B+C+D | G2 | 真实 TEMP01→MCU→SBC→RealWSClient→Backend→Dashboard；NORMAL/WARNING/FAN 状态同步 PASS | 软件 / IoT 主线 PASS；G2 全局仍等待 A 网络线及其余 DoD |
 
 ## Final Architecture v2 课程覆盖追踪
 

@@ -6,6 +6,7 @@
 - Working branch: `feat/dashboard`
 - Current project Gate: **Gate 2**
 - Gate 1 D status: **PASS**
+- Gate 2 D status: **PASS**
 - Final Architecture baseline: **v2**
 
 D 长期负责：
@@ -33,6 +34,19 @@ tests/test_dashboard_contract.py
 ```
 
 Gate 1 已验证：Dashboard Normal、Threshold WARNING、Edge Offline、Reconnect / State Sync；D 新增 Dashboard contract tests 5/5 PASS，提交时完整仓库测试 14/14 PASS。
+
+## Gate 2 Archived Deliverables
+
+```text
+docs/gate2/D_DASHBOARD_REPORT.md
+
+evidence/dashboard/gate2/
+├── G2-D-01-dashboard-normal-real-pt-pass.png
+└── G2-D-02-dashboard-warning-fan-on-real-pt-pass.png
+```
+
+Gate 2 D-side 已验证真实 PT TEMP01 → MCU → EDGE-SBC-01 → RealWSClient → Backend → Dashboard。
+实测 27.9 C 为 NORMAL / FAN OFF，34.1 C 为 WARNING / FAN ON；Gate 1 软件回归 14/14 PASS。
 
 ## Public Contract Status
 
@@ -92,4 +106,4 @@ Packet Tracer VLAN / OSPF / BGP / NAT / Tunnel 是模拟 Data Plane；`RealWSCli
 - 当前阻塞项；
 - 下一步 Integration 动作。
 
-当前 D 下一动作：参加 Gate 2 B+C+D 真实 Telemetry 联调，并整理端到端证据。
+当前 D 下一动作：Gate 2 D-side 已 PASS；等待全组 Gate 2 Definition of Done。进入 Gate 3 后执行 Dashboard Policy / Command → Backend → Edge → ACK 真实闭环验收。
