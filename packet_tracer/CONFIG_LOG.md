@@ -429,17 +429,135 @@ INTERNET-SERVER（GUI）：HTTP Service = **On**；DNS Service = **On**，记录
 3. **IOT 隔离的双重机制**：见第 3 层说明——BGP 不发布前缀（无路由）+ ACL deny（纵深防御）。报告与答辩中应如实说明，不宜简化为"配了 ACL 所以不通"。
 4. **跨跳 ARP 首包超时**：ADMIN-PC → SW-BRANCH（跨 4 跳）首次 ping 出现 50% 丢包，后两个包 TTL=251 正常返回；属 ARP 解析期，**非故障**。
 
-## Gate 4：IPv6 / Tunnel / Port Security / Central Admin
+## Gate 4：IPv6 / Tunnel / Port Security / Central Admin — ✅ 已实施并验证通过
 
-计划内容：
+实施记录（2026-09-16，**已实测**）：按 `NETWORK_PLAN.md` §13 第 8–12 步推进。
 
-- HQ OFFICE SLAAC；
-- BR-OFFICE DHCPv6；
-- 管理域 Static IPv6；
-- R-HQ ↔ R-BRANCH IPv6-over-IPv4 Tunnel；
-- IPv6 static route；
-- BR-ADMIN → HQ MANAGEMENT；
-- HQ ADMIN → R-BRANCH / SW-BRANCH remote management；
-- SW-ACCESS Fa0/1 sticky MAC / Port Security。
+### 第 8 层：Central Administration（N14）
+
+```text
+! R-BRANCH 与 SW-BRANCH 各配一份
+ip access-list standard MGMT-ALLOW
+ permit 192.168.30.20
+exit
+line vty 0 4
+ access-class MGMT-ALLOW in
+ transport input telnet
+ password cisco
+ login
+exit
+```
+
+验证：ADMIN-PC(`192.168.30.20`) Telnet `172.16.40.65` / `.66` **成功**；OFFICE-PC Telnet `172.16.40.65` **被拒**（`Connection refused`）；两台 `show access-lists` 均显示 `MGMT-ALLOW` 且有命中。
+
+### 第 9 层：IPv6 地址（N12）
+
+```text
+! 三台路由器（SW-CORE / R-HQ / R-BRANCH）
+ipv6 unicast-routing
+
+! SW-CORE
+interface gigabitEthernet 1/0/24  ipv6 address 2001:db8:100::1/64
+interface vlan 10                 ipv6 address 2001:db8:10::1/64
+interface vlan 30                 ipv6 address 2001:db8:30::1/64
+
+! R-HQ
+interface gigabitEthernet 0/0     ipv6 address 2001:db8:100::2/64
+
+! R-BRANCH
+interface gigabitEthernet 0/1.40  ipv6 address 2001:db8:40::1/64
+interface gigabitEthernet 0/1.50  ipv6 address 2001:db8:50::1/64
+
+! DHCPv6 服务端（BR-OFFICE VLAN40）
+ipv6 dhcp pool BR-V6
+ address prefix 2001:db8:40::/64
+exit
+interface gigabitEthernet 0/1.40
+ ipv6 dhcp server BR-V6
+ ipv6 nd managed-config-flag
+exit
+```
+
+终端：HQ-SERVICE `2001:db8:30::10/64`、ADMIN-PC `2001:db8:30::20/64`、BR-ADMIN-PC `2001:db8:50::70/64`（网关均为各自 `::1`）；OFFICE-PC 用 **SLAAC**、BR-OFFICE-PC 用 **DHCPv6**。
+
+验证：OFFICE-PC 经 SLAAC 获得 `2001:DB8:10:0:2E0:F9FF:FEB0:77EE`；BR-OFFICE-PC 经 DHCPv6 获得 `2001:DB8:40:0:1990:FD7C:D148:C4A6`，与 R-BRANCH `show ipv6 dhcp binding` 的绑定**完全一致**（且**非 EUI-64**，证明来自地址池）。
+
+### 第 10 层：IPv6-over-IPv4 Tunnel（N13）
+
+```text
+! R-HQ
+interface tunnel 0
+ tunnel source gigabitEthernet 0/1
+ tunnel destination 198.51.100.2
+ tunnel mode ipv6ip
+ ipv6 address 2001:db8:ff::1/64
+
+! R-BRANCH
+interface tunnel 0
+ tunnel source gigabitEthernet 0/0
+ tunnel destination 203.0.113.1
+ tunnel mode ipv6ip
+ ipv6 address 2001:db8:ff::2/64
+
+! 四条 IPv6 静态路由（不引入 OSPFv3）
+R-BRANCH: ipv6 route 2001:db8:30::/64 2001:db8:ff::1
+R-HQ:     ipv6 route 2001:db8:50::/64 2001:db8:ff::2
+R-HQ:     ipv6 route 2001:db8:30::/64 2001:db8:100::1
+SW-CORE:  ipv6 route 2001:db8:50::/64 2001:db8:100::2
+```
+
+验证：两端 `show interfaces tunnel 0` 均 `up/up` 且 `Tunnel protocol/transport IPv6/IP`；隧道端点互 ping **5/5**；**BR-ADMIN-PC → `2001:db8:30::10` 4/4 通**（N13 核心）。
+
+### 第 11 层：Port Security（N15）
+
+```text
+interface fastEthernet 0/1
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+exit
+```
+
+验证：初始 `Secure-up` / `Max 1` / `Sticky 1` / `Violation 0`；替换为非法 MAC `0000.1111.2222` 触发 `%PORT_SECURITY-2-PSECURE_VIOLATION`，**Violation Count = 5**，非法流量 100% 丢包，合法 sticky MAC `00E0.F9B0.77EE` 仍在表；恢复原 MAC 后通信恢复正常。
+
+### 第 12 层：Full Regression + 跨层问题修复
+
+**全量回归（N1–N11 + Edge）**：EtherChannel / VLAN / ACL / SVI / DHCP、OSPF、eBGP、PAT / DNS / 静态映射、全部行为测试 —— 均通过。
+
+**发现并修复：静态 NAT 误抓穿越流量（N7）**
+
+- **现象**：BR-OFFICE-PC 浏览器打不开 `http://192.168.30.10`（N7）。
+- **定位**：`show ip nat translations` 出现 `Outside global = 172.16.40.2:`**`0`**（端口 0）的坏会话；临时移除静态映射后 N7 立刻恢复正常。
+- **根因**：**Packet Tracer** 的静态映射在反向查找时按 **inside-local（地址 + 端口）** 匹配，导致"**目的地 = 内网服务地址**"的**穿越流量**也被抓去翻译。真实 IOS 按 inside-global 匹配，无此问题。
+- **处置**：引入**遮蔽条目**（置于配置前部），使穿越流量被"翻译成自身"（无害），公网流量仍走真正的映射：
+
+```text
+ip nat inside source static tcp 192.168.30.10 80 192.168.30.10 80     ! 遮蔽：身份翻译，必须在前面
+ip nat inside source static tcp 192.168.30.10 80 203.0.113.1 80       ! 真正的公网端口映射
+```
+
+- **验证**：**N7 与 N11 同时成立** —— BR-OFFICE `http://192.168.30.10` 与 INTERNET-SERVER `http://203.0.113.1` 均正常打开；穿越流量的会话端口一致（如 `172.16.40.2:1039 ↔ 172.16.40.2:1039`），**不再出现端口 0**。**地址、端口、NAT 位置全部零偏离设计**。
+
+### Gate 4 验证结果
+
+| 日期 | 测试 | 预期 | 实际 | 证据 |
+|---|---|---|---|---|
+| 2026-09-16 | **N12** IPv6 modes | SLAAC / DHCPv6 / Static 正确 | 三种模式全部实测成立 | `G4-A-03/03b/03c/03d` |
+| 2026-09-16 | **N13** IPv6 Tunnel | BR-ADMIN → HQ MANAGEMENT | IPv6 ping 4/4 通 | `G4-A-04*` |
+| 2026-09-16 | **N14** Remote Admin | HQ ADMIN 允许，普通 Office 拒绝 | 两台登录成功；OFFICE 被拒 | `G4-A-01*` |
+| 2026-09-16 | **N15** Port Security | 非法 MAC violation / 阻断 | Violation Count 5 + 100% 丢包 | `G4-A-02*` |
+| 2026-09-16 | Full Regression | N1–N11 无退化 | 全部通过 | `G4-A-05*` |
+| 2026-09-16 | N7 与 N11 共存 | 两条需求同时成立 | 遮蔽方案修复，均 PASS | `G4-A-06/07/07b` |
+
+### Gate 4 实施中的问题与说明
+
+1. **PT 静态 NAT 的 inside-local 反向匹配**：见第 12 层，已用遮蔽条目解决；属**平台实现差异**，非配置错误。**逐层回归必须覆盖完整验收矩阵**——Gate 3 第 4 层未回头重测 N7 才漏掉了它。
+2. **DHCPv6 客户端不发起请求**：只配 `ipv6 dhcp pool` + `ipv6 dhcp server` 不够，RA 缺 **M 标志**时主机会自行 SLAAC。补 `ipv6 nd managed-config-flag` 后 `show ipv6 dhcp binding` 才出现绑定。**先记录实测再调整，未删除 DHCPv6 验收项**（符合 `NETWORK_PLAN.md` §9.2）。
+3. **`tunnel source <IP>` PT 不支持**：改用接口形式 `tunnel source gigabitEthernet 0/1`。
+4. **IPv6 静态路由不能用 `tunnel 0` 作下一跳**：必须写对端隧道 IPv6 地址（如 `2001:db8:ff::1`）。
+5. **`show ipv6 route static` PT 不认 `static` 关键字**：改用 `show ipv6 route` 或 `show running-config | include ipv6 route`。
+6. **Gate 3 的 N7 结论说明**：Gate 3 的 N7 验证发生在静态映射加入**之前**；在 Gate 3 最终配置下曾因上述 NAT 问题失效。本 Gate 已定位并修复，N7 在最终配置下**重新成立**。
 
 权威逻辑规划始终以 `docs/NETWORK_PLAN.md` 为准。
