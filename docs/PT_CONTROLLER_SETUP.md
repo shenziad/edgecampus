@@ -1,6 +1,12 @@
 # Packet Tracer 控制器实际数据接入
 
-本次接入为只读：Backend 登录控制器，读取设备清单与物理拓扑。未运行设备发现、写配置、关闭链路或编辑 canonical .pkt。PT 控制器的配置由用户在当前 PT 工作区完成。现有 Gate 状态与 Edge Protocol v1.0 不变。
+## 当前实际接入结论（2026-09-18）
+
+项目完成（待补证据）。用户已确认 Dashboard 真实设备显示成功，并提供配置报告：NC-HQ `192.168.30.30/24`/网关 `.30.1`，GE0接SW-CORE Gi1/0/10 access VLAN30；R-HQ管理Loopback0 `10.255.255.1/32`；VTY新增允许NC `.30.30`同时保留ADMIN `.30.20`。这是用户实施记录，尚待完整running-config与成功Dashboard/API归档。两项Managed原图已入库，见 [最终报告](final/PROJECT_COMPLETION_REPORT.md)。
+
+下方‘尚未联调通过’或UNAVAILABLE检查描述的是早期开发时刻，不能作为当前失败结论。Managed映射仍仅依据collectionStatus；报告中的R-HQ发现不代表已Managed。
+
+本次接入为只读：Backend 登录控制器，读取设备清单与物理拓扑。未运行设备发现、写配置、关闭链路或编辑 canonical .pkt。PT 控制器的配置由用户在当前 PT 工作区完成。Edge Protocol v1.0 不变；最新收尾状态以最终报告为准。
 
 ## 1. 在 PT 添加 NC-HQ
 
@@ -70,7 +76,7 @@ Invoke-RestMethod http://127.0.0.1:8000/api/network/state | ConvertTo-Json -Dept
 - 控制器端口 58000 与 Backend/SBC 端口 8000 不同。真实主机地址为 localhost:58000，不能用 PT 内部 192.168.30.30 地址替代。
 - 只向本机 HTTP 控制器地址发送登录信息；不跟随重定向，不使用系统代理，页面与 API 不返回密码或认证票据。
 - 超时与认证失败给出明确状态；401 重新登录后只重试一次。拓扑读取失败时保留已成功读取的清单，并显示拓扑不可用。
-- 实际 PT 联调需要用户完成上述控制器配置并启动脚本。本地 HTTP fixture 测试不替代真实 PT 验收。
+- 实际 PT 联调由用户完成上述控制器配置并启动脚本。本地 HTTP fixture 测试不替代真实 PT 验收。
 
 ## 官方依据
 
@@ -79,7 +85,7 @@ Invoke-RestMethod http://127.0.0.1:8000/api/network/state | ConvertTo-Json -Dept
 [Northbound API：POST /ticket、GET /network-device、GET /topology/physical-topology](https://tutorials.ptnetacad.net/help/default/NetconRestAPI/index.html)
 
 ## 本地验证
-46 项 Python 测试、3 项 Node 前端验证及 Protocol contract 检查通过；PowerShell 启动脚本通过语法解析。Controller fixture 覆盖实际 HTTP 认证/读取、401 重登录、500 后清空旧数据、501 拓扑降级、空清单、响应格式错误、缓存隔离和凭据不外泄。前端验证覆盖实际来源标签、UNKNOWN 状态、设备文本渲染、认证失败和模拟网络按钮禁用。尚未宣称 NC-HQ 实机联调通过。
+46 项 Python 测试、3 项 Node 前端验证及 Protocol contract 检查通过；PowerShell 启动脚本通过语法解析。Controller fixture 覆盖实际 HTTP 认证/读取、401 重登录、500 后清空旧数据、501 拓扑降级、空清单、响应格式错误、缓存隔离和凭据不外泄。前端验证覆盖实际来源标签、真实设备状态、设备文本渲染、认证失败和模拟网络按钮禁用。开发阶段仅使用 fixture；后续用户已确认 NC-HQ 实际接入，证据状态见本页顶部。
 
 
 ## 设备健康展示更新

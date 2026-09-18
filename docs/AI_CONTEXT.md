@@ -122,18 +122,13 @@ Real FastAPI
 
 它是带外通道。不得描述成真实 WebSocket 经过 VLAN20/30、R-HQ、R-ISP、BGP、NAT 或 IPv6 Tunnel。
 
-## 当前 Gate 状态
+## 当前项目状态
 
-- G0：COMPLETE。
-- G1：`CLOSED`。A/B/D PASS，A+B integration PASS；C 三项 stability debt 在 Gate4 补齐真实证据并清零。
-- G2：COMPLETE。A 的 Branch/WAN Foundation 与 B/C/D 的真实 PT Telemetry 全链路均 PASS。
-- G3：**EVIDENCE PENDING**，A/B PASS，BCD 实测已确认，修复后 ACK/state/events 待补。
-- 当前：**G4 — Failure Recovery + IPv6/Security（IMPLEMENTED / USER-TESTED / EVIDENCE PENDING）**。
-- G5：NOT STARTED。
+**完成（待补证据）**，2026-09-18，用户指定继续 `feat/edge`。G4 后 NOC 开发完成，真实 NC 接入由用户确认并有两项 Managed 清单原图。最终行为以 [完成报告](final/PROJECT_COMPLETION_REPORT.md)、[NOC_UPGRADE](NOC_UPGRADE.md)和 [CURRENT_GATE](CURRENT_GATE.md) 为准。
 
-2026-09-17 当前审计：Gate4 已实现并有用户现场实测确认；B 离线 ON、真实 reconnect/hello/state_sync、Backend 恢复与 D 失联有截图，C 三项 Gate1 stability debt 清零。A N12-N15 用户确认已测，截图本次跳过后补；离线 OFF/Attributes、恢复后 Dashboard、G4 N1-N11 全量回归及 G3 修复后 ACK/完整 events 仍需归档。Gate4 为 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，未正式 COMPLETE；Gate5 NOT STARTED。
+Network Health 只读真实 NC：Managed→ONLINE，OSPF/BGP/Tunnel NOT COLLECTED；Network Failure 禁用/409。Security/Branch模拟，Campus Network/Security展示，不写IOS。Cloud按钮实际中断Edge WS，自治和物理FAN仍需PT现场证据。
 
-当前唯一指挥文件：`docs/CURRENT_GATE.md`。
+G3/G4 证据待补；G5 最终包打开核验、包内程序一致性和三轮彩排未记 PASS。后续仅补证、复核与必要修复；[28组清单](final/EVIDENCE_PENDING.md)。当前包 144326 bytes，哈希见完成报告；旧 G4 哈希为历史版本。
 
 ## Gate 3 已整合 Owner 边界（历史基线）
 
@@ -190,10 +185,6 @@ static TCP/80 + business ACL PASS
 建议截图证据：
 ```
 
-## Gate 4 当前任务
+## 当前收尾任务
 
-A：N12-N15（地址模式、Tunnel、管理、Port Security），回归 N1-N11；ISP IPv4-only。B：真实 Backend-off 保留 AUTO 策略控 FAN、自动 reconnect + hello/state_sync。C：disconnect/offline snapshot、真实状态恢复、协议安全拒绝已核验，Gate1 debt 清零。D：Backend/WS down 和恢复状态展示，R1/R2 集成证据，并协同补 Gate3 ACK/state/events。完整任务、DoD 与 Gate5 门禁见 CURRENT_GATE。
-
-## Gate4 当前归档索引（2026-09-17）
-
-报告见 `gate4/`：A/B/C/D/BCD 报告、EVIDENCE_INDEX、VALIDATION_REPORT。Protocol 1.0 与冻结网络规划未改变。
+按最终补证清单逐项归档，复用既有证据，区分用户确认/原图/本机 fixture 验证。未打开 `.pkt` 前不能宣称包内已含全部新程序；未记录三轮彩排不能宣称 G5 通过。本轮源码检查结果见 [最终验证](final/VALIDATION.md)。原 G1–G4 报告保留历史事实。

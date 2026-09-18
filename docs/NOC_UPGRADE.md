@@ -1,97 +1,58 @@
-# EdgeCampus Intelligent NOC Upgrade
+# EdgeCampus NOC Upgrade 最终实现
 
-状态：IMPLEMENTED / LOCAL VERIFIED；本地分支 feat/edge，使用最新 Gate1-Gate4 基线。NOC 升级是用户授权的独立增量工作，不改变现有 Gate4 证据状态或 Gate5 状态。
+状态：**完成（待补证据）**；2026-09-18，`feat/edge`。本页为最终行为；早期 Mock Network 的演示由真实 NC-only 行为替代。完整收尾与来源见 [完成报告](final/PROJECT_COMPLETION_REPORT.md)。
 
-## 为什么升级
+## 五位一体
 
-原 Dashboard 只有 Edge 温控实时数据，实验网络的 Routing、IPv6、ACL、Port Security 与 Remote Administration 不能在同一运维入口解释。目标为 Edge Control + Network Operation + Security Operation + Policy Management + Failure Simulation。
+| 功能 | API/通道 | 最终数据与作用 |
+|---|---|---|
+| Edge Control | `/api/state`、`/ws/edge`、`/ws/dashboard` | 既有真实 SBC 遥测/Policy/Command/ACK；Local Loop 优先 |
+| Network Operation | `/api/controller/state`、`/api/network/state` | 真实 PT NC 设备清单/物理拓扑；健康卡片来自 collectionStatus |
+| Security Operation | `/api/security/state`、`/api/network/events` | 模拟违例/ACL事件、累计次数、独立审计流 |
+| Policy Management | `/api/campus-policy` | thermal 使用既有策略；Campus 上层展示 Edge/Network/Security |
+| Failure Simulation | `/api/simulation/state`、`/api/simulation/*` | Cloud 真实中断控制通道；Security 模拟；Network 禁用 |
 
-## 三段开发
+`/api/noc/state` 聚合各 NOC 快照，前端约 1.5 秒轮询。NC 采集采用约 5 秒缓存，HTTP 在线程池执行，不阻塞 Edge WS。NOC 事件与原 Edge ACK 事件分开。
 
-1. Network Agent、network REST 状态/事件接口、Network Health。
-2. Security Center、非法 MAC/ACL 阻断事件。
-3. Remote Operations、Campus Policy 展示、三类故障模拟与恢复、完整演示回归。
+## 真实 Network Health
 
-## 模块与真实性
+控制器适配器 `backend/app/pt_controller.py` 登录 `/api/v1/ticket`，只读 `/api/v1/network-device` 与 `/api/v1/topology/physical-topology`。连接参数在启动时由环境读取；脚本交互输入账户，不写 NC 密码文件。页面/API 不返回密码与 ticket。
 
-Network Agent 在 backend/app/network_agent.py，NetworkProvider 可替换；当前 MockNetworkProvider 从 config/network_baseline.json 返回配置状态，API 与 UI 明确 source=SIMULATED / MOCK ADAPTER。当前不读取 PT、不登录 SSH、不证明实际 OSPF/BGP/Tunnel 健康。
+- 仅接受 `PT_CONTROLLER` 来源的 CONNECTED 清单，显示 hostname/name、managementIpAddress/ipAddress、type 和 collectionStatus。
+- `collectionStatus == Managed` 精确映射 ONLINE；其他值保留控制器报告，缺字段为 NOT COLLECTED，不把 reachabilityStatus 代替 Managed。
+- OSPF/BGP/IPv6 Tunnel 均 NOT COLLECTED；不推断 FULL/ESTABLISHED/UP，不展示 UNKNOWN。
+- 无配置、认证/连接失败、Backend 失联时清空卡片，不回退 Mock，不保留旧 ONLINE。
+- 拓扑读取失败保留已成功取得的设备清单并报告降级。
+- 仅向本机控制器发送认证，不跟随重定向，不使用系统代理；401 重登录后重试一次。
 
-现有 /api/state、/ws/edge、/ws/dashboard 与 Protocol 1.0 的消息格式保持；NOC 数据通过独立 REST 接口获取。真实 Edge 遥测仍由连接的 Edge 提供。Campus Policy 作为上层展示，thermal-01/version/ACK 不改。网络模拟不影响 RealWSClient 带外事实。
+用户已确认真实 NC 接入和 Dashboard 显示。已有 [NC Managed 清单截图](../evidence/noc/NOC-NC-01-controller-managed-inventory.png)，两项为 SW-CORE/SW-BRANCH。成功 Dashboard、同次 API、失败恢复配套留证见 [EV-16–20](final/EVIDENCE_PENDING.md)。不声明 R-HQ 已 Managed。
 
-## 第一段接口
+## Security / Branch / Campus Policy
 
-- GET /api/network/state：ospf/bgp/ipv6_tunnel/branch_status，以及详细 routing/ipv6/branch/source。
-- GET /api/network/events：独立 NOC 事件流，不挤掉 Edge Policy/Command ACK。
+Security：`POST /api/simulation/security` 支持 PORT_SECURITY_VIOLATION 与 ACL_BLOCK_EVENT；`POST /api/simulation/security/restore` 恢复并保留累计次数/最后事件。红色卡片、Unauthorized MAC/Port blocked 为模拟，不改变 PT 端口。
 
-## 实验融合
+Branch：`GET /api/branch/state`、`POST /api/branch/check`，展示 R-BRANCH `172.16.40.65`、SW-BRANCH `172.16.40.66`；按配置模拟 ADMIN-PC `192.168.30.20` 的 VTY ACL PASS/ALLOW，其他来源 DENY。请求中的 source_ip 不是认证，不发起 Telnet/SSH。真实登录证据另按 N14 验收。
 
-| 实验 | NOC 表达 |
-|---|---|
-| 1 IPv6 基础 | Tunnel/IPv6 与模式规划 |
-| 2 VLAN/Port Security | Security Center |
-| 3 ACL/NAT | 安全事件与 Campus Network Policy；业务入口仍用冻结映射 |
-| 4 OSPF/BGP | Network Health |
-| 5 Tunnel/Remote Admin | Tunnel 与 Branch Operations |
-| Edge 创新 | Policy/FAN/ACK 与断云本地自治 |
+Campus：thermal-01/version/ACK 机制不改，campus_version 为 campus-1 / thermal-vN。Backend thermal 对象是策略状态，实际执行以 Edge ACK/回报为准。Branch Access ALLOW、IoT Isolation ENABLE、Port Security STRICT 是 Network/Security 配置展示，不写 IOS。
 
-## 第一段验证
+模拟状态与最多 100 条 NOC 事件保存在内存，重启回到配置基线。
 
-Network Agent adapter 隔离/替换测试、真实 HTTP network state 与原 Edge snapshot 分离测试、Dashboard 健康/不可用/降级渲染，另运行现有 Gate4/ACK/contract 回归。
+## 故障中心最终边界
 
-## 第二段：Security Center
-GET /api/security/state；POST /api/simulation/security（event 可选 PORT_SECURITY_VIOLATION / ACL_BLOCK_EVENT）；POST /api/simulation/security/restore。攻击显示红色告警、阻断状态和累计次数；恢复保留审计记录。全部为模拟，不实际关闭交换机端口。
+- `POST /api/simulation/cloud` 实际关闭 Edge WebSocket并拒绝重连，HTTP 保持服务；离线 FAN 为 LAST KNOWN。自治提示表示预期行为，真实 FAN 动作须在 PT 中观察。
+- `POST /api/simulation/cloud/restore` 放开连接；只有合法 Edge state_sync 才标记 SUCCESS，hello 不能代替同步。
+- 此按钮与 G4 真正停止/重启 Uvicorn 是两项测试，后者仍需执行。
+- `POST /api/simulation/network` 及 `/restore` 返回 409，界面禁用。不能演示模拟 BGP DOWN/Tunnel DOWN 来证明真实 NC 网络故障。
+- 安全攻击仍为模拟，真实 Port Security 验收在 PT 手工触发。
 
+## 课程知识对应
 
-## 第三段接口与边界
+以仓库 [ACCEPTANCE](ACCEPTANCE.md) 既有五次实验表为准：实验1 地址/IPv6与远程管理；实验2 VLAN/Trunk/EtherChannel/SVI/ROAS；实验3 ACL/NAT/DNS/HTTP；实验4 OSPF/eBGP；实验5 Port Security/Tunnel。NOC 是对这些基础设施能力的可观测与解释入口，控制器管理健康不等于所有实验协议均已被自动采集。
 
-- GET /api/noc/state：五功能聚合快照，1.5 秒轮询，与 Edge WS 独立。
-- GET /api/branch/state；POST /api/branch/check：device=R-BRANCH 或 SW-BRANCH，source_ip 默认 192.168.30.20。仅模拟 ADMIN-PC 的 VTY ACL；来源参数不构成真实身份认证。其他来源 DENY，链路故障时 UNAVAILABLE。
-- GET /api/campus-policy：thermal 使用 Backend 既有策略对象；campus_version 为 campus-1 / thermal-vN，不伪造 Edge version。Network/Security 从配置展示，不下发路由器。
-- GET /api/simulation/state；POST /api/simulation/cloud、/network，以及各自 /restore；Security 见第二段。
-- Cloud Failure 实际关闭 Edge WebSocket 并拒绝重连，HTTP 保持服务用于恢复。AUTO 自治为 Edge 已有本地循环行为；断连期间 FAN 仅显示 LAST KNOWN，不能证明实时物理输出。恢复后只有收到合法真实 state_sync 才报告 SUCCESS，hello 不能触发成功。
-- 这是控制通道中断演练；整个 Uvicorn 进程停止/恢复的 Gate4 测试仍按原测试方案执行。
-- Network Failure 仅模拟 Branch Link Down：BGP/Tunnel/Branch 降级，HQ OSPF 保持 FULL；与 Edge 带外控制链路独立。
-- 模拟状态、累计违例、最多 100 条 NOC 事件在内存，Backend 重启回归配置基线。原 Edge ACK 事件保留机制不变。
+## 开发过程与验证
 
-## 连续演示
+三段开发完成 Network Agent→Security→Branch/Policy/Simulation，再增加中文界面、PT 端口对齐、真实 NC 适配器与真实健康卡片。早期 Fake Edge+Mock Network 连续演示属于软件开发记录，不作为最终真实 PT 验收。
 
-启动本地 Backend：`runtime/noc-venv/Scripts/python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8017`。
-软件演示使用 Fake Edge（不是 PT 证据）：`runtime/noc-venv/Scripts/python.exe -m edge.fake_edge --server ws://127.0.0.1:8017/ws/edge --temperatures 35 --interval 2`。
+本次 46 Python、3 Node、compileall、Protocol contract 通过，详见 [VALIDATION](final/VALIDATION.md)。Protocol 1.0、设备 ID、Edge WS/API 与严格递增版本保持。最新用户 `.pkt` 原样归档，未在本次打开 PT 核验。
 
-1. 打开 http://127.0.0.1:8017，查看 Edge / Network / Security。
-2. Temperature Policy 设置 AUTO、33℃，下发，检查 vN APPLIED 与 FAN ON；Campus 同步显示 thermal-vN。
-3. Cloud Failure：OFFLINE、AUTONOMOUS MODE (expected)、FAN 最后观测值；Edge 按最后策略继续本地循环。Edge 命令/策略禁用，NOC 恢复按钮保持可用。
-4. Restore Cloud：WAITING_FOR_STATE_SYNC → Edge 重连并发送 state_sync → SUCCESS；恢复温度与 FAN 的实时观测。
-5. Network Failure：BGP DOWN / Tunnel DOWN / Branch OFFLINE，Check Router 返回 UNAVAILABLE；Restore Network 恢复 ESTABLISHED / UP。
-6. Security Attack：红色 PORT_SECURITY_VIOLATION，Unauthorized MAC detected / Port blocked；Restore Security 恢复转发但保留次数与最后告警。
-
-## 验证记录
-
-37 项 Python 测试通过，涵盖 HTTP 状态、ACL 来源拒绝、网络故障恢复、真实 WebSocket 关闭/拒绝重连、hello 不伪造同步、非默认策略恢复，以及原 Gate4/协议回归。三个 Node 验证通过：NOC 健康/不可用/降级，Edge ACK，断线恢复。check_contract.py 通过。
-浏览器连续验证了 33℃策略 v2 APPLIED、FAN ON；补验 36℃ v3 时 FAN OFF，再恢复 33℃ v4 时 FAN ON、Cloud OFFLINE、恢复按钮可用、实际重连 STATE_SYNC SUCCESS、Remote Management PASS、BGP/Tunnel DOWN 和非法 MAC 红色事件；使用本机 Fake Edge + Mock Network，不替代 PT 验收截图。
-未修改 .pkt、Protocol v1.0 或已有 Gate 状态；只作三个本地提交，不推送。
-
-
-## 中文界面与 Packet Tracer 连接
-
-界面导航、功能标题、操作按钮、提示和演练说明改为中文；保留 OSPF/BGP/IPv6/ACL/VTY、设备标识及必要协议状态码。API 和 Protocol 字段不变。
-
-PT 既有 Gate4 程序使用 `ws://127.0.0.1:8000/ws/edge`，必须与 Backend 端口一致。8017/8018 是独立软件演示端口，运行其服务不会自动让 PT 的 8000 地址可用。
-
-真实 PT 测试在仓库根目录运行：
-
-```powershell
-& .\runtime\noc-venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
-```
-
-打开 http://127.0.0.1:8000，在 PT 的 EDGE-SBC-01 Programming 中运行已实测 Gate4 程序，并确认 WS_URL 与上面一致。若连接仍失败，检查 PT 的 External Network Access 是否允许，以及 SBC Console 的实际错误。不要同时把 Fake Edge 接到同一个 Backend；同一 Backend 当前只有一个 Edge 会话槽位。在 8018 运行的 Fake Edge 不占用 8000 Backend。
-
-可通过 `Invoke-RestMethod http://127.0.0.1:8000/healthz` 检查 Backend：status=ok 只说明服务可达，edge_online=true 才说明收到 Edge 消息；该标志本身不区分 Fake Edge 和 PT，因此真实测试不启动 Fake Edge。
-
-
-## PT Controller 只读接入增量
-已实现真实控制器认证、设备清单/拓扑采集与 Dashboard 展示；使用 scripts/start_pt_backend.ps1 输入控制器账户并启动。配置与边界见 [PT_CONTROLLER_SETUP.md](PT_CONTROLLER_SETUP.md)。尚需用户配置 NC-HQ 后进行实际 PT 联调，不能将本机 HTTP fixture 测试认定为 PT 验收通过。
-
-
-## Network Health 当前行为
-按用户确认的实际 NC API 字段显示真实设备健康卡片，collectionStatus=Managed 映射 ONLINE。OSPF/BGP/Tunnel 为 NOT COLLECTED。Network Health 不再显示模拟数据或 UNKNOWN；无真实采集结果时清空卡片。此更新替代前述历史 Mock Network 演示，模拟网络按钮禁用且接口返回 409；安全与分部模拟模块保持独立。
+真实启动与网络配置见 [PT_CONTROLLER_SETUP](PT_CONTROLLER_SETUP.md)，最终演示见 [DEMO_SCRIPT](DEMO_SCRIPT.md)，完整待补证据见 [清单](final/EVIDENCE_PENDING.md)。

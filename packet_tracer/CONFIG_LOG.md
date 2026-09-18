@@ -457,3 +457,53 @@ Remote Admin：R-BRANCH/SW-BRANCH VTY-HQ-ADMIN 只 permit 192.168.30.20、deny a
 B/C/D：G4-B-01 v2/33 策略基线；G4-B-02 离线 33.3 C ON；G4-B-03 与 G4-C-05 自动 reconnect/hello/state_sync 恢复 31.8/OFF/v2/33/1；G4-D-01 控制平面失联；G4-C-01/02/03/04/05 清零 C 三项 stability debt。离线 OFF/Attributes 与恢复 Dashboard 待补图；图的真实路径/改名 SHA-256 见 `docs/gate4/EVIDENCE_INDEX.md`。
 
 当前用户包 EdgeCampus.pkt：136138 bytes，SHA-256 74bfa6067dc8570b88c96c941101235d1cac4127c81fe5678483277767d6eb35；AI 未改动包内容。当前 Gate4 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，Gate5 NOT STARTED。
+
+## 2026-09-18：G4 后 NOC 管理配置与最终归档
+
+总状态：**完成（待补证据）**。配置来源为用户提交的《EdgeCampus NOC功能升级过程与配置报告》，原文件与完整文字见 `docs/final/source/`。本次没有登录PT、修改IOS或执行Discovery；以下按用户报告重排为可读配置记录，不代表本次运行输出。
+
+### NC-HQ / SW-CORE
+
+NC-HQ GigabitEthernet0接入SW-CORE Gi1/0/10；地址192.168.30.30/24，GW192.168.30.1，ADMIN-PC192.168.30.20。用户报告配置：
+
+```text
+interface gigabitEthernet 1/0/10
+ switchport mode access
+ switchport access vlan 30
+ no shutdown
+```
+
+### R-HQ 管理地址
+
+报告保留G0/0 OSPF业务链路，新增稳定管理Loopback：
+
+```text
+interface loopback0
+ ip address 10.255.255.1 255.255.255.255
+ description MANAGEMENT_LOOPBACK
+```
+
+报告称Discovery发现该地址，但没有直接截图证明其Managed。需导出接口/实际管理路由；不自动推定Loopback已被OSPF或BGP发布。
+
+### CLI / VTY 管理增量
+
+报告使用本地设备用户名认证、`line vty 0 4`、`login local`、`transport input telnet`，Discovery协议为Telnet。设备CLI实验凭据详见用户源报告，不与NC Web/API账户混用。
+
+```text
+ip access-list standard VTY-HQ-ADMIN
+ permit host 192.168.30.20
+ permit host 192.168.30.30
+ deny any
+```
+
+此段更新旧G4‘只permit .30.20’的管理准入事实。应用设备、原ACL合并顺序、VTY `access-class VTY-HQ-ADMIN in` 绑定需以完整running-config核对；报告没有逐设备输出，不补造绑定已执行。必须验证普通HQ OFFICE/BR-OFFICE仍被拒绝。
+
+### NC与Dashboard
+
+用户确认真实NC接入，原图直接证明SW-CORE192.168.30.1/MultiLayerSwitch与SW-BRANCH172.16.40.66/Switch Managed，另三项Unsupported。原图`evidence/noc/NOC-NC-01-controller-managed-inventory.png`。Dashboard只对collectionStatus=Managed映射ONLINE；协议级OSPF/BGP/Tunnel为NOT COLLECTED。
+
+Backend只读ticket/设备清单/物理拓扑，不写IOS。Security/Branch仍模拟，Campus Network/Security仍配置展示。Cloud演练中断Edge WS；网络模拟禁用/409。
+
+### 最新用户包与待核验
+
+`packet_tracer/EdgeCampus.pkt`：144326 bytes，SHA-256 `1c390fd766e6cb3c108f4e69853f61f614ca5a1a790cbed92e4cbd3f37e505dd`。这是本次开始前用户已经修改的最新文件，原样归档；此前136138bytes/G4哈希保留为历史。本次未打开包，最终运行配置、SBC程序嵌入、保存重开及连续三轮彩排待核验。全部缺口见 `docs/final/EVIDENCE_PENDING.md`，软件验证见 `docs/final/VALIDATION.md`。

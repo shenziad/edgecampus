@@ -39,14 +39,16 @@ EdgeCampus 将 Packet Tracer 中的总部园区、企业 WAN、Internet 与异�
 
 ## 当前项目状态
 
-- Gate 0：**COMPLETE**。
-- Gate 1：**CLOSED**。A/B/D 与 A+B 集成通过；C 三项稳定性欠账已于 Gate4 补齐真实证据。
-- Gate 2：**COMPLETE**。Branch/WAN IPv4 基础层以及真实 `TEMP01 → Dashboard` 全链路均已通过。
-- Gate 3：**EVIDENCE PENDING**，实测已确认，ACK 修复后证据后补。
-- 当前 Gate：**Gate 4 — Failure Recovery + IPv6/Security（已实现 / USER-TESTED / EVIDENCE PENDING）**。
-- Gate 5：**NOT STARTED**。
+**完成（待补证据） / COMPLETE — EVIDENCE PENDING**，更新于 2026-09-18。
 
-当前唯一指挥文件：`docs/CURRENT_GATE.md`。
+G4 后 NOC 开发收尾，真实 NC 接入已由用户确认。Network Health 使用真实清单，Managed→ONLINE；OSPF/BGP/Tunnel NOT COLLECTED。Security/Branch 为模拟，Campus Network/Security 为展示层，Network Failure 模拟已禁用。G3/G4 缺证及最终包复核、G5 三轮彩排仍待完成，不宣称已通过全部最终验收。
+
+- [最终完成报告](docs/final/PROJECT_COMPLETION_REPORT.md)
+- [全部待补证据：28 组](docs/final/EVIDENCE_PENDING.md)
+- [软件验证](docs/final/VALIDATION.md)与[NOC 最终说明](docs/NOC_UPGRADE.md)
+- [真实 NC 启动/配置](docs/PT_CONTROLLER_SETUP.md)与[现场演示](docs/DEMO_SCRIPT.md)
+
+当前指挥文件：[CURRENT_GATE](docs/CURRENT_GATE.md)。分支继续 `feat/edge`，本次本地归档，不推送。
 
 ## Gate 2 已验证基线
 
@@ -97,11 +99,9 @@ Dashboard
 
 实际 Policy 核心证据为 v3/33 C，最终 Backend 图为 v5；连续联调版本正常递增。B 已验证 31.8 C FAN OFF、34.9 C FAN ON。Dashboard ACK 修复后证据待补。
 
-## Gate 4 开工任务
+## G4 及之后收尾
 
-A：IPv6 地址模式、IPv6-over-IPv4 Tunnel、静态路由、远程管理、Port Security 与网络回归。B：断云本地自治、保留最后策略与自动重连。C：offline、hello/state_sync 恢复与安全拒绝补证。D：失联/重连展示、恢复真实状态和集成证据。
-
-2026-09-17 当前审计：Gate4 已实现并有用户现场实测确认；B 离线 ON、真实 reconnect/hello/state_sync、Backend 恢复与 D 失联有截图，C 三项 Gate1 stability debt 清零。A N12-N15 用户确认已测，截图本次跳过后补；离线 OFF/Attributes、恢复后 Dashboard、G4 N1-N11 全量回归及 G3 修复后 ACK/完整 events 仍需归档。Gate4 为 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，未正式 COMPLETE；Gate5 NOT STARTED。
+G4 用户确认实测，9 张真实图已归档；网络 N12–N15、离线 OFF/物理输出、恢复 Dashboard 与最终回归待补。NOC 已增加中文五板块及真实 NC 只读采集。最新用户包 144326 bytes 原样归档，最终打开/源码一致性与三轮彩排仍待执行。详情见最终完成报告和补证清单。
 
 ## 真实性边界
 
@@ -130,27 +130,15 @@ Packet Tracer 的 VLAN / ACL / Routing / OSPF / BGP / NAT / IPv6 Tunnel 是**模
 6. `docs/NETWORK_PLAN.md`
 7. `docs/ACCEPTANCE.md`
 
-## 软件基线启动
+## 真实 PT + NC 启动
 
-```bash
-python -m venv .venv
-```
-
-Windows PowerShell：
+先在 PT 启用 NC External Access/Real World Access（58000），运行真实 SBC 程序（WS 8000）；在仓库根目录：
 
 ```powershell
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python -m uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\start_pt_backend.ps1 -ControllerPort 58000 -BackendPort 8000
 ```
 
-开发替身：
-
-```powershell
-python -m edge.fake_edge
-```
-
-Dashboard：`http://127.0.0.1:8000`
+输入 NC Web/API 账户，打开 `http://127.0.0.1:8000`。当前本机已有 `runtime/noc-venv`；其他机器环境安装见 PT_CONTROLLER_SETUP。Fake Edge 是独立开发替身，不与真实 PT 同时连接同一 Backend，也不用于现场真实证据。
 
 ## 常用检查
 

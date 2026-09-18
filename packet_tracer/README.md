@@ -1,5 +1,9 @@
 # Packet Tracer 交付目录
 
+## 最新本地交付包（2026-09-18）
+
+项目完成（待补证据）。当前用户 `.pkt` 已更新为144326 bytes，SHA-256 `1c390fd766e6cb3c108f4e69853f61f614ca5a1a790cbed92e4cbd3f37e505dd`，本次原样归档未改二进制。来源报告记录新增NC-HQ与管理配置，实际包内内容、保存重开、程序一致性仍待PT核验（EV-26/27），三轮彩排待执行（EV-28）。详见 [最终报告](../docs/final/PROJECT_COMPLETION_REPORT.md)。
+
 A（Network Owner）在此维护：
 
 - `EdgeCampus.pkt`：唯一正式拓扑文件；

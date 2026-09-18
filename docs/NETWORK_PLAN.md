@@ -447,3 +447,18 @@ Gate 0 已实测该通道；Final Architecture v2 不改变它。
 | MAC Binding / Port Security / IPv6-over-IPv4 | HQ 接入安全 + 跨 IPv4 ISP 的 IPv6 管理 Overlay |
 
 最终报告应按业务/架构组织，再用此表说明课程覆盖；不要把最终项目写成五个独立实验的机械拼接。
+
+## 2026-09-18：G4 后 NOC 管理增量（用户实施报告）
+
+该段是已由用户实施并报告的新增管理平面规划，不重编号既有HQ/Branch/WAN业务地址、AS、Tunnel或EtherChannel。项目完成（待补证据），现场配置导出仍待补。
+
+| 节点/连接 | 报告中的实际值 |
+|---|---|
+| NC-HQ 管理接口 | GigabitEthernet0，192.168.30.30/24，GW 192.168.30.1 |
+| NC 接入交换端口 | SW-CORE Gi1/0/10，access VLAN30，no shutdown |
+| R-HQ 管理 Loopback0 | 10.255.255.1/32，description MANAGEMENT_LOOPBACK；G0/0保留OSPF业务链路 |
+| VTY 准入新增 | 在实际应用设备的VTY-HQ-ADMIN中保留192.168.30.20，新增192.168.30.30，deny any；需核对VTY access-class绑定 |
+| CLI 管理 | login local，transport input telnet；具体设备覆盖及凭据按源报告/实际配置核对 |
+| 宿主机API端口 | NC Real World Access 58000；FastAPI/Edge WS 8000；不能用PT内部192.168.30.30替代宿主机127.0.0.1:58000 |
+
+NC用户已确认连通，直接截图证明SW-CORE `.30.1` 与SW-BRANCH `.40.66` Managed。R-HQ Loopback发现与管理路由尚待实际配置/清单核验，不自行新增OSPF/BGP发布、不冒称Managed。新增NC准入不能放开普通OFFICE/Branch用户管理权限。所有最终回归与留证见 [EV-01–28](final/EVIDENCE_PENDING.md)。

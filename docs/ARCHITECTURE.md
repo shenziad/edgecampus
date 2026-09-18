@@ -1,5 +1,20 @@
 # 系统架构 — Final Architecture v2
 
+## G4 后 NOC 最终增量（2026-09-18）
+
+项目完成（待补证据）。新增 NC-HQ `.30.30`/VLAN30 与本机 REST Real World Access 58000；Backend通过认证只读清单/拓扑，再由独立NOC REST向Dashboard展示。与SBC RealWSClient→Backend 8000带外通道并行。此增量不改Protocol 1.0、Edge策略ID/version/ACK。
+
+```mermaid
+flowchart LR
+    PT[PT 网络设备] --> NC[NC-HQ 管理采集]
+    NC -->|Real World Access 58000| B[FastAPI Backend]
+    SBC[PT SBC] <-->|RealWSClient /ws/edge 8000| B
+    B -->|Edge WS + NOC REST| UI[中文 Dashboard]
+    SBC --> FAN[PT FAN01]
+```
+
+Network Health真实只读；协议状态NOT COLLECTED；Security/Branch模拟；Campus Network/Security配置展示；Cloud中断Edge WS；Network Failure禁用。详见 [最终报告](final/PROJECT_COMPLETION_REPORT.md)。下方保留v2网络与双环基线。
+
 ## 一句话目标
 
 在多园区网络安全域隔离的基础上，实现“感知—边缘决策—云端管理—设备执行”的双向闭环；总部、Internet 与异地分部通过分层路由和安全策略互联，同时在 Cloud 失联时保持本地 Edge 自治。

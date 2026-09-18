@@ -1,5 +1,11 @@
 # Integration Board — Final Architecture v2
 
+## 当前收尾状态（2026-09-18）
+
+项目 **完成（待补证据）**。G4 后 NOC 开发与真实 NC 只读接入完成；NC 成功由用户确认，并有两项 Managed 原图。G3/G4 缺证与 G5 复核/三轮彩排仍待完成。当前能力和包哈希见 [最终报告](final/PROJECT_COMPLETION_REPORT.md)，待补项见 [28组清单](final/EVIDENCE_PENDING.md)。
+
+下方为截至 2026-09-17 的阶段历史台账，包含当时包大小、Gate 状态与下一动作；不作为最新开工指令。最新工作以 CURRENT_GATE 和最终报告为准。
+
 只记录可验收能力与跨模块状态，不记录局部样式或函数改名。
 
 ## 能力状态
