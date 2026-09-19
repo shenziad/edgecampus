@@ -1,6 +1,6 @@
 # 最终现场演示与彩排脚本
 
-项目：**完成（待补证据）**。版本：2026-09-19。最终演示固定采用 **园区管理 → 中心物联网控制 → Dashboard 面板控制** 的顺序。完整逐项操作、命令和预期画面见 [最终功能演示设计](FINAL_FUNCTION_DEMO.md)；本文用于现场快速串讲和彩排。
+项目：**验收完成，报告准备中**。版本：2026-09-19。最终演示固定采用 **园区管理 → 中心物联网控制 → Dashboard 面板控制** 的顺序。完整逐项操作、命令和预期画面见 [最终功能演示设计](FINAL_FUNCTION_DEMO.md)；本文用于现场快速串讲和彩排。
 
 ## 演示前
 
@@ -54,12 +54,12 @@ show mac address-table interface fa0/1
 
 配合真实SLAAC/DHCPv6/Static地址分配、IPv6端到端ping、ADMIN Telnet两台Branch设备、OFFICE/BR-OFFICE拒绝、不同MAC违例与恢复。restrict丢弃非法MAC流量，不自动等于物理shutdown。
 
-## 最终连续三轮彩排
+## 报告展示彩排（建议）
 
-同一最终包/代码版本连续完成3轮；每轮按清单覆盖：Edge+NC基线、Policy/Command ACK、真实停Backend升降温与恢复、N1–N15关键业务/安全验证、NOC中文五板块和模拟边界。记录日期/操作者/包哈希/软件提交、阈值/version、预期/实际、截图/JSON/日志位置和异常。
+为提高答辩稳定性，建议使用同一最终包/代码版本连续演练3轮；每轮按清单覆盖：Edge+NC基线、Policy/Command ACK、真实停Backend升降温与恢复、N1–N15关键业务/安全验证、NOC中文五板块和模拟边界。记录日期/操作者/包哈希/软件提交、阈值/version、预期/实际、截图/JSON/日志位置和异常。
 
-当前尚无三轮记录，**待执行并留证**。某轮失败应保存真实失败、修复后重新取得连续3轮，不补写不存在的PASS。完整待补项见 [最终待补索引](final/EVIDENCE_PENDING.md)。
+三轮记录属于报告与答辩准备材料，不是重新验收。若执行中发现问题，应保存真实现象并修正报告描述；素材清单见 [最终报告素材准备索引](final/EVIDENCE_PENDING.md)。
 
 ## 讲解时保持的边界
 
-PT WAN是模拟企业数据平面；RealWSClient→宿主机FastAPI为带外通道，不经过PT BGP/NAT。NC REST是另一个宿主机对外API端口；HQ-SERVICE/BACKEND-STUB不是FastAPI。项目开发完成与证据齐全/三轮验收通过是不同状态，当前为完成（待补证据）。
+PT WAN是模拟企业数据平面；RealWSClient→宿主机FastAPI为带外通道，不经过PT BGP/NAT。NC REST是另一个宿主机对外API端口；HQ-SERVICE/BACKEND-STUB不是FastAPI。当前项目已验收完成，后续截图、配置导出和彩排均用于报告和答辩准备。

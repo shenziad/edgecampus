@@ -108,3 +108,7 @@ R-HQ 向 HQ OSPF 发布默认路由；不把完整 BGP 表重分发进 Core。
 ## 2026-09-17 Gate4 归档决定
 
 用户明确继续在 feat/edge 整理并提交；A N12-N15 已实测，截图跳过后补，以 Markdown 清单占位而非伪造 PNG。Gate4 保留 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，Gate5 NOT STARTED。C stability debt 依据真实截图清零。最终 Branch HTTP 入口按用户实测采用 203.0.113.1 static TCP/80，私网直连 HTTP FAIL，不重编号冻结地址。
+
+## 2026-09-19 项目状态纠正
+
+用户确认项目已经完成验收。当前统一状态为 **验收完成，报告准备中 / ACCEPTANCE COMPLETE — REPORT PREPARATION**。此后计划补拍的PNG、配置导出和展示彩排记录全部用于实验报告与答辩准备，不再作为项目验收门槛。G1–G4文档中的 EVIDENCE PENDING、G5 NOT STARTED 等状态保留为当时的历史过程记录。

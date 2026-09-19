@@ -2,7 +2,7 @@
 
 ## G4 后 NOC 最终增量（2026-09-18）
 
-项目完成（待补证据）。新增 NC-HQ `.30.30`/VLAN30 与本机 REST Real World Access 58000；Backend通过认证只读清单/拓扑，再由独立NOC REST向Dashboard展示。与SBC RealWSClient→Backend 8000带外通道并行。此增量不改Protocol 1.0、Edge策略ID/version/ACK。
+项目验收完成，报告准备中。新增 NC-HQ `.30.30`/VLAN30 与本机 REST Real World Access 58000；Backend通过认证只读清单/拓扑，再由独立NOC REST向Dashboard展示。与SBC RealWSClient→Backend 8000带外通道并行。此增量不改Protocol 1.0、Edge策略ID/version/ACK。
 
 ```mermaid
 flowchart LR

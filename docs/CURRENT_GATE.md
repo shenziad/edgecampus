@@ -1,6 +1,6 @@
-# 项目收尾 — 完成（待补证据）
+# 项目收尾 — 验收完成，报告准备中
 
-> 项目总状态：**COMPLETE — EVIDENCE PENDING / 完成（待补证据）**
+> 项目总状态：**ACCEPTANCE COMPLETE — REPORT PREPARATION / 验收完成，报告准备中**
 > 更新：2026-09-19；正式分支：`feat/edge`。
 
 ## 当前交付事实
@@ -17,13 +17,13 @@
 - [五次实验映射](EXPERIMENT_MAPPING.md)
 - [最终素材总清单](FINAL_REPORT_SCREENSHOT_CHECKLIST.md)
 - [四人逐张截图操作清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)：A30张、B12张、C15张、D13张
-- [前五次实验需补的5张图](EXPERIMENT_EVIDENCE_COVERAGE.md)
+- [前五次实验报告补拍的5张图](EXPERIMENT_EVIDENCE_COVERAGE.md)
 - [最终完成报告](final/PROJECT_COMPLETION_REPORT.md)
 - [最终软件验证](final/VALIDATION.md)
 
-## 待补内容
+## 报告素材准备
 
-待补证据固定为25组、70张PNG；每张的文件名、操作和预期画面见四人清单。另需归档CFG01–CFG08完整配置附件，并在同一最终软件和PT包上完成连续三轮彩排记录。没有实际取得的素材继续保持待补状态。
+计划补拍25组、70张PNG；每张的文件名、操作和预期画面见四人清单。另整理CFG01–CFG08完整配置附件，并可在同一最终软件和PT包上完成三轮展示彩排记录。这些工作服务于实验报告和答辩材料，不影响已经完成的项目验收结论。
 
 ## 正式PT包
 
@@ -32,7 +32,7 @@
 - 大小：147803 bytes
 - SHA-256：`6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`
 
-包已纳入本次发布；保存重开、包内程序一致性及现场连续彩排仍按截图和附件清单执行。
+包已纳入本次发布；保存重开、包内程序和展示流程按截图与附件清单复现，作为报告素材。
 
 ## 启动
 

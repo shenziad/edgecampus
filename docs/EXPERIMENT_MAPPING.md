@@ -164,4 +164,4 @@ TEMP→MCU→SBC→FAN本地闭环、迟滞温控、Protocol1.0双向WS、therma
 
 当前不能写成已覆盖的项目：DHCPv6 DNS/domain参数、自定义Native VLAN、PortSecurity shutdown/err-disable模式、手工静态MAC绑定变体、全协议一对一Static NAT、原生ISP IPv6、HQ IoT IPv6、OSPFv3、GRE/IPsec、真实SSH管理、BGP高级route-map/AS-path策略，以及Dashboard直接采集OSPF/BGP/Tunnel。这些不作为已实现能力宣传，也不因课程目录出现就自动要求新增功能。
 
-最终状态仍为**完成（待补证据）**：当前分支已归档21张G4 A网络原图，当前NC/API/Dashboard配套证据、最终包内程序一致性及连续三轮彩排仍按最新版本归档。详情见 [配置总览§12](FINAL_CONFIGURATION.md)与[最终完成报告](final/PROJECT_COMPLETION_REPORT.md)。
+最终状态为**验收完成，报告准备中**：当前分支已归档21张G4 A网络原图，NC/API/Dashboard配套截图、最终包内程序和展示彩排记录继续按最新版本整理为报告素材。详情见 [配置总览§12](FINAL_CONFIGURATION.md)与[最终完成报告](final/PROJECT_COMPLETION_REPORT.md)。

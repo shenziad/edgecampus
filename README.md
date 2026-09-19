@@ -39,7 +39,7 @@ EdgeCampus 将 Packet Tracer 中的总部园区、企业 WAN、Internet 与异�
 
 ## 当前项目状态
 
-**完成（待补证据） / COMPLETE — EVIDENCE PENDING**，更新于 2026-09-19。
+**验收完成，报告准备中 / ACCEPTANCE COMPLETE — REPORT PREPARATION**，更新于 2026-09-19。
 
 当前 `feat/edge` 已整合五大NOC板块、真实Packet Tracer Network Controller只读采集、中文Dashboard、真实Edge Policy/Command/ACK、断云自治与恢复，以及五次实验的最终网络配置说明。Network Health以NC真实清单为准：Managed→ONLINE，OSPF/BGP/Tunnel显示NOT COLLECTED；Security/Branch是演示适配器，Campus Network/Security是上层策略展示，Network Failure已禁用。
 
@@ -48,10 +48,10 @@ EdgeCampus 将 Packet Tracer 中的总部园区、企业 WAN、Internet 与异�
 - [最终功能演示设计](docs/FINAL_FUNCTION_DEMO.md)
 - [最终报告素材总清单](docs/FINAL_REPORT_SCREENSHOT_CHECKLIST.md)
 - [四人逐张截图操作清单](docs/FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)
-- [前五次实验需补的5张图](docs/EXPERIMENT_EVIDENCE_COVERAGE.md)
+- [前五次实验报告补拍的5张图](docs/EXPERIMENT_EVIDENCE_COVERAGE.md)
 - [最终完成报告](docs/final/PROJECT_COMPLETION_REPORT.md)与[软件验证](docs/final/VALIDATION.md)
 
-当前仓库已正式收录21张G4网络原图、既有Edge/Backend/Dashboard证据和NC Managed清单原图。待补范围固定为25组、70张PNG，以及CFG01–CFG08配置附件和连续三轮彩排记录；逐张操作与预期画面以上述清单为准。
+当前仓库已正式收录21张G4网络原图、既有Edge/Backend/Dashboard证据和NC Managed清单原图。项目功能已经完成验收；后续25组、70张PNG、CFG01–CFG08配置附件和展示彩排记录均用于撰写报告、制作图表和准备答辩，不再作为项目验收门槛。
 
 当前正式分支为 `feat/edge`，远程同名分支作为交付分支。`packet_tracer/EdgeCampus.pkt` 是唯一正式PT包，当前大小147803 bytes，SHA-256 `6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`。
 

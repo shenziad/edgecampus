@@ -124,11 +124,11 @@ Real FastAPI
 
 ## 当前项目状态
 
-**完成（待补证据）**，2026-09-19，用户指定继续 `feat/edge`。G4 后 NOC 开发完成，真实 NC 接入由用户确认并有两项 Managed 清单原图。最终行为以 [完成报告](final/PROJECT_COMPLETION_REPORT.md)、[NOC_UPGRADE](NOC_UPGRADE.md)和 [CURRENT_GATE](CURRENT_GATE.md) 为准。
+**验收完成，报告准备中**，2026-09-19，用户指定继续 `feat/edge`。G4 后 NOC 开发完成，真实 NC 接入由用户确认并有两项 Managed 清单原图。最终行为以 [完成报告](final/PROJECT_COMPLETION_REPORT.md)、[NOC_UPGRADE](NOC_UPGRADE.md)和 [CURRENT_GATE](CURRENT_GATE.md) 为准。
 
 Network Health 只读真实 NC：Managed→ONLINE，OSPF/BGP/Tunnel NOT COLLECTED；Network Failure 禁用/409。Security/Branch模拟，Campus Network/Security展示，不写IOS。Cloud按钮实际中断Edge WS，自治和物理FAN仍需PT现场证据。
 
-G1–G4历史证据及21张G4网络原图已经归档；最终报告指定截图、包内程序一致性和三轮彩排记录仍待补。后续仅补证、复核与必要修复；[25组/70张逐图清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)。当前包147803 bytes，SHA-256见完成报告；21张G4网络证据已纳入当前分支。
+G1–G4历史证据及21张G4网络原图已经归档；项目已完成验收。后续工作是按[25组/70张逐图清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)整理最终报告截图、配置附件和展示彩排材料，并在写作过程中复核事实。当前包147803 bytes，SHA-256见完成报告；21张G4网络证据已纳入当前分支。
 
 ## Gate 3 已整合 Owner 边界（历史基线）
 
@@ -187,4 +187,4 @@ static TCP/80 + business ACL PASS
 
 ## 当前收尾任务
 
-按70张逐图清单和CFG01–CFG08附件清单归档，复用当前分支已有73张证据原图。完成A29/A30保存重开、B01–B05包内程序核对和连续三轮彩排记录。本轮源码检查结果见 [最终验证](final/VALIDATION.md)。原 G1–G4 报告保留历史事实。
+按70张逐图清单和CFG01–CFG08附件清单准备报告，复用当前分支已有73张证据原图。整理A29/A30保存重开、B01–B05包内程序和展示彩排记录。本轮源码检查结果见 [最终验证](final/VALIDATION.md)。原 G1–G4 报告保留历史事实。

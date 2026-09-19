@@ -1,8 +1,8 @@
 # EdgeCampus 最终完成报告
 
-项目状态：**完成（待补证据） / COMPLETE — EVIDENCE PENDING**。归档日期：2026-09-19；分支：`feat/edge`。
+项目状态：**验收完成，报告准备中 / ACCEPTANCE COMPLETE — REPORT PREPARATION**。归档日期：2026-09-19；分支：`feat/edge`。
 
-此状态表示功能开发与仓库整合完成。21张G4网络原图、9张G4 Edge/Backend/Dashboard原图和NC Managed清单图已经归入当前分支；最终报告指定截图、完整配置附件和连续三轮彩排记录继续待补。
+此状态表示功能开发、仓库整合和项目验收均已完成。21张G4网络原图、9张G4 Edge/Backend/Dashboard原图和NC Managed清单图已经归入当前分支；后续指定截图、完整配置附件和展示彩排记录用于撰写实验报告与准备答辩。
 
 ## 本次归档依据
 
@@ -48,8 +48,8 @@ PT 企业 WAN 为模拟数据平面。RealWSClient→FastAPI 与宿主机→NC R
 | G3 | 功能整合完成，历史网络与Edge证据保留 |
 | G4 | 功能完成；21张网络图和9张软件侧图已纳入当前分支 |
 | G4后NOC | 五大板块完成；真实NC Managed清单原图已归档 |
-| 最终报告 | 73张已有图可复用；25组/70张指定PNG、CFG01–CFG08和三轮记录待补 |
-| 项目总状态 | **完成（待补证据）** |
+| 最终报告 | 73张已有图可复用；继续整理25组/70张指定PNG、CFG01–CFG08和展示彩排记录 |
+| 项目总状态 | **验收完成，报告准备中** |
 
 ## 最新交付包
 
@@ -73,4 +73,4 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\start_pt_backe
 
 输入 NC 的 Web/API 管理员账户，不混用设备 Discovery CLI 凭据。打开 `http://127.0.0.1:8000`。真实 PT 留证时不启动 Fake Edge。本次没有启动长期 Backend 服务。
 
-完整补证要求见 [逐张操作清单](../FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)和[待补索引](EVIDENCE_PENDING.md)；现场流程见 [DEMO_SCRIPT.md](../DEMO_SCRIPT.md)。补齐后更新证据索引与状态，不重命名未拍摄图片为 PASS，不用模拟数据填补真实验收空缺。
+完整报告素材要求见 [逐张操作清单](../FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)和[报告素材准备索引](EVIDENCE_PENDING.md)；展示流程见 [DEMO_SCRIPT.md](../DEMO_SCRIPT.md)。整理后更新素材索引，不重命名未拍摄图片为 PASS，也不混淆真实能力与模拟/展示能力。

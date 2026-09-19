@@ -208,3 +208,7 @@
 2026-09-17 当前审计：Gate4 已实现并有用户现场实测确认；B 离线 ON、真实 reconnect/hello/state_sync、Backend 恢复与 D 失联有截图，C 三项 Gate1 stability debt 清零。A N12-N15 用户确认已测，截图本次跳过后补；离线 OFF/Attributes、恢复后 Dashboard、G4 N1-N11 全量回归及 G3 修复后 ACK/完整 events 仍需归档。Gate4 为 IMPLEMENTED / USER-TESTED / EVIDENCE PENDING，未正式 COMPLETE；Gate5 NOT STARTED。
 
 过程与配置：`docs/gate4/A_NETWORK_REPORT.md`、B/C/D/BCD 报告；自动验证：`docs/gate4/VALIDATION_REPORT.md`。报告应解释 Cloud outage/Edge restart、临时默认值/state_sync、NAT 业务入口、IPv4-only ISP、static IPv6、VTY ACL 和 sticky/restrict。
+
+## 2026-09-19 最终状态纠正
+
+用户确认项目已完成验收，当前进入实验报告准备阶段。上方2026-09-17状态仅作为阶段历史；截图、配置附件和展示彩排用于报告与答辩，不作为新的验收条件。

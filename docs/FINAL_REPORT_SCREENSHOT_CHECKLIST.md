@@ -1,12 +1,12 @@
 # 最终实验报告素材与截图清单
 
-整理日期：2026-09-19。适用版本：当前 `feat/edge`，项目状态 **完成（待补证据）**。本清单针对最终报告的四项要求：**完整功能演示、完整配置信息、前五次实验逐项对照、明确创新点**。已阅读本地代码、配置总览、实验映射、G1–G4报告和现有证据目录，并核对来源提交后将21张G4网络原图纳入当前分支。
+整理日期：2026-09-19。适用版本：当前 `feat/edge`，项目状态 **验收完成，报告准备中**。本清单针对最终报告的四项要求：**完整功能演示、完整配置信息、前五次实验逐项对照、明确创新点**。已阅读本地代码、配置总览、实验映射、G1–G4报告和现有证据目录，并核对来源提交后将21张G4网络原图纳入当前分支。
 
-本清单共有 **70组截图用途**：**44组已有可复用素材**、**25组实际补图任务**，另有I08直接复用这些补图。引用 **73张不同的已有原图**（均已纳入当前分支；其中21张G4网络图保留来源提交）；同图多处出现是交叉引用，不重复拍摄。另列完整配置非截图附件CFG01–CFG09。
+本清单共有 **70组截图用途**：**44组已有可复用素材**、**25组报告补图任务**，另有I08直接复用这些补图。引用 **73张不同的已有原图**（均已纳入当前分支；其中21张G4网络图保留来源提交）；同图多处出现是交叉引用，不重复拍摄。另列完整配置非截图附件CFG01–CFG09。
 
-**多人分工**：见 [截图分工与操作手册（四人）](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)，四人各自使用自己的完整项目，可独立同时操作；25组待补任务已经拆成70张明确PNG：A30张、B12张、C15张、D13张，每张都有编号、文件名、操作步骤和预期画面。
+**多人分工**：见 [截图分工与操作手册（四人）](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)，四人各自使用自己的完整项目，可独立同时操作；25组报告补图任务已经拆成70张明确PNG：A30张、B12张、C15张、D13张，每张都有编号、文件名、操作步骤和预期画面。
 
-**直接开始补图**：先看 [§10 只补缺图速查](#missing-shots)，需要截图细节再按代号回查前文。配置信息与五次实验对照分别见§6、§7，创新点素材见§8。
+**直接准备报告图片**：先看 [§10 只补缺图速查](#missing-shots)，需要截图细节再按代号回查前文。配置信息与五次实验对照分别见§6、§7，创新点素材见§8。
 
 ## 1. 如何使用这份清单
 
@@ -694,7 +694,7 @@
 
 ## 8. 创新点：每个主张对应哪组证据
 
-以下创新是课程技术的系统集成与应用扩展，不声称发明OSPF/BGP/Tunnel等协议。已打勾的是对应截图素材已存在；需要最终版本配图的部分引用前面的待补项，不新增重复摄影任务。
+以下创新是课程技术的系统集成与应用扩展，不声称发明OSPF/BGP/Tunnel等协议。已打勾的是对应截图素材已存在；需要最终版本配图的部分引用前面的报告补图项，不新增重复摄影任务。
 
 - [x] **I01｜感知—边缘决策—云端管理—物理执行双闭环**
 
@@ -826,7 +826,7 @@ U03/U04/U05配套`/api/controller/state`、`/api/network/state`；F06/F07/F11配
 
 ## 10. 只补缺图：拍摄任务速查
 
-下面是前文所有尚缺画面的汇总，可直接按代号命名。一组可能需要多张，正文是否采用由报告篇幅决定。“必补”指完整最终报告所需；“最终核验”指配置信息/当前版本验收所需；同画面已满足多项时合并，不增加重复任务。
+下面是前文所有尚缺画面的汇总，可直接按代号命名。一组可能需要多张，正文是否采用由报告篇幅决定。“必补”指完整最终报告所需；“配置复现”指用于呈现完整配置和当前系统状态；同画面已满足多项时合并，不增加重复任务。
 
 | 代号 | 建议主文件名 | 必须看到什么 | 优先级 |
 |---|---|---|---|
@@ -845,16 +845,16 @@ U03/U04/U05配套`/api/controller/state`、`/api/network/state`；F06/F07/F11配
 | U09 | `U09-campus-policy.png` | Campus Version及Edge/Network/Security，配置展示说明 | 必补；可合图复用 |
 | U10 | `U10-cloud-ws-failure.png` | 按钮真实WS断开、离线最后观测、恢复state_sync SUCCESS | 必补；可合图复用 |
 | U11 | `U11-network-simulation-disabled.png` | Network Failure禁用/说明，必要时附409 | 必补；可合图复用 |
-| C10 | `C10-dns-config.png` | DNS On与两个A记录 | 最终核验/配置 |
-| C11 | `C11-http-config.png` | 两Server HTTP On、页面资源与地址 | 最终核验/配置 |
-| C15 | `C15-nc-access-address.png` | Core Gi1/0/10 access30及NC .30.30/24/GW | 最终核验/配置 |
-| C16 | `C16-nc-external-discovery.png` | External Access/RWA58000与实际Discovery结果 | 最终核验/配置 |
-| C17 | `C17-management-final.png` | 当前login local、VTY ACL与绑定、R-HQ Loopback/路由 | 最终核验/配置 |
-| C18 | `C18-host-addresses.png`及补强后缀 | ADMIN/BR-ADMIN/SBC地址；HQ DHCP DNS/Auto Config、同VLAN与双向PC IPv6 ping | 最终核验/配置 |
-| C20 | `C20-pt-program-config.png` | 当前.pkt内MCU/SBC运行程序与关键参数 | 最终核验/配置 |
-| C21 | `C21-backend-started.png`、`C21-runtime-status.png` | Backend8000/NC58000/真实WS成功启动 | 最终核验/配置 |
-| V01 | `V01-final-vty-regression.png` | NC增量后管理来源允许/拒绝对照 | 最终核验/配置 |
-| V02 | `V02-final-reopen-topology.png`、`V02-final-reopen-online.png` | 保存重开后的拓扑、真实Edge和NC在线 | 最终核验/配置 |
+| C10 | `C10-dns-config.png` | DNS On与两个A记录 | 报告配置复现 |
+| C11 | `C11-http-config.png` | 两Server HTTP On、页面资源与地址 | 报告配置复现 |
+| C15 | `C15-nc-access-address.png` | Core Gi1/0/10 access30及NC .30.30/24/GW | 报告配置复现 |
+| C16 | `C16-nc-external-discovery.png` | External Access/RWA58000与实际Discovery结果 | 报告配置复现 |
+| C17 | `C17-management-final.png` | 当前login local、VTY ACL与绑定、R-HQ Loopback/路由 | 报告配置复现 |
+| C18 | `C18-host-addresses.png`及补强后缀 | ADMIN/BR-ADMIN/SBC地址；HQ DHCP DNS/Auto Config、同VLAN与双向PC IPv6 ping | 报告配置复现 |
+| C20 | `C20-pt-program-config.png` | 当前.pkt内MCU/SBC运行程序与关键参数 | 报告配置复现 |
+| C21 | `C21-backend-started.png`、`C21-runtime-status.png` | Backend8000/NC58000/真实WS成功启动 | 报告配置复现 |
+| V01 | `V01-final-vty-regression.png` | NC增量后管理来源允许/拒绝对照 | 报告配置复现 |
+| V02 | `V02-final-reopen-topology.png`、`V02-final-reopen-online.png` | 保存重开后的拓扑、真实Edge和NC在线 | 报告配置复现 |
 
 **执行顺序**：A按A01–A30、B按B01–B12、C按C01–C15、D按D01–D13，从上到下完成[四人逐张操作清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)。
 

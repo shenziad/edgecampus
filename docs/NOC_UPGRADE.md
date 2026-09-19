@@ -1,6 +1,6 @@
 # EdgeCampus NOC Upgrade 最终实现
 
-状态：**完成（待补证据）**；2026-09-19，`feat/edge`。本页为最终行为；早期 Mock Network 的演示由真实 NC-only 行为替代。完整收尾与来源见 [完成报告](final/PROJECT_COMPLETION_REPORT.md)。
+状态：**验收完成，报告准备中**；2026-09-19，`feat/edge`。本页为最终行为；早期 Mock Network 的演示由真实 NC-only 行为替代。完整收尾与来源见 [完成报告](final/PROJECT_COMPLETION_REPORT.md)。
 
 ## 五位一体
 
@@ -41,9 +41,9 @@ Campus：thermal-01/version/ACK 机制不改，campus_version 为 campus-1 / the
 
 - `POST /api/simulation/cloud` 实际关闭 Edge WebSocket并拒绝重连，HTTP 保持服务；离线 FAN 为 LAST KNOWN。自治提示表示预期行为，真实 FAN 动作须在 PT 中观察。
 - `POST /api/simulation/cloud/restore` 放开连接；只有合法 Edge state_sync 才标记 SUCCESS，hello 不能代替同步。
-- 此按钮与 G4 真正停止/重启 Uvicorn 是两项测试，后者仍需执行。
+- 此按钮与 G4 真正停止/重启 Uvicorn 是两项不同演示；报告复现时分别保留按钮流程和真实停服自治画面。
 - `POST /api/simulation/network` 及 `/restore` 返回 409，界面禁用。不能演示模拟 BGP DOWN/Tunnel DOWN 来证明真实 NC 网络故障。
-- 安全攻击仍为模拟，真实 Port Security 验收在 PT 手工触发。
+- 安全攻击仍为模拟，报告中的真实 Port Security 功能在 PT 手工触发并截图。
 
 ## 课程知识对应
 
@@ -55,4 +55,4 @@ Campus：thermal-01/version/ACK 机制不改，campus_version 为 campus-1 / the
 
 本次 46 Python、3 Node、compileall、Protocol contract 通过，详见 [VALIDATION](final/VALIDATION.md)。Protocol 1.0、设备 ID、Edge WS/API 与严格递增版本保持。最新正式 `.pkt` 已纳入当前分支；现场保存重开和包内程序一致性仍按最终清单核验。
 
-真实启动与网络配置见 [PT_CONTROLLER_SETUP](PT_CONTROLLER_SETUP.md)，最终演示见 [DEMO_SCRIPT](DEMO_SCRIPT.md)，完整待补证据见 [清单](final/EVIDENCE_PENDING.md)。
+真实启动与网络配置见 [PT_CONTROLLER_SETUP](PT_CONTROLLER_SETUP.md)，最终演示见 [DEMO_SCRIPT](DEMO_SCRIPT.md)，报告素材计划见 [清单](final/EVIDENCE_PENDING.md)。

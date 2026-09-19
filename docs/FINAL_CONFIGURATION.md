@@ -1,6 +1,6 @@
 # EdgeCampus 最终配置总览
 
-更新日期：2026-09-19。项目状态：**完成（待补证据）**。组织方式为“功能技术模块 → 拓扑区域 → 设备 → 配置、作用、验证”。本文汇总当前项目的网络、终端、IoT、Backend、Dashboard 与 NC 配置。用户本轮确认 G4/network 原则上与当前网络配置一致，因此以其已实施配置和证据为网络基线，再叠加后续 NC 改动；本文是配置总览，不冒充本次直接导出的完整 running-config。
+更新日期：2026-09-19。项目状态：**验收完成，报告准备中**。组织方式为“功能技术模块 → 拓扑区域 → 设备 → 配置、作用、验证”。本文汇总当前项目的网络、终端、IoT、Backend、Dashboard 与 NC 配置。用户本轮确认 G4/network 原则上与当前网络配置一致，因此以其已实施配置和证据为网络基线，再叠加后续 NC 改动；本文是配置总览，不冒充本次直接导出的完整 running-config。
 
 ## 1. 版本依据与阅读方法
 
@@ -832,6 +832,6 @@ G4图片提供已有网络配置参考，不替代后续NC准入和当前运行�
 
 当前正式 `.pkt`：147803 bytes，SHA-256 `6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`。21张G4网络原图已经纳入当前分支；来源网络包与当前NC整合包是不同历史版本，不用于覆盖当前正式包。最终包的保存重开、包内程序和现场行为按A29/A30、B01–B05及CFG附件核验。
 
-保存重开后需导出：六台网络设备SW-CORE/SW-ACCESS/R-HQ/R-ISP/R-BRANCH/SW-BRANCH的完整配置；各PC/Server/NC地址和GUI服务；实际MCU/SBC程序；NC清单/API与Dashboard；N1–N15/Edge/Policy/Command/Outage/Recovery回归和连续三轮彩排。完整历史缺口见 [EVIDENCE_PENDING](final/EVIDENCE_PENDING.md)，软件回归见 [VALIDATION](final/VALIDATION.md)。
+为完整实验报告，保存重开后整理：六台网络设备SW-CORE/SW-ACCESS/R-HQ/R-ISP/R-BRANCH/SW-BRANCH的完整配置；各PC/Server/NC地址和GUI服务；实际MCU/SBC程序；NC清单/API与Dashboard；N1–N15、Edge、Policy、Command、Outage、Recovery演示和展示彩排记录。报告素材计划见 [EVIDENCE_PENDING](final/EVIDENCE_PENDING.md)，软件回归见 [VALIDATION](final/VALIDATION.md)。
 
 五次课程实验逐项落点见 [EXPERIMENT_MAPPING](EXPERIMENT_MAPPING.md)。配置字段、ID和URL仍以 [PROTOCOL](PROTOCOL.md) 与当前实现为准。
