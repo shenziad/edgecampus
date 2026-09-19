@@ -2,7 +2,7 @@
 
 项目状态：**验收完成，报告准备中 / ACCEPTANCE COMPLETE — REPORT PREPARATION**。归档日期：2026-09-19；分支：`feat/edge`。
 
-此状态表示功能开发、仓库整合和项目验收均已完成。21张G4网络原图、9张G4 Edge/Backend/Dashboard原图和NC Managed清单图已经归入当前分支；后续指定截图、完整配置附件和展示彩排记录用于撰写实验报告与准备答辩。
+此状态表示功能开发、仓库整合和项目验收均已完成。21张G4网络原图、9张G4 Edge/Backend/Dashboard原图、NC Managed清单图、A/B最终证据及课程补强图47–54已经归入当前分支；后续指定截图、完整配置附件和展示彩排记录用于撰写实验报告与准备答辩。
 
 ## 本次归档依据
 
@@ -11,6 +11,7 @@
 - G4 后本地开发提交：`260192d` Network Agent；`b791bd5` Security Center；`1a54005` Branch/Policy/Simulation；`2069e38` 中文界面与端口说明；`9181ea5` NC 真实读取；`1aaa81d` 真实设备健康与 NOT COLLECTED。
 - 用户确认 NC 已连通且 Dashboard 已显示。现归档的 [NC 清单截图](../../evidence/noc/NOC-NC-01-controller-managed-inventory.png)直接证明 SW-CORE、SW-BRANCH 为 Managed；最终Dashboard与同次API JSON按C10–C15逐张清单补拍。
 - 本次重新执行的[软件验证](VALIDATION.md)。HTTP fixture/Fake Edge 回归与真实 PT 现场证据分开记录。
+- 本次用户提供的正式PT包、最终拓扑和图47–54；逐命令说明、兼容限制及证据映射见[课程重点补强](../COURSE_COVERAGE_PATCH.md)。
 
 ## 最终能力与真实作用范围
 
@@ -38,6 +39,18 @@ PT 企业 WAN 为模拟数据平面。RealWSClient→FastAPI 与宿主机→NC R
 | VTY-HQ-ADMIN | permit host `.30.20` 与 `.30.30`，deny any | A24–A27拍摄实际管理允许与拒绝 |
 | 已有直接截图 | SW-CORE `192.168.30.1` / MultiLayerSwitch；SW-BRANCH `172.16.40.66` / Switch；均 Managed | 原图已入库；同图另三项 Unsupported，未改写为在线 |
 
+## 课程重点补强增量
+
+| 能力 | 当前最终实现 | 证据 |
+|---|---|---|
+| EtherChannel | Core/Access两端静态`mode on`，Po1(SU)、Protocol `-`、成员(P) | 图47 |
+| Branch出口策略 | VLAN40来源PAT；到Internet Server的ICMP拒绝、TCP/80允许 | 图48、49a、49b |
+| OSPF广播网段 | VLAN100 `10.255.0.0/29`；Core为DR，R-HQ/R-COURSE为两个FULL/DROTHER | 图50a、50b |
+| 路由重分发实验 | R-COURSE/R-TEST隔离OSPF44/BGP65144/65154；Core学习O E2/Type-5，R-TEST获O*E2默认路由 | 图51、52a、52b |
+| Port Security | Fa0/1与Fa0/3双端口sticky/maximum1/restrict；非法接入计数与恢复 | 图53、54拓扑、54a、54b |
+
+Packet Tracer 2911不支持prefix-list、route-map和distribute-list，因此课程重分发没有伪造这些命令，而是通过独立协议域限制影响范围。生产WAN AS65001/65000/65002仍不做完整BGP表到OSPF的广泛重分发。
+
 报告中 CLI 段落被压平，不自动作为脚本执行。本次未操作 PT、未写 IOS、未自动运行 Discovery。用户名/VTY ACL 的真实设备覆盖范围、Loopback 路由与 `access-class … in` 绑定，以最终 running-config 为准。
 
 ## 阶段结论
@@ -48,18 +61,18 @@ PT 企业 WAN 为模拟数据平面。RealWSClient→FastAPI 与宿主机→NC R
 | G3 | 功能整合完成，历史网络与Edge证据保留 |
 | G4 | 功能完成；21张网络图和9张软件侧图已纳入当前分支 |
 | G4后NOC | 五大板块完成；真实NC Managed清单原图已归档 |
-| 最终报告 | 73张已有图可复用；继续整理25组/70张指定PNG、CFG01–CFG08和展示彩排记录 |
+| 最终报告 | 仓库现有164张证据图片；其中A最终证据40张、B最终证据12张，课程补强图47–54共13个图文件；继续整理CFG01–CFG08和展示彩排记录 |
 | 项目总状态 | **验收完成，报告准备中** |
 
 ## 最新交付包
 
 `packet_tracer/EdgeCampus.pkt` 是本次发布采用的唯一正式PT包。
 
-- 大小：147,803 bytes。
-- SHA-256：`6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`。
+- 大小：156,539 bytes。
+- SHA-256：`4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`。
 - 当前包已纳入 `feat/edge`；现场保存重开和包内程序一致性仍按A29/A30、B01–B05核验。
 - 原始 DOCX SHA-256：`ce6f10931e090d52e9e004fc191a46d8084e1c1976da7901e6709fb185b50e6b`。
-- G4 的 136,138 bytes 包及旧哈希为历史版本；不再当作当前包。
+- 147,803 bytes及更早的136,138 bytes包均为历史版本；不再当作当前包。
 - 哈希用于锁定发布二进制；现场可运行性和最终行为以逐张截图及配置附件为准。
 
 ## 启动与收尾入口

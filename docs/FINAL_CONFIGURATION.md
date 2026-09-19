@@ -15,6 +15,7 @@
 | 历史集成基线 | `1a5beca755c63a3d57917491de5c1cef81c4060e` | 当前分支祖先；仅用于追溯 |
 | 本地 `feat/edge` | `ac3f6c0bf58a75c4bb846ad790d7c19827147bd3` | 最新 G4 Edge、中文 NOC、NC 只读采集与收尾归档 |
 | 用户 NOC 配置报告 | [原始报告](final/source/EdgeCampus_NOC功能升级过程与配置报告.docx) / [文本](final/source/REPORT_TEXT.md) | NC-HQ 接入、R-HQ Loopback、本地认证及 VTY 准入增量 |
+| 课程重点补强 | [详细配置与证据](COURSE_COVERAGE_PATCH.md) | 当前正式包中的静态EtherChannel、Branch PAT/ACL、双DROTHER、隔离重分发、双端口Port Security |
 
 网络 G4 的主要远程依据为 [CONFIG_LOG](https://github.com/shenziad/edgecampus/blob/4e0d31491689f24ce2d5e2a8bd6c7663af1f12d8/packet_tracer/CONFIG_LOG.md) 与 [A_NETWORK_REPORT](https://github.com/shenziad/edgecampus/blob/4e0d31491689f24ce2d5e2a8bd6c7663af1f12d8/docs/gate4/A_NETWORK_REPORT.md)。本地 [CONFIG_LOG](../packet_tracer/CONFIG_LOG.md) 包含更晚 NC 实施记录。按用户本轮确认，G4/network 为当前网络配置参考，不作为第二套并行配置；旧输入中的池名、路由语法及修复前 HTTP 结论以 G4 实施与证据更正。
 
@@ -49,7 +50,7 @@
 
 ```text
 HQ：OFFICE / IOT / MANAGEMENT
-              SW-ACCESS == Po1(LACP) == SW-CORE -- OSPF -- R-HQ
+              SW-ACCESS == Po1(mode on) == SW-CORE -- OSPF -- R-HQ
                                                           |
                                           AS65001 -- eBGP -- R-ISP AS65000
                                                           |          |
@@ -66,6 +67,7 @@ IPv6 管理 Overlay：SW-CORE -- R-HQ == Tunnel0/IPv4 Underlay == R-BRANCH
 IoT：TEMP01 A0 → MCU A0 → USB0/9600 → SBC → D0 → FAN01
 带外通道1：SBC RealWSClient ↔ 宿主机 FastAPI :8000 ↔ Dashboard
 带外通道2：NC-HQ Real World Access :58000 → 宿主机 NC 适配器 → Dashboard
+课程隔离验证：SW-CORE -- VLAN100/OSPF1 -- R-COURSE -- OSPF44/eBGP -- R-TEST
 ```
 
 R-ISP 转发 Tunnel 外层 IPv4，不是企业 Tunnel 终结点。HQ-SERVICE/BACKEND-STUB 是 PT 内部测试服务器，不是宿主机 FastAPI。
@@ -74,9 +76,11 @@ R-ISP 转发 Tunnel 外层 IPv4，不是企业 Tunnel 终结点。HQ-SERVICE/BAC
 
 | 区域 | 设备 | 地址 / 连接 | 配置职责 |
 |---|---|---|---|
-| HQ Core | SW-CORE，3650-24PS | VLAN10/20/30 `.1`；Gi1/0/24 `10.255.0.1/30` | SVI、DHCP、HQ ACL、LACP、OSPF、IPv6、NC 接入 |
-| HQ Access | SW-ACCESS，2960-24TT | 上联 Gi0/1–2；独立管理 IP 未登记 | Access/Trunk/LACP、Fa0/1 Port Security；不能假定有管理 SVI |
-| HQ Border | R-HQ，2911 | G0/0 `10.255.0.2/30`；G0/1 `203.0.113.1/30` | OSPF/eBGP、默认路由、WAN ACL、PAT、映射、Tunnel；NC 增量 Loopback0 `10.255.255.1/32` |
+| HQ Core | SW-CORE，3650-24PS | VLAN10/20/30 `.1`；Vlan100 `10.255.0.1/29` | SVI、DHCP、HQ ACL、静态EtherChannel、OSPF、IPv6、NC 接入 |
+| HQ Access | SW-ACCESS，2960-24TT | 上联 Gi0/1–2；独立管理 IP 未登记 | Access/Trunk/静态EtherChannel、Fa0/1与Fa0/3 Port Security；不能假定有管理 SVI |
+| HQ Border | R-HQ，2911 | G0/0 `10.255.0.2/29`；G0/1 `203.0.113.1/30` | OSPF/eBGP、默认路由、WAN ACL、PAT、映射、Tunnel；NC 增量 Loopback0 `10.255.255.1/32` |
+| Course Router | R-COURSE，2911 | G0/0 `10.255.0.3/29`；G0/1 `10.254.44.1/30` | OSPF1/44、BGP65144、隔离重分发与默认路由发布 |
+| Test Router | R-TEST，2911 | G0/0 `10.254.44.2/30`；Lo0 `10.44.44.1/24`；Lo1 `10.54.54.1/32` | OSPF44、BGP65154、测试前缀与回程验证 |
 | ISP | R-ISP，2911 | G0/0 `203.0.113.2/30`；G0/1 `198.51.100.1/30`；G0/2 `192.0.2.1/24` | AS65000、IPv4-only Transit、Internet LAN |
 | Branch Border | R-BRANCH，2911 | G0/0 `198.51.100.2/30`；G0/1.40 `172.16.40.1/26`；G0/1.50 `172.16.40.65/27` | ROAS、DHCP/DHCPv6、AS65002、Tunnel、VTY |
 | Branch Access | SW-BRANCH，2960-24TT | VLAN50 `172.16.40.66/27` | VLAN40/50、Trunk、管理 SVI、默认网关、VTY |
@@ -104,7 +108,9 @@ R-ISP 转发 Tunnel 外层 IPv4，不是企业 Tunnel 终结点。HQ-SERVICE/BAC
 | HQ | SW-ACCESS Fa0/3 | ADMIN-PC Fa0 | access VLAN30 |
 | HQ | SW-ACCESS Fa0/4 | HQ-SERVICE Fa0 | access VLAN30 |
 | HQ NC | SW-CORE Gi1/0/10 | NC-HQ GigabitEthernet0 | access VLAN30，NC 增量 |
-| HQ Transit | SW-CORE Gi1/0/24 | R-HQ G0/0 | 三层路由口 |
+| HQ Transit | SW-CORE Gi1/0/24 | R-HQ G0/0 | access VLAN100，共享OSPF广播网段 |
+| Course Transit | SW-CORE Gi1/0/23 | R-COURSE G0/0 | access VLAN100，共享OSPF广播网段 |
+| Course Test | R-COURSE G0/1 | R-TEST G0/0 | IPv4 /30，隔离OSPF44/eBGP测试链路 |
 | WAN | R-HQ G0/1 | R-ISP G0/0 | IPv4 /30 |
 | WAN | R-ISP G0/1 | R-BRANCH G0/0 | IPv4 /30 |
 | Internet | R-ISP G0/2 | INTERNET-SERVER Fa0 | Internet LAN |
@@ -132,14 +138,13 @@ vlan 20
 vlan 30
  name MANAGEMENT
 interface range gigabitEthernet 1/0/1 - 2
- channel-group 1 mode active
+ channel-group 1 mode on
 interface port-channel 1
- switchport trunk encapsulation dot1q
  switchport mode trunk
  switchport trunk allowed vlan 10,20,30
 ```
 
-Gi1/0/1–2 由 LACP active 合为 Po1，承担 HQ 三个 VLAN 的交换机互联。`switchport trunk encapsulation dot1q` 是日志原有记录，是否需要/支持以实际型号 CLI 为准，不据此断言每种交换机都必须执行该行。
+Gi1/0/1–2 由静态 `mode on` 合为Po1，承担HQ三个VLAN的交换机互联。当前3650的Packet Tracer CLI不接受`switchport trunk encapsulation dot1q`，因为封装固定为802.1Q；该行无需执行。最终`show etherchannel summary`应显示Po1(SU)、两个成员(P)，Protocol列为`-`。
 
 NC 增量单独使用 Gi1/0/10，不改变 Po1 或 Transit：
 
@@ -173,7 +178,7 @@ interface fastEthernet 0/4
  switchport mode access
  switchport access vlan 30
 interface range gigabitEthernet 0/1 - 2
- channel-group 1 mode active
+ channel-group 1 mode on
 interface port-channel 1
  switchport mode trunk
  switchport trunk allowed vlan 10,20,30
@@ -221,13 +226,18 @@ interface vlan 20
 interface vlan 30
  ip address 192.168.30.1 255.255.255.0
  no shutdown
-interface gigabitEthernet 1/0/24
- no switchport
- ip address 10.255.0.1 255.255.255.252
+vlan 100
+ name OSPF-TRANSIT
+interface range gigabitEthernet 1/0/23 - 24
+ switchport mode access
+ switchport access vlan 100
+ no shutdown
+interface vlan 100
+ ip address 10.255.0.1 255.255.255.248
  no shutdown
 ```
 
-SVI 提供 HQ 三个网关；Gi1/0/24 是路由口而非 VLAN Trunk。
+Vlan10/20/30 SVI提供HQ三个业务网关；Vlan100 SVI提供OSPF广播网段三层地址。Gi1/0/24接R-HQ、Gi1/0/23接R-COURSE，两者均为access VLAN100。
 
 OFFICE IPv4 DHCP，G3 增加 Internet DNS 选项：
 
@@ -243,7 +253,7 @@ ip dhcp pool OFFICE
 
 | 接口 | 配置 | 作用 |
 |---|---|---|
-| G0/0 | `ip address 10.255.0.2 255.255.255.252`；`no shutdown` | HQ Transit，OSPF，NAT inside |
+| G0/0 | `ip address 10.255.0.2 255.255.255.248`；`ip ospf priority 0`；`no shutdown` | HQ Transit，OSPF，NAT inside |
 | G0/1 | `ip address 203.0.113.1 255.255.255.252`；`no shutdown` | HQ 外网、eBGP、NAT outside、Tunnel source |
 | Loopback0 | `ip address 10.255.255.1 255.255.255.255`；`description MANAGEMENT_LOOPBACK` | 用户 NC 报告新增管理地址；其可达路由/协议发布未登记 |
 
@@ -306,7 +316,7 @@ SW-BRANCH 为二层交换机，SVI 用于本机管理，没有启用 `ip routing
 ```text
 router ospf 1
  router-id 10.255.0.1
- network 10.255.0.0 0.0.0.3 area 0
+ network 10.255.0.0 0.0.0.7 area 0
  network 192.168.10.0 0.0.0.255 area 0
  network 192.168.20.0 0.0.0.255 area 0
  network 192.168.30.0 0.0.0.255 area 0
@@ -318,7 +328,7 @@ router ospf 1
 ip route 0.0.0.0 0.0.0.0 203.0.113.2
 router ospf 1
  router-id 10.255.0.2
- network 10.255.0.0 0.0.0.3 area 0
+ network 10.255.0.0 0.0.0.7 area 0
  default-information originate
 router bgp 65001
  bgp log-neighbor-changes
@@ -354,9 +364,15 @@ router bgp 65002
 
 ### 5.5 路由融合与验证
 
-OSPF 与 BGP 在 R-HQ 分工交汇，**没有配置 `redistribute`**，没有将完整 BGP 表导入 OSPF，也没有新增 OSPFv3。使用默认出口和显式前缀发布完成跨区域路由。没有登记 route-map、AS-path access-list 或 local-preference/MED 调优。
+生产WAN的OSPF与BGP仍在R-HQ分工交汇，**没有配置生产域的广泛`redistribute`**，没有将完整AS65001/65000/65002 BGP表导入OSPF，也没有新增OSPFv3。课程补强的R-COURSE/R-TEST使用独立OSPF44与BGP65144/65154，只把测试前缀`10.54.54.0/24`以E2注入OSPF1，并向R-TEST发布缺省路由；见下一节。
 
 `show ip ospf neighbor`、`show ip route`、`show ip bgp summary`、`show ip bgp`。两条 eBGP 连接在三个路由器上的邻居条目合计四条；R-ISP 有两个邻居，不能把设备数直接当会话数。BGP summary 的数字 PfxRcd 表示已建立，不要求显示字符串 ESTABLISHED。
+
+### 5.6 课程隔离路由验证 / R-COURSE、R-TEST
+
+VLAN100现为`10.255.0.0/29`。SW-CORE设置OSPF priority 255，R-HQ与R-COURSE均为priority 0，因此Core侧邻居表出现两个`FULL/DROTHER`。R-COURSE与R-TEST在`10.254.44.0/30`上运行独立OSPF44和eBGP 65144/65154；R-TEST用Null0汇总路由发布`10.54.54.0/24`，并以Lo1 `10.54.54.1/32`提供ping目标。
+
+Packet Tracer 2911不支持本方案原计划使用的prefix-list、route-map及distribute-list，因此没有伪造这些命令；通过隔离协议域控制影响范围。验收以SW-CORE的`O E2 10.54.54.0/24`、Type-5 LSA `Metric Type: 2`、R-TEST的`O*E2 0.0.0.0/0`和ADMIN-PC到`10.54.54.1`四次成功ping为准。完整命令见[课程重点补强](COURSE_COVERAGE_PATCH.md)。
 
 <a id="security"></a>
 
@@ -447,9 +463,16 @@ interface fastEthernet 0/1
  switchport port-security maximum 1
  switchport port-security mac-address sticky
  switchport port-security violation restrict
+interface fastEthernet 0/3
+ switchport mode access
+ switchport access vlan 30
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
 ```
 
-G4原图中的历史合法sticky MAC 为 `00E0.F9B0.77EE`；测试 MAC `0000.1111.2222`，该次 violation count=5，恢复原 MAC 后业务恢复。它们是该次测试值，不是当前计数/当前地址的保证。
+当前两条合法sticky记录为Fa0/1/VLAN10的`00E0.F9B0.77EE`和Fa0/3/VLAN30的`00D0.97E2.907A`。课程违规测试在临时副本中把非法PC接入Fa0/3，违规计数达到5；恢复ADMIN-PC后ping恢复。计数属于该次测试，不是永久保证。
 
 **restrict** 丢弃非法 MAC 流量、计数并可产生日志，合法终端仍可使用端口；没有选择 shutdown/err-disable 模式。sticky 为自动学习绑定，不伪称执行过手工静态 MAC 命令。是否将学习项保存入 startup-config 需保存重开核验。
 
@@ -466,7 +489,7 @@ G4原图中的历史合法sticky MAC 为 `00E0.F9B0.77EE`；测试 MAC `0000.111
 | BR-OFFICE | HQ 其他管理节点 / IoT | WAN ACL/路由隔离 |
 | BR-ADMIN IPv6 | HQ-SERVICE IPv6 | 经 Overlay 可达，不据此声称已有 IPv6 ACL |
 
-`show access-lists`、`show running-config`、实际 Telnet 允许/拒绝、`show port-security interface fa0/1`、`show port-security address`，配合正常→非法→恢复对照。NOC 模拟安全事件不替代这些输出。
+`show access-lists`、`show running-config`、实际 Telnet 允许/拒绝、`show port-security interface fa0/1`、`show port-security interface fa0/3`、`show port-security address`，配合正常→非法→恢复对照。NOC 模拟安全事件不替代这些输出。
 
 <a id="services"></a>
 
@@ -484,7 +507,9 @@ ip access-list standard NAT-INSIDE
 ip nat inside source list NAT-INSIDE interface gigabitEthernet 0/1 overload
 ```
 
-只有 HQ Office `/24` 登记通用 PAT，复用 `203.0.113.1` 的不同端口/标识。HQ IoT 未登记通用 PAT；不将 NAT-INSIDE 说成接口业务 ACL。没有配置 Branch PAT。
+HQ Office `/24`登记通用PAT，复用`203.0.113.1`的不同端口/标识。HQ IoT未登记通用PAT；不将NAT-INSIDE说成接口业务ACL。课程补强还在R-BRANCH配置VLAN40来源PAT，inside为G0/1.40、outside为G0/0，ACL `BR-NAT-INSIDE`只匹配`172.16.40.0/26`到Internet网段`192.0.2.0/24`。
+
+R-BRANCH同时在G0/1.40入方向应用`BR-INTERNET-POLICY`：先拒绝到`192.0.2.10`的ICMP，再允许到同一主机的TCP/80，最后`permit ip any any`。因此HTTP成功与NAT TCP翻译、ping失败与deny计数共同构成协议级策略证据。
 
 ### 7.2 HQ Border / R-HQ：公网 TCP80 映射与G4归档修复
 
@@ -544,7 +569,7 @@ interface vlan 10
  ipv6 address 2001:db8:10::1/64
 interface vlan 30
  ipv6 address 2001:db8:30::1/64
-interface gigabitEthernet 1/0/24
+interface vlan 100
  ipv6 address 2001:db8:100::1/64
 ```
 
@@ -784,6 +809,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\start_pt_backe
 | 项目 | 本文当前取值 / 说明 |
 |---|---|
 | 网络基线 | 以用户确认一致且已纳入当前分支的G4/network配置为准，后续叠加 NC-HQ 管理增量 |
+| 课程补强 | 静态EtherChannel、VLAN100 `/29`双DROTHER、R-COURSE/R-TEST隔离重分发、Branch PAT/ACL与双端口Port Security覆盖旧课程基线 |
 | DHCPv6 | BR-V6 池绑定 G0/1.40，RA M标志；旧输入BR-OFFICE-V6不作为第二套配置 |
 | IPv6路由 | 四条地址下一跳静态路由；旧`tunnel 0`输入错误不作为最终命令 |
 | NAT共存 | 身份翻译条目在前、公网TCP80映射在后；私网/公网HTTP同时可用为当前预期 |
@@ -814,10 +840,11 @@ G4图片提供已有网络配置参考，不替代后续NC准入和当前运行�
 | 设备 | 查阅配置模块 |
 |---|---|
 | SW-CORE | §3.1二层/NC端口；§4.1 SVI/DHCP/Transit；§5.1 OSPF；§6.1 ACL；§8.2 IPv6；§9.3回程；§6.4管理增量覆盖待核验 |
-| SW-ACCESS | §3.2 VLAN/Access/LACP；§6.5 PortSecurity；独立管理地址未登记 |
+| SW-ACCESS | §3.2 VLAN/Access/静态EtherChannel；§6.5双端口PortSecurity；独立管理地址未登记 |
 | R-HQ | §4.2接口/Loopback；§5.2 OSPF/默认/BGP；§6.2 WAN ACL；§6.4 NC管理；§7.1–2 NAT；§8.3/9.1 IPv6/Tunnel |
 | R-ISP | §4.3 IPv4接口；§5.3 BGP；§9.4 IPv4 Underlay |
 | R-BRANCH | §4.4 ROAS/DHCP；§5.4 BGP；§6.3–4 VTY；§8.4 DHCPv6；§9.2 Tunnel/静态路由 |
+| R-COURSE / R-TEST | §5.6隔离OSPF/BGP重分发、双DROTHER、E2/Type-5与回程验证 |
 | SW-BRANCH | §3.3二层；§4.5管理SVI/GW；§6.3–4 VTY |
 | OFFICE-PC / BR-OFFICE-PC | §2.2 IPv4客户端；§7.5应用；§8.5 IPv6自动配置；§6测试角色 |
 | ADMIN-PC / BR-ADMIN-PC | §2.2静态IPv4；§8.5静态IPv6；§6/9管理验证 |
@@ -830,7 +857,7 @@ G4图片提供已有网络配置参考，不替代后续NC准入和当前运行�
 
 ### 12.4 当前包与核验入口
 
-当前正式 `.pkt`：147803 bytes，SHA-256 `6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`。21张G4网络原图已经纳入当前分支；来源网络包与当前NC整合包是不同历史版本，不用于覆盖当前正式包。最终包的保存重开、包内程序和现场行为按A29/A30、B01–B05及CFG附件核验。
+当前正式 `.pkt`：156539 bytes，SHA-256 `4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`。21张G4网络原图、A/B最终证据和课程补强图47–54已经纳入当前分支；来源网络包与当前整合包是不同历史版本，不用于覆盖当前正式包。课程临时违规副本仅作为图54复现附件，不是正式包。最终包的保存重开、包内程序和现场行为按A29/A30、B01–B05、课程补强清单及CFG附件核验。
 
 为完整实验报告，保存重开后整理：六台网络设备SW-CORE/SW-ACCESS/R-HQ/R-ISP/R-BRANCH/SW-BRANCH的完整配置；各PC/Server/NC地址和GUI服务；实际MCU/SBC程序；NC清单/API与Dashboard；N1–N15、Edge、Policy、Command、Outage、Recovery演示和展示彩排记录。报告素材计划见 [EVIDENCE_PENDING](final/EVIDENCE_PENDING.md)，软件回归见 [VALIDATION](final/VALIDATION.md)。
 

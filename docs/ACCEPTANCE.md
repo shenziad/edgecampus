@@ -31,7 +31,7 @@ G0 Contract Freeze
 
 ### A Network — PASS
 
-VLAN10/20/30、Access、LACP EtherChannel/Trunk、SVI/IP routing、OFFICE DHCP、HQ ACL、N1/N2/N3 均有实测证据。
+VLAN10/20/30、Access、静态EtherChannel/Trunk、SVI/IP routing、OFFICE DHCP、HQ ACL、N1/N2/N3 均有实测证据；课程补强的Branch PAT、双DROTHER、隔离重分发和双端口Port Security另见课程补强证据。
 
 ### B Edge — PASS
 

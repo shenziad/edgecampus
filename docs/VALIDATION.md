@@ -31,7 +31,7 @@
 
 ### A Network — PASS
 
-VLAN10/20/30、Access、LACP EtherChannel、Trunk、SVI/IP routing、OFFICE DHCP、HQ ACL 与关键行为矩阵均通过。
+VLAN10/20/30、Access、静态EtherChannel、Trunk、SVI/IP routing、OFFICE DHCP、HQ ACL 与关键行为矩阵均通过；课程补强图47–54提供Branch PAT/ACL、双DROTHER、E2重分发及双端口安全证据。
 
 ### B Edge — PASS
 

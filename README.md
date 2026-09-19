@@ -22,7 +22,7 @@ EdgeCampus 将 Packet Tracer 中的总部园区、企业 WAN、Internet 与异�
                              |                        |
                           SW-CORE                 SW-BRANCH
                              ║                    /       \
-                       LACP EtherChannel     BR-OFFICE   BR-ADMIN
+                       Manual EtherChannel   BR-OFFICE   BR-ADMIN
                              ║
                           SW-ACCESS
                     /          |           \
@@ -35,7 +35,9 @@ EdgeCampus 将 Packet Tracer 中的总部园区、企业 WAN、Internet 与异�
                      FastAPI ↔ Dashboard
 ```
 
-最终系统覆盖总部安全分区、Edge 本地自治、真实 Edge→Cloud Telemetry、Cloud→Edge Policy/Command、断云不断控、总部互联网出口、总部—分部业务访问、OSPF/eBGP、NAT/PAT、DNS/HTTP、IPv6-over-IPv4 Overlay、Port Security 与集中管理。
+课程兼容测试层在 SW-CORE 的 VLAN100 上增加 `R-COURSE` 与 `R-TEST`：SW-CORE 同时观察 R-HQ、R-COURSE 两个 `FULL/DROTHER`，并通过独立 OSPF 44 / AS65144–65154 验证受控跨协议重分发。该测试层不承载正常业务。
+
+最终系统覆盖总部安全分区、Edge 本地自治、真实 Edge→Cloud Telemetry、Cloud→Edge Policy/Command、断云不断控、总部互联网出口、总部—分部业务访问、生产OSPF/eBGP、总部与分部PAT、DNS/HTTP、IPv6-over-IPv4 Overlay、双端口Port Security，以及隔离的课程重分发验证。
 
 ## 当前项目状态
 
@@ -44,6 +46,7 @@ EdgeCampus 将 Packet Tracer 中的总部园区、企业 WAN、Internet 与异�
 当前 `feat/edge` 已整合五大NOC板块、真实Packet Tracer Network Controller只读采集、中文Dashboard、真实Edge Policy/Command/ACK、断云自治与恢复，以及五次实验的最终网络配置说明。Network Health以NC真实清单为准：Managed→ONLINE，OSPF/BGP/Tunnel显示NOT COLLECTED；Security/Branch是演示适配器，Campus Network/Security是上层策略展示，Network Failure已禁用。
 
 - [最终配置总览](docs/FINAL_CONFIGURATION.md)
+- [课程重点补强配置与图47～54证据](docs/COURSE_COVERAGE_PATCH.md)
 - [五次实验技术映射](docs/EXPERIMENT_MAPPING.md)
 - [最终功能演示设计](docs/FINAL_FUNCTION_DEMO.md)
 - [最终报告素材总清单](docs/FINAL_REPORT_SCREENSHOT_CHECKLIST.md)
@@ -51,9 +54,9 @@ EdgeCampus 将 Packet Tracer 中的总部园区、企业 WAN、Internet 与异�
 - [前五次实验报告补拍的5张图](docs/EXPERIMENT_EVIDENCE_COVERAGE.md)
 - [最终完成报告](docs/final/PROJECT_COMPLETION_REPORT.md)与[软件验证](docs/final/VALIDATION.md)
 
-当前仓库已正式收录21张G4网络原图、既有Edge/Backend/Dashboard证据和NC Managed清单原图。项目功能已经完成验收；后续25组、70张PNG、CFG01–CFG08配置附件和展示彩排记录均用于撰写报告、制作图表和准备答辩，不再作为项目验收门槛。
+当前仓库已正式收录21张G4网络原图、A/B组最终报告证据、图47～54课程补强证据、既有Edge/Backend/Dashboard证据和NC Managed清单原图。剩余截图、配置附件和展示彩排记录用于撰写报告、制作图表和准备答辩，不再作为项目验收门槛。
 
-当前正式分支为 `feat/edge`，远程同名分支作为交付分支。`packet_tracer/EdgeCampus.pkt` 是唯一正式PT包，当前大小147803 bytes，SHA-256 `6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`。
+当前正式分支为 `feat/edge`，远程同名分支作为交付分支。`packet_tracer/EdgeCampus.pkt` 是唯一正式PT包，当前大小156539 bytes，SHA-256 `4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`。
 
 ## Gate 2 已验证基线
 

@@ -384,9 +384,11 @@
   **本地已有**：[evidence/network/G1-03-swaccess-access-ports-pass.png](../evidence/network/G1-03-swaccess-access-ports-pass.png)。
 
 
-- [x] **C02｜HQ Trunk/LACP/Port-channel**
+- [x] **C02｜HQ Trunk/静态EtherChannel/Port-channel**
 
-  Core与Access Po1(SU)、LACP、两成员bundled、802.1Q、allowed10/20/30、Native VLAN1。可直接用两图，说明聚合已成立，不凭它声称已经测得双倍吞吐或故障切换。
+  当前最终证据使用图47：Core与Access均显示`channel-group 1 mode on`、Po1(SU)、Protocol `-`、两成员(P)、802.1Q与allowed10/20/30。下面G1两图保留为LACP历史基线，不作为当前协议模式结论。
+
+  **当前补强证据**：[evidence/final_report/A/course_patch/COURSE-E2-01-manual-etherchannel.png](../evidence/final_report/A/course_patch/COURSE-E2-01-manual-etherchannel.png)。
 
   **本地已有**：[evidence/network/G1-04-swcore-trunk-etherchannel-pass.png](../evidence/network/G1-04-swcore-trunk-etherchannel-pass.png)。
 
@@ -627,7 +629,7 @@
 | E2-04 | Trunk链路 | HQ Core↔Access的Po1；Branch SW Gi0/1↔Router G0/1 | C02/C05 |
 | E2-05 | IEEE 802.1Q | HQ Trunk、Branch .40/.50路由子接口 | C02/C05（trunk/encapsulation） |
 | E2-06 | Native VLAN | 现有802.1Q Trunk的相关属性 | C02/C05（Native VLAN1） |
-| E2-07 | LACP协商 | Core Gi1/0/1–2、Access Gi0/1–2 | C02（LACP） |
+| E2-07 | EtherChannel成员聚合 | Core Gi1/0/1–2、Access Gi0/1–2 | C02/图47（mode on、Protocol `-`） |
 | E2-08 | EtherChannel/Port-channel | HQ Po1 | C02（Po1 SU/member bundled） |
 | E2-09 | 聚合带宽/可靠性 | HQ双链路Core↔Access | C02只证明聚合成立；带宽/可靠性为设计说明，未有实测吞吐/切链结果 |
 | E2-10 | SVI三层交换网关 | SW-CORE Vlan10/20/30 | C03 |
@@ -647,8 +649,8 @@
 | E3-05 | ACL应用方向与顺序 | Core VLAN10/20 inbound；R-HQ G0/1 inbound | C04/C08（access-group方向和条目顺序） |
 | E3-06 | Standard ACL | NAT-INSIDE与管理来源ACL | C09（NAT-INSIDE）、C14/C17（VTY来源） |
 | E3-07 | NAT地址转换 | R-HQ | C09/N04/N06 |
-| E3-08 | PAT/Overload | R-HQ OFFICE `/24`→G0/1 `203.0.113.1` | C09/N06 |
-| E3-09 | NAT Inside/Outside边界 | R-HQ G0/0 inside，G0/1 outside | C09（inside/outside） |
+| E3-08 | PAT/Overload | R-HQ OFFICE `/24`及R-BRANCH OFFICE `/26` | C09/N06、图48/49a |
+| E3-09 | NAT Inside/Outside边界 | R-HQ与R-BRANCH各自LAN/WAN接口 | C09、图48（inside/outside） |
 | E3-10 | Static NAT/Port Mapping | R-HQ TCP `203.0.113.1:80→192.168.30.10:80` | C09/N04；全协议1:1 Static NAT未部署 |
 | E3-11 | DNS Server/域名解析 | INTERNET-SERVER `192.0.2.10` | N06/C10 |
 | E3-12 | HTTP/Web Server | Internet Server与HQ-SERVICE/BACKEND-STUB | N04/N06/C11 |
@@ -660,16 +662,16 @@
 | 技术编号 | 课程技术 | 当前项目落点 | 报告素材代号 / 说明 |
 |---|---|---|---|
 | E4-01 | OSPF/IGP | HQ SW-CORE↔R-HQ | N03/C07 |
-| E4-02 | OSPF Area 0 | Transit10.255.0.0/30及Core HQ网段 | C07及完整CLI附录 |
+| E4-02 | OSPF Area 0 | Transit10.255.0.0/29及Core HQ网段 | C07、图50及完整CLI附录 |
 | E4-03 | OSPF Router ID | Core10.255.0.1，R-HQ10.255.0.2 | N03/C07（实际RID） |
 | E4-04 | OSPF Network宣告 | Core声明Transit与三个/24；R-HQ声明Transit | C07及完整CLI附录 |
-| E4-05 | OSPF邻居与动态路由学习 | Core/R-HQ | N03 |
+| E4-05 | OSPF邻居与动态路由学习 | Core/R-HQ/R-COURSE | N03、图50a/50b |
 | E4-06 | BGP/EGP | R-HQ、R-ISP、R-BRANCH | N03/C07 |
 | E4-07 | AS自治系统规划 | HQ65001、ISP65000、Branch65002 | N03/C07/T02；AS规划表 |
 | E4-08 | eBGP Neighbor | HQ↔ISP `.113.1/.2`；ISP↔Branch `.100.1/.2` | N03（两会话、四条邻居条目） |
 | E4-09 | BGP Route Advertisement | HQ发布192.168.30/24；Branch两个VLSM前缀；ISP发布192.0.2/24及两WAN/30 | C07/N03（BGP表及network/mask附录） |
 | E4-10 | AS Path | 各路由器BGP表内跨AS路径属性 | N03（G3-A-02b的AS Path）；未做过滤/prepend |
-| E4-11 | OSPF+BGP融合 | R-HQ两类路由交汇；Core由默认出口外出 | C07（Core默认出口+RHQ双协议）；无redistribute |
+| E4-11 | OSPF+BGP融合/隔离重分发 | 生产R-HQ；课程R-COURSE/R-TEST | C07保持生产无广泛redistribute；图51/52验证测试前缀E2/Type-5及默认路由 |
 | E4-12 | 前缀/出口路由策略 | HQ管理网发布，IoT不对外发布；Core仅需默认路由 | C07/C08/N05；未做route-map/MED/local-pref调优 |
 | E4-13 | 路由表/BGP表/跨区域Ping验证 | 三个路由器、Core与Branch PC | N03/N04/N06 |
 
@@ -677,16 +679,16 @@
 
 | 技术编号 | 课程技术 | 当前项目落点 | 报告素材代号 / 说明 |
 |---|---|---|---|
-| E5-01 | Port Security | SW-ACCESS Fa0/1→OFFICE-PC | C14/N11 |
-| E5-02 | Sticky MAC | 同一Fa0/1 | N11（合法SecureSticky） |
-| E5-03 | Maximum MAC | Fa0/1 maximum1 | C14/N11（max1） |
-| E5-04 | MAC Binding/端口绑定 | 合法OFFICE MAC↔Fa0/1/VLAN10 | N11（sticky绑定）；非手工静态MAC命令 |
-| E5-05 | Violation Mode选择 | Fa0/1 | C14/N11（restrict） |
-| E5-06 | Restrict | Fa0/1非法MAC流量 | N11（非法流量丢弃但Secure-up） |
+| E5-01 | Port Security | SW-ACCESS Fa0/1→OFFICE、Fa0/3→ADMIN | C14/N11、图53 |
+| E5-02 | Sticky MAC | Fa0/1与Fa0/3 | 图53（两条合法SecureSticky） |
+| E5-03 | Maximum MAC | Fa0/1、Fa0/3 maximum1 | C14/N11、图53 |
+| E5-04 | MAC Binding/端口绑定 | OFFICE↔Fa0/1/VLAN10；ADMIN↔Fa0/3/VLAN30 | 图53（Secure Address Table） |
+| E5-05 | Violation Mode选择 | Fa0/1、Fa0/3 | 图53/54a（restrict） |
+| E5-06 | Restrict | Fa0/3非法MAC流量 | 图54a/54b（计数5、Secure-up、恢复后连通） |
 | E5-07 | Shutdown/err-disable | 当前项目未选择 | 未选择shutdown/err-disable；如实文字说明，不要求截图或新增功能 |
-| E5-08 | Violation Counter | SW-ACCESS show port-security interface fa0/1 | N11（违规计数0→5为历史当次测试） |
-| E5-09 | 未授权终端替换/检测日志 | 临时更改OFFICE终端MAC为0000.1111.2222 | N11（非法MAC/日志/丢包） |
-| E5-10 | 安全恢复与正负向对照 | Fa0/1与OFFICE-PC | N11（三阶段） |
+| E5-08 | Violation Counter | SW-ACCESS show port-security interface fa0/3 | 图54a（违规计数5） |
+| E5-09 | 未授权终端替换/检测日志 | 临时非法PC接入Fa0/3 | 图54拓扑/54a（丢包与计数） |
+| E5-10 | 安全恢复与正负向对照 | Fa0/3与ADMIN-PC | 图54a/54b |
 | E5-11 | IPv6-over-IPv4 Tunnel/封装 | R-HQ↔R-BRANCH，经过IPv4-only R-ISP | N08/C13/C06 |
 | E5-12 | Tunnel Interface与端点参数 | 两端Tunnel0，ff::1/ff::2；HQ source G0/1→198.51.100.2；Branch source G0/0→203.0.113.1 | C13/N08 |
 | E5-13 | IPv4 Underlay与IPv6 Overlay路由配合 | ISP BGP发布两个WAN/30；企业四条IPv6静态路由 | C06/C07/C12/N08 |
@@ -752,7 +754,7 @@
 
 - [x] **I07｜按站点规模选择SVI/ROAS，并用多层安全约束业务**
 
-  HQ三层Core+LACP与Branch ROAS/VLSM结合；VLAN、IP ACL、VTY来源ACL、PortSecurity分别约束不同层次。用C02/C03/C05/C08/N09/N11交叉引用。
+  HQ三层Core+静态EtherChannel与Branch ROAS/VLSM结合；VLAN、IP ACL、VTY来源ACL、PortSecurity分别约束不同层次。用C02/C03/C05/C08/N09/N11及图47/53/54交叉引用。
 
   **本地已有**：[evidence/network/G1-06-swcore-svi-routing-pass.png](../evidence/network/G1-06-swcore-svi-routing-pass.png)。
 
@@ -807,7 +809,7 @@
 以下不是要求把所有CLI拍成几十张图。关键片段用C类图，**完整配置信息**通过当前真实导出文件和配置总览形成可检索附录：
 
 - [ ] **CFG01**：`CFG01-SW-CORE-running.txt`，SVI/DHCP/ACL/OSPF/IPv6、Po1及NC接入/管理认证；另保存`show vlan brief`/Trunk/Port-channel结果，因为VLAN数据库不一定只靠running-config完整呈现。
-- [ ] **CFG02**：`CFG02-SW-ACCESS-running.txt`，VLAN/Access/Trunk/LACP/Fa0/1 PortSecurity/sticky；另保存VLAN/聚合/安全状态输出。
+- [ ] **CFG02**：`CFG02-SW-ACCESS-running.txt`，VLAN/Access/Trunk/静态EtherChannel/Fa0/1与Fa0/3 PortSecurity/sticky；另保存VLAN/聚合/安全状态输出。
 - [ ] **CFG03**：`CFG03-R-HQ-running.txt`，接口/Loopback、OSPF/BGP/默认路由、WAN-IN、PAT与两静态映射、Tunnel/IPv6路由、VTY认证与ACL绑定。
 - [ ] **CFG04**：`CFG04-R-ISP-running.txt`，三个IPv4接口、AS65000/两邻居/发布前缀；对照ISP未启用原生IPv6/Tunnel的事实。
 - [ ] **CFG05**：`CFG05-R-BRANCH-running.txt`，ROAS/DHCP/BR-V6/RA标志、BGP/Tunnel/IPv6静态路由、最终VTY。
@@ -859,6 +861,28 @@ U03/U04/U05配套`/api/controller/state`、`/api/network/state`；F06/F07/F11配
 **执行顺序**：A按A01–A30、B按B01–B12、C按C01–C15、D按D01–D13，从上到下完成[四人逐张操作清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)。
 
 若完整全页U02已经清晰覆盖U09/U11，直接将对应项更新为引用U02。同一次F06截图也能同时支撑I01/I03；F09/F10/F11支撑I02/I04；U01/U03支撑I05。创新点不另造一套新截图。
+
+## 10.1 课程重点补强图47–54（已归档）
+
+以下为2026-09-19正式包增量证据，统一位于`evidence/final_report/A/course_patch/`；详细命令、预期输出、Packet Tracer兼容限制与复现顺序见[课程重点补强详细配置](COURSE_COVERAGE_PATCH.md)。
+
+| 图号 | 归档文件 | 证明内容 |
+|---|---|---|
+| 图47 | `COURSE-E2-01-manual-etherchannel.png` | Core/Access两端`mode on`，Po1(SU)、Protocol `-`、成员(P)，Trunk允许10/20/30 |
+| 图48 | `COURSE-E3-01-rbranch-pat.png` | R-BRANCH TCP/80 PAT翻译、统计及inside/outside/overload配置 |
+| 图49a | `COURSE-E3-02-http-permit-acl-nat.png` | HTTP页面成功、ACL TCP/80命中增长、NAT TCP翻译 |
+| 图49b | `COURSE-E3-03-icmp-deny.png` | 到同一服务器的ICMP失败，形成协议级允许/拒绝对照 |
+| 图50a | `COURSE-E4-01-two-drother-neighbors.png` | SW-CORE在VLAN100看到R-HQ、R-COURSE两个FULL/DROTHER |
+| 图50b | `COURSE-E4-02-vlan100-dr-state.png` | Vlan100 `/29`、Core为DR/priority255及两个邻居 |
+| 图51 | `COURSE-E4-03-isolated-redistribution-config.png` | 隔离OSPF44/BGP65144/65154重分发配置与测试前缀 |
+| 图52a | `COURSE-E4-04-oe2-type5.png` | Core的O E2路由与Type-5/Metric Type 2 LSA |
+| 图52b | `COURSE-E4-05-bgp-ping.png` | R-TEST获得O*E2默认路由且ADMIN到10.54.54.1四次ping成功 |
+| 图53 | `COURSE-E5-01-two-port-security.png` | Fa0/1与Fa0/3双端口SecureSticky、maximum1、restrict、Secure-up |
+| 图54拓扑 | `COURSE-E5-02-violation-topology.png` | 临时非法PC替换ADMIN-PC的违规测试拓扑 |
+| 图54a | `COURSE-E5-03-fa03-violation.png` | Fa0/3非法流量失败且Security Violation Count为5 |
+| 图54b | `COURSE-E5-04-fa03-restored.png` | 恢复ADMIN-PC后业务连通，合法sticky绑定保持 |
+
+图54的非法PC场景使用临时复现附件`EdgeCampus-course-e5-violation-temp.pkt`；正式交付始终是`packet_tracer/EdgeCampus.pkt`。
 
 ## 11. 不能直接使用的图片与图注要求
 

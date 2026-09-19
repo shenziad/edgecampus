@@ -8,8 +8,8 @@
 - 五大NOC板块已完成：Edge Control、Network Operation、Security Operation、Policy Management、Failure Simulation。
 - PT Network Controller真实只读接入已完成，Managed设备映射ONLINE；OSPF/BGP/Tunnel显示NOT COLLECTED。
 - Security/Branch使用演示适配器；Campus Network/Security为上层展示；Cloud按钮实际断开Edge WebSocket；Network Failure禁用并返回409。
-- G4的21张网络原图已纳入当前分支；另有9张G4 Edge/Backend/Dashboard证据和1张NC Managed清单图。
-- 最终配置和五次实验落点已经整理成独立文档。
+- G4的21张网络原图、A/B最终证据，以及课程补强图47–54均已纳入当前分支；另有9张G4 Edge/Backend/Dashboard证据和1张NC Managed清单图。
+- 最终配置、五次实验落点和课程重点补强增量已经整理成独立文档。
 
 ## 当前权威入口
 
@@ -20,6 +20,7 @@
 - [前五次实验报告补拍的5张图](EXPERIMENT_EVIDENCE_COVERAGE.md)
 - [最终完成报告](final/PROJECT_COMPLETION_REPORT.md)
 - [最终软件验证](final/VALIDATION.md)
+- [课程重点补强详细配置与证据](COURSE_COVERAGE_PATCH.md)
 
 ## 报告素材准备
 
@@ -29,8 +30,8 @@
 
 `packet_tracer/EdgeCampus.pkt` 是唯一正式包：
 
-- 大小：147803 bytes
-- SHA-256：`6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`
+- 大小：156539 bytes
+- SHA-256：`4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`
 
 包已纳入本次发布；保存重开、包内程序和展示流程按截图与附件清单复现，作为报告素材。
 

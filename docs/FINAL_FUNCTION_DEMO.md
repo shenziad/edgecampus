@@ -82,7 +82,7 @@
 - SW-CORE 的三个 SVI 和 Transit 接口处于 up/up；
 - ADMIN-PC 到 `192.168.20.10` 成功，OFFICE-PC 到同一地址被阻断。
 
-这一场景同时证明 IPv4 DHCP、IPv6 SLAAC、VLAN、Access、Trunk、LACP EtherChannel、SVI、三层转发和基于角色的 ACL。
+这一场景同时证明 IPv4 DHCP、IPv6 SLAAC、VLAN、Access、Trunk、静态 EtherChannel、SVI、三层转发和基于角色的 ACL。
 
 证据：N01、C01–C04、A19、A21，以及已有 G1/G4 网络图。
 
@@ -411,7 +411,7 @@
 
 | 真实场景 | 主要技术 | 对应课程实验 |
 |---|---|---|
-| 总部员工入网与部门划分 | IPv4 DHCP、IPv6 SLAAC、VLAN、Trunk、LACP、SVI、ACL | 实验一、二、三 |
+| 总部员工入网与部门划分 | IPv4 DHCP、IPv6 SLAAC、VLAN、Trunk、静态EtherChannel、SVI、ACL | 实验一、二、三 |
 | 分部员工接入 | VLSM、DHCP/DHCPv6、VLAN、802.1Q、ROAS | 实验一、二 |
 | 总部与分部办公 | OSPF、eBGP、路由表、跨站点 ACL | 实验三、四 |
 | Internet 与服务发布 | DNS、HTTP、PAT、Static TCP/80、WAN ACL | 实验三 |

@@ -26,12 +26,12 @@ Final Architecture v2 是对 Gate 1 单园区基线的**向外扩展**，不是�
 必须保留：
 
 - HQ VLAN 10 / 20 / 30、地址和 ACL 意图；
-- SW-CORE ⇄ SW-ACCESS 的 LACP EtherChannel；
+- SW-CORE ⇄ SW-ACCESS 的两链路静态 EtherChannel（`mode on`）；
 - TEMP01 → MCU → EDGE-SBC-01 → FAN01 本地闭环；
 - Protocol v1.0、设备 ID、WS 路径；
 - RealWSClient 到真实 FastAPI 的带外控制方式。
 
-新增：R-HQ、R-ISP、R-BRANCH、SW-BRANCH、BR-OFFICE-PC、BR-ADMIN-PC、INTERNET-SERVER，以及相应的 OSPF/eBGP、NAT、DNS/HTTP、IPv6 Overlay 与 Port Security。
+新增：R-HQ、R-ISP、R-BRANCH、SW-BRANCH、BR-OFFICE-PC、BR-ADMIN-PC、INTERNET-SERVER，以及相应的 OSPF/eBGP、NAT、DNS/HTTP、IPv6 Overlay 与 Port Security。2026-09-19课程补强又增量加入R-COURSE、R-TEST及第二个VLAN100邻接端口，用隔离的OSPF 44/BGP 65144/65154验证受控重分发，不改变生产WAN自治系统。
 
 ## 总体拓扑
 
@@ -41,7 +41,7 @@ flowchart LR
     ISP --- RHQ["R-HQ\nAS65001"]
     ISP --- RBR["R-BRANCH\nAS65002"]
     RHQ --- CORE["SW-CORE\nHQ L3 Core"]
-    CORE === ACCESS["SW-ACCESS\nLACP EtherChannel"]
+    CORE === ACCESS["SW-ACCESS\nStatic EtherChannel · mode on"]
     ACCESS --- OFFICE["OFFICE\nVLAN10"]
     ACCESS --- EDGE["EDGE-SBC-01\nVLAN20"]
     ACCESS --- MGMT["MANAGEMENT\nVLAN30"]
@@ -50,6 +50,8 @@ flowchart LR
     RBR --- BRSW["SW-BRANCH\n802.1Q"]
     BRSW --- BRO["BR-OFFICE\nVLAN40"]
     BRSW --- BRA["BR-ADMIN\nVLAN50"]
+    CORE ---|"VLAN100 · 10.255.0.0/29"| RCOURSE["R-COURSE\nOSPF1/44 · BGP65144"]
+    RCOURSE ---|"10.254.44.0/30"| RTEST["R-TEST\nOSPF44 · BGP65154"]
 ```
 
 网络控制关系：
@@ -256,4 +258,4 @@ NOC 五功能已完成并通过本地 HTTP/WS/浏览器验证；详细接口、�
 
 ## 2026-09-19 最终交付同步
 
-当前正式分支为`feat/edge`。21张G4网络原图、最终配置总览、五次实验映射和四人逐图清单已经纳入。正式PT包为147803 bytes，SHA-256 `6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`。架构与Protocol 1.0不变；最终报告素材仍按25组/70张清单补齐。
+当前正式分支为`feat/edge`。21张G4网络原图、A/B最终证据、课程补强图47–54、最终配置总览、五次实验映射和四人逐图清单已经纳入。正式PT包为156539 bytes，SHA-256 `4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`。课程增量把Core–Access改为静态EtherChannel，VLAN100扩为`10.255.0.0/29`并增加R-COURSE/R-TEST隔离验证链路；Protocol 1.0与真实Edge闭环不变。详细差异见[课程重点补强](COURSE_COVERAGE_PATCH.md)。

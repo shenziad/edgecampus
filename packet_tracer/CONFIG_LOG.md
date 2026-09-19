@@ -12,6 +12,18 @@
 - RealWSClient 已在 Gate 0 实机验证，并在保存、关闭、重开 `.pkt` 后再次连接成功。
 - 真实性边界：该 RealWSClient 是带外 Edge–Cloud 控制通道，**不经过 Packet Tracer VLAN/WAN 数据平面**。
 
+## 当前正式包增量（2026-09-19）
+
+本日志前面的Gate 1–Gate 4段落保留当时的实施历史，其中`LACP mode active`、Gi1/0/24三层口`10.255.0.0/30`和单Fa0/1 Port Security均是历史基线，不再代表当前正式包。当前配置由[课程重点补强详细配置](../docs/COURSE_COVERAGE_PATCH.md)覆盖：
+
+- Core–Access两端改为`channel-group 1 mode on`，Po1(SU)、Protocol `-`、两成员(P)；
+- SW-CORE Gi1/0/23–24改为access VLAN100，Vlan100 `10.255.0.1/29`；R-HQ `.2/29`、R-COURSE `.3/29`；
+- R-BRANCH新增VLAN40来源PAT和“ICMP拒绝、TCP/80允许”的协议ACL；
+- R-COURSE/R-TEST用独立OSPF44与BGP65144/65154完成E2/Type-5及默认路由验证；
+- SW-ACCESS Fa0/1与Fa0/3均启用sticky、maximum1、restrict。
+
+当前命令、验证结果和图47–54的文件映射以补强文档为准；以下旧段落用于解释设计演进，不应直接复制覆盖最终包。
+
 ---
 
 # Gate 1 — HQ Core 已验证配置
@@ -506,4 +518,4 @@ Backend只读ticket/设备清单/物理拓扑，不写IOS。Security/Branch仍�
 
 ### 最新用户包与待核验
 
-`packet_tracer/EdgeCampus.pkt`：147803 bytes，SHA-256 `6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`。这是当前发布采用的最新正式文件；此前136138 bytes和144326 bytes版本保留为历史。最终运行配置、SBC程序嵌入、保存重开及连续三轮彩排按 `docs/FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md` 留证。
+`packet_tracer/EdgeCampus.pkt`：156539 bytes，SHA-256 `4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`。这是当前发布采用的最新正式文件；此前147803、136138和144326 bytes版本保留为历史。图47–54的详细配置、Packet Tracer限制和复现步骤见`docs/COURSE_COVERAGE_PATCH.md`；最终运行配置、SBC程序嵌入、保存重开及连续三轮彩排按`docs/FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md`留证。

@@ -1,10 +1,10 @@
 # 网络规划 — Final Architecture v2（Network Owner）
 
-> 本文是 A Network Owner 与所有 AI 的网络权威文档。Final Architecture v2 已批准将 Gate 1 的单园区网络向外扩展为 HQ + ISP/Internet + Branch，但**不允许破坏已验证 HQ Core**。
+> 本文是 A Network Owner 与所有 AI 的网络权威文档。2026-09-19课程补强以增量方式覆盖Gate 1旧参数：Po1改为静态`mode on`，VLAN100改为`10.255.0.0/29`并增加R-COURSE/R-TEST。完整最终命令见[课程重点补强](COURSE_COVERAGE_PATCH.md)；历史Gate报告仍保留原始LACP与`/30`记录。
 
 ## 1. 总原则
 
-1. Gate 1 HQ Core 保持不变；新增网络只从 `SW-CORE Gi1/0/24` 向外延伸。
+1. HQ业务VLAN、SVI、ACL与IoT闭环保持不变；课程增量可修改聚合模式和VLAN100实验接入，但不得改变业务地址与Protocol 1.0。
 2. A 是 canonical `packet_tracer/EdgeCampus.pkt` 的唯一 Owner。
 3. 每一层网络功能必须先验证再叠加下一层：Branch LAN → IPv4 Underlay → OSPF → eBGP → NAT/DNS/HTTP → IPv6 Overlay → Port Security/管理验收。
 4. Final Architecture v2 中的逻辑接口、VLAN、IPv4/IPv6 前缀和 AS Number 不得由 AI 自行重编号。
@@ -28,14 +28,14 @@
 
 | 链路 | A 端接口 | B 端接口 | 模式 | 状态 |
 |---|---|---|---|---|
-| Core–Access #1 | `SW-CORE Gi1/0/1` | `SW-ACCESS Gi0/1` | LACP member / trunk | VERIFIED |
-| Core–Access #2 | `SW-CORE Gi1/0/2` | `SW-ACCESS Gi0/2` | LACP member / trunk | VERIFIED |
+| Core–Access #1 | `SW-CORE Gi1/0/1` | `SW-ACCESS Gi0/1` | static EtherChannel member / trunk | VERIFIED |
+| Core–Access #2 | `SW-CORE Gi1/0/2` | `SW-ACCESS Gi0/2` | static EtherChannel member / trunk | VERIFIED |
 | OFFICE-PC | `SW-ACCESS Fa0/1` | PC Fa0 | access VLAN10 | VERIFIED |
 | EDGE-SBC-01 | `SW-ACCESS Fa0/2` | SBC FastEthernet0 | access VLAN20 | VERIFIED |
 | ADMIN-PC | `SW-ACCESS Fa0/3` | PC Fa0 | access VLAN30 | VERIFIED |
 | BACKEND-STUB | `SW-ACCESS Fa0/4` | Server Fa0 | access VLAN30 | VERIFIED |
 
-Gate 1 已验证 VLAN10/20/30、Po1(LACP)、Trunk、SVI、`ip routing`、OFFICE DHCP 和 VLAN10/VLAN20 inbound ACL。Final Architecture v2 不重新设计这些内容。
+Gate 1已验证VLAN10/20/30、Po1、Trunk、SVI、`ip routing`、OFFICE DHCP和VLAN10/VLAN20 inbound ACL。当前Po1最终模式为静态`mode on`，Protocol列`-`；旧LACP图只作历史演进记录。
 
 ### 2.3 HQ Edge 物理闭环
 
@@ -60,6 +60,8 @@ EDGE-SBC-01 D0 → FAN01 D0  (Custom Cable)
 | `BR-OFFICE-PC` | PC-PT | 分部普通员工 |
 | `BR-ADMIN-PC` | PC-PT | 分部异地运维人员 |
 | `INTERNET-SERVER` | Server-PT | 模拟公网 DNS + HTTP 服务与外部访问测试节点 |
+| `R-COURSE` | Cisco 2911 | VLAN100第二OSPF邻居、隔离OSPF44/BGP65144边界与重分发验证 |
+| `R-TEST` | Cisco 2911 | BGP65154、测试前缀10.54.54.0/24、回程与默认路由验证 |
 
 `R-HQ G0/2`、`R-BRANCH G0/2` 预留，不为了“用满接口”增加无关设备。
 
@@ -69,7 +71,9 @@ EDGE-SBC-01 D0 → FAN01 D0  (Custom Cable)
 
 | 本端 | 本端接口 | 对端 | 对端接口 | 用途 | 当前状态 |
 |---|---|---|---|---|---|
-| SW-CORE | `Gi1/0/24` | R-HQ | `G0/0` | HQ L3 Transit / OSPF | PLANNED V2 |
+| SW-CORE | `Gi1/0/24` | R-HQ | `G0/0` | access VLAN100 / OSPF | IMPLEMENTED |
+| SW-CORE | `Gi1/0/23` | R-COURSE | `G0/0` | access VLAN100 / OSPF | IMPLEMENTED |
+| R-COURSE | `G0/1` | R-TEST | `G0/0` | 隔离OSPF44/eBGP测试链路 | IMPLEMENTED |
 | R-HQ | `G0/1` | R-ISP | `G0/0` | HQ WAN / eBGP / NAT outside | PLANNED V2 |
 | R-ISP | `G0/1` | R-BRANCH | `G0/0` | Branch WAN / eBGP | PLANNED V2 |
 | R-ISP | `G0/2` | INTERNET-SERVER | `Fa0` | 模拟 Internet Service LAN | PLANNED V2 |
@@ -85,12 +89,13 @@ EDGE-SBC-01 D0 → FAN01 D0  (Custom Cable)
 
 ### 5.1 HQ Core ↔ R-HQ Transit
 
-网络：`10.255.0.0/30`
+网络：`10.255.0.0/29`（共享VLAN100广播网段）
 
 | 节点 | 地址 |
 |---|---|
-| `SW-CORE Gi1/0/24` | `10.255.0.1/30` |
-| `R-HQ G0/0` | `10.255.0.2/30` |
+| `SW-CORE Vlan100` | `10.255.0.1/29` |
+| `R-HQ G0/0` | `10.255.0.2/29` |
+| `R-COURSE G0/0` | `10.255.0.3/29` |
 
 此链路运行 OSPF Area 0。
 
@@ -163,8 +168,8 @@ OSPF 只运行在 HQ 内部：
 HQ VLAN10/20/30
        ↓
     SW-CORE
-       ↕ 10.255.0.0/30
-    R-HQ
+       ↕ VLAN100 10.255.0.0/29
+    R-HQ + R-COURSE
 ```
 
 设计意图：
@@ -172,7 +177,7 @@ HQ VLAN10/20/30
 - SW-CORE 将 HQ `192.168.10.0/24`、`192.168.20.0/24`、`192.168.30.0/24` 发布到 OSPF。
 - R-HQ 使用静态默认路由指向 `203.0.113.2`。
 - R-HQ 使用 `default-information originate` 向 HQ Core 发布默认出口。
-- **不把完整 BGP 路由表重分发进 HQ OSPF**；SW-CORE 对外部网络只需要默认路由。
+- **不把生产WAN完整BGP路由表重分发进HQ OSPF**；课程演示仅由R-COURSE把隔离测试前缀`10.54.54.0/24`以E2注入OSPF1。
 
 ### 6.2 WAN EGP — eBGP
 

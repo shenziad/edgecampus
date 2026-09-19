@@ -17,7 +17,7 @@ VLAN10 OFFICE      192.168.10.0/24
 VLAN20 IOT         192.168.20.0/24
 VLAN30 MANAGEMENT  192.168.30.0/24
 
-SW-CORE ⇄ LACP EtherChannel ⇄ SW-ACCESS
+SW-CORE ⇄ Manual EtherChannel (mode on) ⇄ SW-ACCESS
 TEMP01 → IO-MCU-01 → EDGE-SBC-01 → FAN01
 ```
 
@@ -91,7 +91,9 @@ Final Architecture v2 与 Gate 3 均不修改 Protocol v1.0。
 
 Gate 2 已实测并冻结：
 
-- `SW-CORE Gi1/0/24 = 10.255.0.1/30 ↔ R-HQ G0/0 = 10.255.0.2/30`
+- `SW-CORE Vlan100 = 10.255.0.1/29`；Gi1/0/24 access VLAN100 ↔ `R-HQ G0/0 = 10.255.0.2/29`
+- `SW-CORE Gi1/0/23` access VLAN100 ↔ `R-COURSE G0/0 = 10.255.0.3/29`
+- `R-COURSE G0/1 = 10.254.44.1/30 ↔ R-TEST G0/0 = 10.254.44.2/30`，仅用于课程重分发验证
 - `R-HQ G0/1 = 203.0.113.1/30 ↔ R-ISP G0/0 = 203.0.113.2/30`
 - `R-ISP G0/1 = 198.51.100.1/30 ↔ R-BRANCH G0/0 = 198.51.100.2/30`
 - `R-ISP G0/2 = 192.0.2.1/24 ↔ INTERNET-SERVER = 192.0.2.10/24`
@@ -128,7 +130,7 @@ Real FastAPI
 
 Network Health 只读真实 NC：Managed→ONLINE，OSPF/BGP/Tunnel NOT COLLECTED；Network Failure 禁用/409。Security/Branch模拟，Campus Network/Security展示，不写IOS。Cloud按钮实际中断Edge WS，自治和物理FAN仍需PT现场证据。
 
-G1–G4历史证据及21张G4网络原图已经归档；项目已完成验收。后续工作是按[25组/70张逐图清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)整理最终报告截图、配置附件和展示彩排材料，并在写作过程中复核事实。当前包147803 bytes，SHA-256见完成报告；21张G4网络证据已纳入当前分支。
+G1–G4历史证据、21张G4网络原图、A/B最终报告证据和图47～54课程补强证据已经归档。当前包156539 bytes，SHA-256见完成报告；课程补强的权威说明见[COURSE_COVERAGE_PATCH](COURSE_COVERAGE_PATCH.md)。
 
 ## Gate 3 已整合 Owner 边界（历史基线）
 

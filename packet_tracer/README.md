@@ -2,7 +2,7 @@
 
 ## 最新本地交付包（2026-09-19）
 
-项目完成（待补证据）。当前用户 `.pkt` 已更新为147803 bytes，SHA-256 `6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`，本次发布采用当前工作树中的最新二进制。来源报告记录新增NC-HQ与管理配置，当前包已纳入当前分支；保存重开、程序一致性和三轮彩排按最终逐张清单继续留证。详见 [最终报告](../docs/final/PROJECT_COMPLETION_REPORT.md)。
+项目完成（报告证据整理中）。当前正式 `.pkt` 为156539 bytes，SHA-256 `4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`。该包包含手工EtherChannel、Branch PAT/协议ACL、VLAN100双DROTHER课程节点、隔离重分发测试层和双端口Port Security；图54非法终端场景仅保存在证据目录的临时包中。详见[课程补强配置](../docs/COURSE_COVERAGE_PATCH.md)与[最终报告](../docs/final/PROJECT_COMPLETION_REPORT.md)。
 
 A（Network Owner）在此维护：
 

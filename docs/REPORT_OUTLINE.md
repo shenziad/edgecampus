@@ -31,7 +31,7 @@
 
 - VLAN10 OFFICE / VLAN20 IOT / VLAN30 MANAGEMENT；
 - SW-CORE / SW-ACCESS；
-- LACP EtherChannel、Trunk；
+- 静态 EtherChannel（mode on）、Trunk；
 - SVI、三层转发、DHCP；
 - Gate 1 ACL 安全域；
 - Port Security / sticky MAC；

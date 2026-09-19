@@ -112,3 +112,17 @@ R-HQ 向 HQ OSPF 发布默认路由；不把完整 BGP 表重分发进 Core。
 ## 2026-09-19 项目状态纠正
 
 用户确认项目已经完成验收。当前统一状态为 **验收完成，报告准备中 / ACCEPTANCE COMPLETE — REPORT PREPARATION**。此后计划补拍的PNG、配置导出和展示彩排记录全部用于实验报告与答辩准备，不再作为项目验收门槛。G1–G4文档中的 EVIDENCE PENDING、G5 NOT STARTED 等状态保留为当时的历史过程记录。
+
+## ADR-014：课程重点补强采用隔离、增量实现
+
+状态：Accepted — 2026-09-19
+
+决策：
+
+- Core–Access保留两条物理链路和Po1，但最终配置统一为静态EtherChannel `channel-group 1 mode on`；
+- R-BRANCH新增VLAN40来源PAT及协议级ACL，明确形成“ICMP拒绝、TCP/80允许”的对照；
+- VLAN100由`10.255.0.0/30`扩为`10.255.0.0/29`，R-HQ与R-COURSE均设OSPF priority 0，由SW-CORE作为DR并形成两个FULL/DROTHER邻居；
+- R-COURSE/R-TEST使用独立OSPF 44和BGP 65144/65154验证BGP→OSPF E2、Type-5 LSA、默认路由及端到端回程，不改变原WAN AS65001/65000/65002；
+- SW-ACCESS的Fa0/1与Fa0/3分别在VLAN10和VLAN30启用sticky、maximum 1、restrict，补足双端口违规与恢复对照。
+
+原因：Packet Tracer 2911不支持本题原计划使用的prefix-list、route-map和distribute-list。将课程演示放在隔离协议域中，可避免把不受过滤的广域BGP路由整体注入生产OSPF，同时仍能提供可核查的路由表、Type-5 LSA和端到端证据。完整命令与限制见[课程重点补强详细配置](COURSE_COVERAGE_PATCH.md)。
