@@ -1,12 +1,12 @@
 # 最终实验报告素材与截图清单
 
-整理日期：2026-09-19。适用版本：当前 `feat/edge`，项目状态 **验收完成，报告准备中**。本清单针对最终报告的四项要求：**完整功能演示、完整配置信息、前五次实验逐项对照、明确创新点**。已阅读本地代码、配置总览、实验映射、G1–G4报告和现有证据目录，并核对来源提交后将21张G4网络原图纳入当前分支。
+整理日期：2026-09-20。适用版本：当前 `main`，项目状态 **验收完成，报告准备中**。本清单针对最终报告的四项要求：**完整功能演示、完整配置信息、前五次实验逐项对照、明确创新点**。已阅读本地代码、配置总览、实验映射、G1–G4报告和现有证据目录，并核对来源提交后将21张G4网络原图纳入当前分支。
 
-本清单原始规划为**70组截图用途**和A/B/C/D共70张补图。当前仓库`evidence/`已有**177张证据图**，B01–B12与D01–D13已全部完成，A组已合入最终证据并新增图47–54课程补强；仍未完成的项以本清单中的`[ ]`和[素材准备索引](final/EVIDENCE_PENDING.md)为准。另列完整配置非截图附件CFG01–CFG09。
+本清单原始规划为**70组截图用途**和A/B/C/D共70张补图。当前仓库`evidence/`已有**195张证据图**；A01–A30、B01–B12、C01–C15、D01–D13均已完成，A组另有图47–54课程补强。截图任务已闭环；仍未完成的配置附件以本清单中的`[ ]`和[素材准备索引](final/EVIDENCE_PENDING.md)为准。另列完整配置非截图附件CFG01–CFG09。
 
-**多人分工**：见[截图分工与操作手册（四人）](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)。原任务拆为A30张、B12张、C15张、D13张；B与D现已完成，A/C按未勾选项继续，每张仍保留原编号、文件名、操作步骤和预期画面。
+**多人分工**：见[截图分工与操作手册（四人）](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)。原任务拆为A30张、B12张、C15张、D13张，现已全部归档；操作步骤继续保留，供报告复现与答辩排查。
 
-**直接准备报告图片**：先看 [§10 只补缺图速查](#missing-shots)，需要截图细节再按代号回查前文。配置信息与五次实验对照分别见§6、§7，创新点素材见§8。
+**直接准备报告图片**：先看 [§10 截图完成状态速查](#missing-shots)，需要截图细节再按代号回查前文。配置信息与五次实验对照分别见§6、§7，创新点素材见§8。
 
 ## 1. 如何使用这份清单
 
@@ -32,7 +32,7 @@
   **本地已有**：[evidence/network/G2-A-01-topology-check-pass.png](../evidence/network/G2-A-01-topology-check-pass.png)。
 
 
-- [ ] **T02｜当前完整 PT 拓扑（含 NC）**
+- [x] **T02｜当前完整 PT 拓扑（含 NC）**
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -128,7 +128,7 @@
   **本地已有**：[evidence/dashboard/gate4/G4-D-01-control-plane-disconnected-pass.png](../evidence/dashboard/gate4/G4-D-01-control-plane-disconnected-pass.png)。
 
 
-- [ ] **F09｜真正离线降温 FAN OFF 及物理输出**
+- [x] **F09｜真正离线降温 FAN OFF 及物理输出**
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -147,7 +147,7 @@
   **本地已有**：[evidence/backend/gate4/G4-C-05-reconnect-state-sync-restored-pass.png](../evidence/backend/gate4/G4-C-05-reconnect-state-sync-restored-pass.png)。
 
 
-- [ ] **F11｜恢复后的最终中文 Dashboard**
+- [x] **F11｜恢复后的最终中文 Dashboard**
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -299,7 +299,9 @@
   - **D01**｜`U02-noc-overview-01.png`：导航和面板标题为中文；Edge ONLINE、Cloud CONNECTED，温度和FAN状态有实时读数。
 
 
-- [ ] **U03｜真实 Network Health、NC清单与API对应**
+- [x] **U03｜真实 Network Health、NC清单与API对应**
+
+  **C组最终证据**：`evidence/final_report/C/U03-nc-dashboard-api.png`、`U03-controller-table.png`、`U03-controller-api.png`。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -308,7 +310,9 @@
   - **C12**｜`U03-controller-api.png`：SW-CORE、SW-BRANCH的设备名、IP、类型、collectionStatus=Managed可读。
 
 
-- [ ] **U04｜NC断连失败→恢复**
+- [x] **U04｜NC断连失败→恢复**
+
+  **C组最终证据**：`evidence/final_report/C/U04-nc-unavailable.png`、`U04-nc-recovered.png`。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -316,7 +320,9 @@
   - **C15**｜`U04-nc-recovered.png`：控制器回到CONNECTED；设备表重新出现，SW-CORE/SW-BRANCH回到ONLINE/Managed。
 
 
-- [ ] **U05｜真实NC物理拓扑读取或实际降级结果**
+- [x] **U05｜真实NC物理拓扑读取或实际降级结果**
+
+  **C组最终证据**：`evidence/final_report/C/U05-controller-topology-response.png`；实际返回为两节点、`links=[]`、`topology_error=null`，按真实能力留档。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -484,14 +490,14 @@
   **本地已有**：[evidence/network/G4-A-07b-n7-n11-coexist-confirm-pass.png](../evidence/network/G4-A-07b-n7-n11-coexist-confirm-pass.png)。
 
 
-- [ ] **C10｜DNS Server实际服务设置**
+- [x] **C10｜DNS Server实际服务设置**
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
   - **A02**｜`C10-dns-config.png`：DNS为On；www.edgecampus.net对应192.0.2.10，status.edgecampus.net对应203.0.113.1。
 
 
-- [ ] **C11｜两台PT服务器HTTP服务与地址**
+- [x] **C11｜两台PT服务器HTTP服务与地址**
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -530,7 +536,9 @@
   **本地已有**：[evidence/network/G4-A-02-port-security-config-pass.png](../evidence/network/G4-A-02-port-security-config-pass.png)。
 
 
-- [ ] **C15｜NC-HQ接入端口与自身地址**
+- [x] **C15｜NC-HQ接入端口与自身地址**
+
+  **C组最终证据**：`evidence/final_report/C/C15-nc-access-address-core.png`、`C15-core-interface-config.png`、`C15-nc-access-address-nc.png`、`C15-nc-gateway.png`。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -540,7 +548,9 @@
   - **C04**｜`C15-nc-gateway.png`：默认网关192.168.30.1。
 
 
-- [ ] **C16｜NC API External Access与Discovery**
+- [x] **C16｜NC API External Access与Discovery**
+
+  **C组最终证据**：`evidence/final_report/C/C16-nc-external-preferences.png`、`C16-nc-external-discovery-access.png`、`C16-nc-external-discovery-results.png`。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -549,7 +559,9 @@
   - **C07**｜`C16-nc-external-discovery-results.png`：浏览器地址栏192.168.30.30、发现目标、采用的协议和任务结果可读。
 
 
-- [ ] **C17｜NC后的管理认证、ACL绑定与R-HQ Loopback**
+- [x] **C17｜NC后的管理认证、ACL绑定与R-HQ Loopback**
+
+  **A组最终证据**：九张截图均位于`evidence/final_report/A/`；本次新增SW-CORE ACL/VTY与SW-BRANCH ACL三张，补齐A07、A08、A13。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -564,7 +576,7 @@
   - **A15**｜`C17-management-final-rhq-loopback.png`：Loopback0地址10.255.255.1，Status和Protocol均为up。
 
 
-- [ ] **C18｜实际终端地址、SBC地址与课程功能补强**
+- [x] **C18｜实际终端地址、SBC地址与课程功能补强**
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -598,7 +610,9 @@
   - **B05**｜`C20-pt-program-running.png`：CLOUD CONNECTED，实际TEMP、FAN、本地控制来源和持续更新的运行日志可见。
 
 
-- [ ] **C21｜Backend启动端口与两个真实通道**
+- [x] **C21｜Backend启动端口与两个真实通道**
+
+  **C组最终证据**：`evidence/final_report/C/C21-backend-started.png`、`C21-runtime-status.png`。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -799,7 +813,7 @@
   **本地已有**：[evidence/network/G4-A-07b-n7-n11-coexist-confirm-pass.png](../evidence/network/G4-A-07b-n7-n11-coexist-confirm-pass.png)。
 
 
-- [ ] **V01｜当前NC准入后的最终管理正负向回归**
+- [x] **V01｜当前NC准入后的最终管理正负向回归**
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -810,7 +824,7 @@
   - **A28**｜`V01-nc-managed-after-vty-check.png`：控制器CONNECTED；SW-CORE 192.168.30.1和SW-BRANCH 172.16.40.66仍为ONLINE/Managed。
 
 
-- [ ] **V02｜保存重开当前.pkt与在线状态**
+- [x] **V02｜保存重开当前.pkt与在线状态**
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -840,39 +854,39 @@ U03/U04/U05配套`/api/controller/state`、`/api/network/state`；F06/F07/F11配
 
 <a id="missing-shots"></a>
 
-## 10. 只补缺图：拍摄任务速查
+## 10. 截图完成状态速查
 
-下面是前文所有尚缺画面的汇总，可直接按代号命名。一组可能需要多张，正文是否采用由报告篇幅决定。“必补”指完整最终报告所需；“配置复现”指用于呈现完整配置和当前系统状态；同画面已满足多项时合并，不增加重复任务。
+下面保留原拍摄任务及最终状态，便于报告选图和现场复现。A/B/C/D共70张均已归档；“配置复现”项目已有截图，但CFG01–CFG08完整文本附件仍需另行导出。
 
 | 代号 | 建议主文件名 | 必须看到什么 | 优先级 |
 |---|---|---|---|
-| T02 | `T02-final-topology.png` | 当前HQ/ISP/Branch/NC/IoT最终完整拓扑 | 必补；可合图复用 |
-| F06 | `F06-policy-ack.png` | Policy APPLIED ACK、同一ID/version、33℃/AUTO/迟滞 | 必补；可合图复用 |
-| F07 | `F07-command-ack.png` | MANUAL OFF/ON、Command APPLIED ACK、物理状态 | 必补；可合图复用 |
-| F09 | `F09-offline-fan-off.png` | Backend真正停止期间CLOUD OFFLINE、TURN_OFF、FAN state=0；必要时补离线ON state=2 | 必补；可合图复用 |
-| F11 | `F11-dashboard-recovered.png` | Backend恢复后中文UI、原Policy/温度/FAN与state_sync | 必补；可合图复用 |
+| T02 | `T02-final-topology.png` | 当前HQ/ISP/Branch/NC/IoT最终完整拓扑 | 已完成（A） |
+| F06 | `F06-policy-ack.png` | Policy APPLIED ACK、同一ID/version、33℃/AUTO/迟滞 | 已完成（B） |
+| F07 | `F07-command-ack.png` | MANUAL OFF/ON、Command APPLIED ACK、物理状态 | 已完成（B） |
+| F09 | `F09-offline-fan-off.png` | Backend真正停止期间CLOUD OFFLINE、TURN_OFF、FAN state=0；必要时补离线ON state=2 | 已完成（B） |
+| F11 | `F11-dashboard-recovered.png` | Backend恢复后中文UI、原Policy/温度/FAN与state_sync | 已完成（B） |
 | U02 | `U02-noc-overview-01.png` | 最终中文Edge首屏；其他板块按U03/U06/U08/U09/U10拍摄 | 已完成（D） |
-| U03 | `U03-nc-dashboard-api.png` | 两台Managed→ONLINE、NC CONNECTED、NOT COLLECTED及同次API | 必补；可合图复用 |
-| U04 | `U04-nc-unavailable.png` | NC关闭时清空旧卡片、恢复时重新采集 | 必补；可合图复用 |
-| U05 | `U05-controller-topology-response.png` | NC物理拓扑实际JSON，或真实降级错误且清单仍可用 | 必补；可合图复用 |
+| U03 | `U03-nc-dashboard-api.png` | 两台Managed→ONLINE、NC CONNECTED、NOT COLLECTED及同次API | 已完成（C） |
+| U04 | `U04-nc-unavailable.png` | NC关闭时清空旧卡片、恢复时重新采集 | 已完成（C） |
+| U05 | `U05-controller-topology-response.png` | NC物理拓扑实际JSON，或真实降级错误且清单仍可用 | 已完成（C） |
 | U06 | `U06-security-attack.png` | 安全模拟攻击红色事件、计数与恢复审计 | 已完成（D） |
 | U07 | `U07-acl-block-event.png` | ACL_BLOCK_EVENT红色事件；端口SECURE/FORWARDING | 已完成（D） |
 | U08 | `U08-branch-check.png` | Router/Switch模拟PASS/ALLOW，保留模拟标签 | 已完成（D） |
 | U09 | `U09-campus-policy.png` | Campus Version及Edge/Network/Security，配置展示说明 | 已完成（D） |
 | U10 | `U10-cloud-ws-failure.png` | 按钮真实WS断开、离线最后观测、恢复state_sync SUCCESS | 已完成（D） |
 | U11 | `U11-network-simulation-disabled.png` | Network Failure禁用/说明，必要时附409 | 已完成（D） |
-| C10 | `C10-dns-config.png` | DNS On与两个A记录 | 报告配置复现 |
-| C11 | `C11-http-config.png` | 两Server HTTP On、页面资源与地址 | 报告配置复现 |
-| C15 | `C15-nc-access-address.png` | Core Gi1/0/10 access30及NC .30.30/24/GW | 报告配置复现 |
-| C16 | `C16-nc-external-discovery.png` | External Access/RWA58000与实际Discovery结果 | 报告配置复现 |
-| C17 | `C17-management-final.png` | 当前login local、VTY ACL与绑定、R-HQ Loopback/路由 | 报告配置复现 |
-| C18 | `C18-host-addresses.png`及补强后缀 | ADMIN/BR-ADMIN/SBC地址；HQ DHCP DNS/Auto Config、同VLAN与双向PC IPv6 ping | 报告配置复现 |
-| C20 | `C20-pt-program-config.png` | 当前.pkt内MCU/SBC运行程序与关键参数 | 报告配置复现 |
-| C21 | `C21-backend-started.png`、`C21-runtime-status.png` | Backend8000/NC58000/真实WS成功启动 | 报告配置复现 |
-| V01 | `V01-final-vty-regression.png` | NC增量后管理来源允许/拒绝对照 | 报告配置复现 |
-| V02 | `V02-final-reopen-topology.png`、`V02-final-reopen-online.png` | 保存重开后的拓扑、真实Edge和NC在线 | 报告配置复现 |
+| C10 | `C10-dns-config.png` | DNS On与两个A记录 | 已完成（A） |
+| C11 | `C11-http-config.png` | 两Server HTTP On、页面资源与地址 | 已完成（A） |
+| C15 | `C15-nc-access-address.png` | Core Gi1/0/10 access30及NC .30.30/24/GW | 已完成（C） |
+| C16 | `C16-nc-external-discovery.png` | External Access/RWA58000与实际Discovery结果 | 已完成（C） |
+| C17 | `C17-management-final.png` | 当前login local、VTY ACL与绑定、R-HQ Loopback/路由 | 已完成（A） |
+| C18 | `C18-host-addresses.png`及补强后缀 | ADMIN/BR-ADMIN/SBC地址；HQ DHCP DNS/Auto Config、同VLAN与双向PC IPv6 ping | 已完成（A） |
+| C20 | `C20-pt-program-config.png` | 当前.pkt内MCU/SBC运行程序与关键参数 | 已完成（B） |
+| C21 | `C21-backend-started.png`、`C21-runtime-status.png` | Backend8000/NC58000/真实WS成功启动 | 已完成（C） |
+| V01 | `V01-final-vty-regression.png` | NC增量后管理来源允许/拒绝对照 | 已完成（A） |
+| V02 | `V02-final-reopen-topology.png`、`V02-final-reopen-online.png` | 保存重开后的拓扑、真实Edge和NC在线 | 已完成（A） |
 
-**执行顺序**：A按A01–A30、B按B01–B12、C按C01–C15、D按D01–D13，从上到下完成[四人逐张操作清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)。
+**完成状态**：A 30/30、B 12/12、C 15/15、D 13/13。需要复现时仍按[四人逐张操作清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)中的原顺序执行。
 
 若完整全页U02已经清晰覆盖U09/U11，直接将对应项更新为引用U02。同一次F06截图也能同时支撑I01/I03；F09/F10/F11支撑I02/I04；U01/U03支撑I05。创新点不另造一套新截图。
 

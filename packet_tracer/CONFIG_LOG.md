@@ -516,6 +516,14 @@ ip access-list standard VTY-HQ-ADMIN
 
 Backend只读ticket/设备清单/物理拓扑，不写IOS。Security/Branch仍模拟，Campus Network/Security仍配置展示。Cloud演练中断Edge WS；网络模拟禁用/409。
 
+## 2026-09-20：A/C最终截图归档
+
+A01–A30、B01–B12、C01–C15、D01–D13共70张最终报告截图已经全部归档。本次新增`evidence/final_report/A/`三张和`evidence/final_report/C/`十五张。
+
+新增CLI证据确认SW-CORE与SW-BRANCH的`VTY-HQ-ADMIN`均为：permit host `192.168.30.20`、permit host `192.168.30.30`、deny any；SW-CORE VTY 0–4显示`access-class VTY-HQ-ADMIN in`、`login local`、`transport input telnet`，SW-BRANCH已有VTY图显示同样绑定与认证方式。C组证据确认Gi1/0/10 access VLAN30、NC-HQ `.30.30/24`/网关`.30.1`、REST External Access与58000监听、Discovery、Backend 8000与Edge WS、真实Managed清单/API、`NOT COLLECTED`协议边界、`links=[]`拓扑返回以及UNAVAILABLE→CONNECTED恢复。
+
+本次仅归档PNG并更新说明；正式`packet_tracer/EdgeCampus.pkt`仍为156539 bytes、SHA-256 `4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`。因此新CLI截图证明当次运行配置，不声明配置已经持久化进该哈希对应的包。CFG01–CFG08完整附件仍待导出。
+
 ### 最新用户包与待核验
 
 `packet_tracer/EdgeCampus.pkt`：156539 bytes，SHA-256 `4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`。这是当前发布采用的最新正式文件；此前147803、136138和144326 bytes版本保留为历史。图47–54的详细配置、Packet Tracer限制和复现步骤见`docs/COURSE_COVERAGE_PATCH.md`；最终运行配置、SBC程序嵌入、保存重开及连续三轮彩排按`docs/FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md`留证。

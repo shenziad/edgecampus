@@ -1,30 +1,30 @@
 # 最终报告素材准备索引
 
-基准日期：2026-09-19。项目状态：**验收完成，报告准备中**；正式分支：`feat/edge`。
+基准日期：2026-09-20。项目状态：**验收完成，报告准备中**；正式分支：`main`。
 
 ## 1. 已有证据
 
-[最终报告素材总清单](../FINAL_REPORT_SCREENSHOT_CHECKLIST.md)已经逐项登记当前证据；仓库`evidence/`现有177张图片，全部位于当前分支：
+[最终报告素材总清单](../FINAL_REPORT_SCREENSHOT_CHECKLIST.md)已经逐项登记当前证据；仓库`evidence/`现有195张图片，全部位于当前分支：
 
 - G1–G3网络、Edge、Backend和Dashboard历史证据；
 - 21张G4网络原图，来源提交 `4e0d31491689f24ce2d5e2a8bd6c7663af1f12d8`；
 - 9张G4 Edge/Backend/Dashboard恢复与鲁棒性证据；
 - NC-HQ设备清单原图，其中SW-CORE、SW-BRANCH为Managed。
-- A/B/D最终报告证据，其中B01–B12与D01–D13已经完成；
+- A/B/C/D最终报告证据共70张，A01–A30、B01–B12、C01–C15、D01–D13已经全部完成；
 - 图47–54课程重点补强证据，包括静态EtherChannel、Branch PAT/ACL、双DROTHER、隔离重分发及双端口Port Security。
 
 已有证据直接按总清单给出的本地路径引用，不重复截图。
 
-## 2. 报告计划补拍范围
+## 2. 报告截图完成状态
 
-报告计划补拍范围为**25组、70张PNG**。执行入口为[四人逐张截图操作清单](../FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)：
+原计划范围为**25组、70张PNG**，现已全部归档。复现入口为[四人逐张截图操作清单](../FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)：
 
 | 人员 | 图号 | 张数 | 内容 |
 |---|---|---:|---|
-| A | A01–A30 | 30 | 最终拓扑、DNS/HTTP、VTY/ACL、终端地址、DHCP/SLAAC、IPv4/IPv6通信、真实Telnet、保存重开 |
-| B | B01–B12 | 12 | 包内MCU/SBC程序、Policy ACK、Command ACK、真停Backend自治、重启同步 |
-| C | C01–C15 | 15 | NC接口/地址/外部访问、Backend端口、真实设备/API、拓扑返回、NC失联恢复 |
-| D | D01–D13 | 13 | 中文Dashboard、Branch检查、Campus策略、安全事件、Cloud故障恢复、Network Failure禁用/409 |
+| A | A01–A30 | 30/30 | 最终拓扑、DNS/HTTP、VTY/ACL、终端地址、DHCP/SLAAC、IPv4/IPv6通信、真实Telnet、保存重开 |
+| B | B01–B12 | 12/12 | 包内MCU/SBC程序、Policy ACK、Command ACK、真停Backend自治、重启同步 |
+| C | C01–C15 | 15/15 | NC接口/地址/外部访问、Backend端口、真实设备/API、拓扑返回、NC失联恢复 |
+| D | D01–D13 | 13/13 | 中文Dashboard、Branch检查、Campus策略、安全事件、Cloud故障恢复、Network Failure禁用/409 |
 
 每张图的文件名、点击路径、输入命令和预期现象均在四人清单中固定。五次实验需要额外补强的5张图另见[实验功能补图清单](../EXPERIMENT_EVIDENCE_COVERAGE.md)。
 
@@ -48,7 +48,25 @@
 
 A可在自己的完整项目中使用当前正式PT包和当前提交，连续完成三轮展示演练。每轮记录日期、包哈希、软件提交、策略版本、预期、实际结果及素材路径。演示流程见[DEMO_SCRIPT](../DEMO_SCRIPT.md)。
 
-尚未整理的PNG、配置附件和三轮记录均属于报告素材，不改变“验收完成”的项目状态；取得后按实际文件路径更新总清单。
+70张PNG已经整理完成。尚未整理的CFG01–CFG08配置附件和三轮记录仍属于报告素材，不改变“验收完成”的项目状态；取得后按实际文件路径更新总清单。
+
+### A 组证据完成状态
+
+**A01–A30 已完成（30/30）**。正式报告证据已保存至 `evidence/final_report/A/`。
+
+2026-09-20补齐：
+
+1. `evidence/final_report/A/C17-management-final-swcore-acl.png`
+2. `evidence/final_report/A/C17-management-final-swcore-vty.png`
+3. `evidence/final_report/A/C17-management-final-swbranch-acl.png`
+
+三张图确认SW-CORE/SW-BRANCH使用`VTY-HQ-ADMIN`；允许ADMIN-PC `192.168.30.20`与NC-HQ `192.168.30.30`，显式`deny any`；SW-CORE VTY 0–4已绑定该ACL并采用`login local`与Telnet。
+
+### C 组证据完成状态
+
+**C01–C15 已完成（15/15）**。正式报告证据已保存至 `evidence/final_report/C/`。
+
+已覆盖NC-HQ的VLAN30接入、`.30.30/24`与网关、REST External Access、58000监听、Discovery结果、Backend/Edge WS启动、8000/58000运行状态、真实设备表/API、物理拓扑返回，以及NC关闭后的UNAVAILABLE与恢复后的CONNECTED对照。拓扑真实返回`links=[]`，未伪造链路。
 
 ### B 组证据完成状态
 

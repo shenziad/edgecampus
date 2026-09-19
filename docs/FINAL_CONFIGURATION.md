@@ -436,9 +436,9 @@ line vty 0 4
 
 允许 ADMIN-PC `.30.20`，其他来源隐含 deny。这里是 line password + login，与后续 NC 的 login local 是两个阶段，不是同时生效的两种认证。SW-BRANCH 回程依赖 §4.5 默认网关。
 
-### 6.4 HQ/Branch 管理平面：用户后续 NC 增量
+### 6.4 HQ/Branch 管理平面：NC 增量与最终截图核验
 
-用户报告记录了以下变更，但未逐台导出当前配置：
+用户报告记录了以下变更；2026-09-20最终截图进一步确认SW-CORE和SW-BRANCH的实际ACL内容，并确认SW-CORE VTY绑定。凭据本身不入库：
 
 ```text
 username admin privilege 15 secret <设备CLI实验密码>
@@ -447,11 +447,14 @@ ip access-list standard VTY-HQ-ADMIN
  permit host 192.168.30.30
  deny any
 line vty 0 4
+ access-class VTY-HQ-ADMIN in
  login local
  transport input telnet
 ```
 
-NC-HQ 以设备 CLI 凭据/Telnet 进行 Discovery，Web/API 登录账户为另一套账户。当前实际应用设备范围、原 MGMT-ALLOW 是否改名/替换、`access-class VTY-HQ-ADMIN in` 是否已绑定、VTY 5–15 是否存在及其设置均待当前运行配置确认。不能只创建新 ACL 就声称旧绑定自动迁移。没有登记 SSH 密钥、SSH 服务或 AAA 服务器配置。
+最终证据确认：SW-CORE与SW-BRANCH的`VTY-HQ-ADMIN`均按顺序允许`192.168.30.20`、`192.168.30.30`并显式`deny any`；SW-CORE VTY 0–4为`login local`、`transport input telnet`且绑定`access-class VTY-HQ-ADMIN in`。既有SW-BRANCH VTY图也显示同名ACL绑定、`login local`和Telnet。原`MGMT-ALLOW`即使仍保留，只要未被VTY引用便不代表当前生效策略。
+
+NC-HQ 以设备 CLI 凭据/Telnet 进行 Discovery，Web/API 登录账户为另一套账户。R-HQ/R-BRANCH各自以现有归档图为准，不能把交换机的`.30.30`条目自动外推到所有设备；VTY 5–15与完整逐设备running-config仍待CFG01–CFG06导出。没有登记SSH密钥、SSH服务或AAA服务器配置。本轮新增截图未改变`packet_tracer/EdgeCampus.pkt`哈希，因此只证明截图当次运行状态，不声明新命令已持久化进正式二进制包。
 
 ### 6.5 HQ / SW-ACCESS：端口与 MAC 安全
 

@@ -1,8 +1,8 @@
 {
-    "archive_date":  "2026-09-19",
+    "archive_date":  "2026-09-20",
     "project_status":  "ACCEPTANCE_COMPLETE_REPORT_PREPARATION",
-    "branch":  "feat/edge",
-    "note":  "Deterministic SHA-256 manifest for repository evidence images, Packet Tracer packages, and archived source documents. It includes the imported A/B/D final evidence and the 2026-09-19 course patch figures 47-54. Historical gate reports remain unchanged; current configuration is documented in docs/COURSE_COVERAGE_PATCH.md.",
+    "branch":  "main",
+    "note":  "Deterministic SHA-256 manifest for repository evidence images, Packet Tracer packages, and archived source documents. It includes all A/B/C/D final-report screenshots and the 2026-09-19 course patch figures 47-54. Historical gate reports remain unchanged; current configuration and evidence boundaries are documented in docs/FINAL_CONFIGURATION.md and docs/COURSE_COVERAGE_PATCH.md.",
     "artifacts":  [
                       {
                           "path":  "edge/packet_tracer/evidence/B1_hysteresis_console.png",
@@ -285,9 +285,24 @@
                           "sha256":  "878c140a5a82ffc288f9008ba9fedda17bebc84387a0260240ba7dee86ef18b2"
                       },
                       {
+                          "path":  "evidence/final_report/A/C17-management-final-swbranch-acl.png",
+                          "bytes":  7979,
+                          "sha256":  "1890627ab857afc6c49c3ddf7682613f0570fcc3417a64e30f33295f3620c3e1"
+                      },
+                      {
                           "path":  "evidence/final_report/A/C17-management-final-swbranch-vty.png",
                           "bytes":  17657,
                           "sha256":  "ea5a4f73f4fda8f9b249977a9a840b0b010035385ef00f9ce94778783de7d5ef"
+                      },
+                      {
+                          "path":  "evidence/final_report/A/C17-management-final-swcore-acl.png",
+                          "bytes":  24559,
+                          "sha256":  "06ff27beab5e5ac062c93b19fac0d23af761937a356e0e9f27bb6f8c6d6d58d8"
+                      },
+                      {
+                          "path":  "evidence/final_report/A/C17-management-final-swcore-vty.png",
+                          "bytes":  6796,
+                          "sha256":  "107e8266ad0757e6ee9b082d06a9c2818c43c012a92686cd8246ab4bd13ff880"
                       },
                       {
                           "path":  "evidence/final_report/A/C18-branch-dhcpv6-client.png",
@@ -498,6 +513,81 @@
                           "path":  "evidence/final_report/B/F11-edge-recovered.png",
                           "bytes":  615982,
                           "sha256":  "ae92dade9ca19133c3fe25b838c058e7a7f829555095bfdd3a11c0e423861a11"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/C15-core-interface-config.png",
+                          "bytes":  4465,
+                          "sha256":  "ec14ffb72c4157f3381c1b1538ac1e3a747e57aeb64e3f01e218d64b2b11086d"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/C15-nc-access-address-core.png",
+                          "bytes":  36068,
+                          "sha256":  "f46466ef9d2ee668398ff76c7dccea84a7d2372ad02934e29738b7cdd8aae9a0"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/C15-nc-access-address-nc.png",
+                          "bytes":  8085,
+                          "sha256":  "1bdc5878328795737ddf17fc822a7552c3e8d6de1f02c32378fcc59e67ed4267"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/C15-nc-gateway.png",
+                          "bytes":  7124,
+                          "sha256":  "33eb1d0f2f4f3955a3b1b2db45d777e495e974a265310aacf601227ec9df4955"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/C16-nc-external-discovery-access.png",
+                          "bytes":  26554,
+                          "sha256":  "11f13b17ff1dfbb1b62be0c4a0cc69a90c028d5c88992bf8222ad282f7823a40"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/C16-nc-external-discovery-results.png",
+                          "bytes":  73238,
+                          "sha256":  "c39ef947739290d9b35b5126eb5c85b89e0b019729c79d3ac9f4adfd142be9c3"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/C16-nc-external-preferences.png",
+                          "bytes":  37861,
+                          "sha256":  "ddda7084b76d52a12d1b129c11db54c490c38e439c8ffc2a6d0aeb6e983af186"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/C21-backend-started.png",
+                          "bytes":  66456,
+                          "sha256":  "2474260bc3fef00cdfe35a2cce783414d72b1b4261a8a7d6972c1cd2bd4d3cc2"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/C21-runtime-status.png",
+                          "bytes":  82204,
+                          "sha256":  "284e6430850c90f02b0e5e0e99fe70b3da078e59260ebefa328e5ace82f9b08d"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/U03-controller-api.png",
+                          "bytes":  65980,
+                          "sha256":  "3d944166f3afa33594f574dbf013e77e80654427c979b73667aa76decbc444c3"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/U03-controller-table.png",
+                          "bytes":  1327845,
+                          "sha256":  "936f2783d084f2573227e5d1ca10428917c281506a60875bbc9c2e058f2691c1"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/U03-nc-dashboard-api.png",
+                          "bytes":  882218,
+                          "sha256":  "9e973637a77e30be61c14b75d1be6920fc4fd0e3ad1299ec12c79ada0d73a512"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/U04-nc-recovered.png",
+                          "bytes":  685849,
+                          "sha256":  "bff1d7f6c01c98aa82d849e4db29df8c6d688d4b840ae7efba7c7221657c53f2"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/U04-nc-unavailable.png",
+                          "bytes":  849351,
+                          "sha256":  "ef3a89b3dbc02536852470cad2c64ced9caec194250f3994d06a711f983d5b1f"
+                      },
+                      {
+                          "path":  "evidence/final_report/C/U05-controller-topology-response.png",
+                          "bytes":  1004674,
+                          "sha256":  "744487acec64762cde19fc824976dc82716f3c396b5fae6aa6d0ceac7005c5bc"
                       },
                       {
                           "path":  "evidence/final_report/D/U02-noc-overview-01.png",
