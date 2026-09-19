@@ -102,14 +102,14 @@
   **本地已有**：[edge/packet_tracer/evidence/gate3/G3-B-06-manual-command-on-pass.png](../edge/packet_tracer/evidence/gate3/G3-B-06-manual-command-on-pass.png)。
 
 
-- [ ] **F06｜当前 Dashboard 的 Policy ACK APPLIED**
+- [x] **F06｜当前 Dashboard 的 Policy ACK APPLIED**
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
   - **B06**｜`F06-policy-ack.png`：表单为AUTO/33/1；策略确认ACK显示实际版本vN和APPLIED；事件流出现策略下发和确认。
 
 
-- [ ] **F07｜当前 Dashboard 的 Command ACK 与物理 FAN**
+- [x] **F07｜当前 Dashboard 的 Command ACK 与物理 FAN**
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -571,7 +571,7 @@
   **本地已有**：[edge/packet_tracer/evidence/gate2/B-G2-06-real-fan-on-status.png](../edge/packet_tracer/evidence/gate2/B-G2-06-real-fan-on-status.png)。
 
 
-- [ ] **C20｜当前包内MCU/SBC真实运行程序与关键参数**
+- [x] **C20｜当前包内MCU/SBC真实运行程序与关键参数**
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 

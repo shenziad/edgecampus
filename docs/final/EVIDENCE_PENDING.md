@@ -47,3 +47,31 @@
 A可在自己的完整项目中使用当前正式PT包和当前提交，连续完成三轮展示演练。每轮记录日期、包哈希、软件提交、策略版本、预期、实际结果及素材路径。演示流程见[DEMO_SCRIPT](../DEMO_SCRIPT.md)。
 
 尚未整理的PNG、配置附件和三轮记录均属于报告素材，不改变“验收完成”的项目状态；取得后按实际文件路径更新总清单。
+
+### B 组证据完成状态
+
+**B01–B12 已完成（12/12）**。正式报告证据已保存至 `evidence/final_report/B/`。
+
+已覆盖：
+
+- B01–B05：MCU/SBC 程序配置、AUTO 本地控制、重连状态同步代码与实际运行日志；
+- B06：AUTO/33/1 策略下发，Policy ACK `APPLIED`；
+- B07–B08：MANUAL 模式 FAN OFF/ON，Command ACK `APPLIED`，物理 FAN `state=0/2`；
+- B09–B10：Backend 8000 端口监听数量为 0 时，SBC 保留最后有效 AUTO/33/1 策略并离线执行 `TURN_ON` / `TURN_OFF`，物理 FAN `state=2/0`；
+- B11：Backend 重启后自动重连并通过 `STATE_SYNC` 恢复断云前策略状态；
+- B12：恢复后 Dashboard 显示 Edge `ONLINE`、Cloud `CONNECTED`，实时温度/FAN 与 SBC Console 一致。
+
+最终证据文件：
+
+1. `evidence/final_report/B/C20-pt-program-config-mcu.png`
+2. `evidence/final_report/B/C20-pt-program-config-sbc-params.png`
+3. `evidence/final_report/B/C20-pt-program-config-sbc-loop.png`
+4. `evidence/final_report/B/C20-pt-program-config-sbc-sync.png`
+5. `evidence/final_report/B/C20-pt-program-running.png`
+6. `evidence/final_report/B/F06-policy-ack.png`
+7. `evidence/final_report/B/F07-command-ack-off.png`
+8. `evidence/final_report/B/F07-command-ack-on.png`
+9. `evidence/final_report/B/F09-offline-fan-on-attributes.png`
+10. `evidence/final_report/B/F09-offline-fan-off.png`
+11. `evidence/final_report/B/F11-dashboard-recovered.png`
+12. `evidence/final_report/B/F11-edge-recovered.png`
