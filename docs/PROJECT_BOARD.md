@@ -1,6 +1,6 @@
 # Integration Board — Final Architecture v2
 
-## 当前收尾状态（2026-09-18）
+## 当前收尾状态（2026-09-19）
 
 项目 **验收完成，报告准备中**。G4 后 NOC 开发与真实 NC 只读接入完成；NC 成功由用户确认，并有两项 Managed 原图。当前工作仅包括报告截图、配置附件和答辩演练素材整理。当前能力和包哈希见 [最终报告](final/PROJECT_COMPLETION_REPORT.md)，素材任务见 [报告素材准备索引](final/EVIDENCE_PENDING.md)。
 
@@ -16,7 +16,7 @@
 | Backend 软件基线 | C | AVAILABLE | FastAPI / state / events / fake baseline | G3 Policy/Command 真转发 |
 | C Gate1 Owner 验收 | C | **PASS / STABILITY DEBT CLEARED G4** | `docs/gate4/C_CONTROL_PLANE_REPORT.md`，G4-C-01~05 | 保持稳定性回归 |
 | Fake Edge | B+C | DONE | 独立开发替身 | 保留，不替代 PT 真链路 |
-| Dashboard | D | **PASS G1 + G2** | G1/G2 Dashboard reports + evidence | G3 Policy/Command 真闭环 |
+| Dashboard | D | **PASS / FINAL EVIDENCE 13/13** | G1/G2/G4 reports + `evidence/final_report/D/` | 仅报告整合/回归 |
 | HQ VLAN/IP / SVI / DHCP | A | **PASS G1** | A G1 evidence | 冻结 Core |
 | HQ EtherChannel / Trunk | A | **PASS G1** | Po1 / trunk evidence | 每层网络变更 regression |
 | HQ ACL | A | **PASS G1** | OFFICE→IOT deny 等 | G3 继续回归 |
@@ -34,14 +34,14 @@
 | Static TCP/80 mapping | A | **PASS G3** | `203.0.113.1:80 → 192.168.30.10:80` 实测；`G3-A-04d/04d2` | 冻结 |
 | WAN / Branch Business ACL | A | **PASS G3** | WAN-IN 权限矩阵；BR-OFFICE 禁 IOT / 管理设备 / Telnet·SSH；`G3-A-03*` | G4 继续回归 |
 | HQ ADMIN → Branch 管理可达 | A | **PASS G3** | ADMIN → `.65` / `.66` 可达；`G3-A-05` | G4 正式远程管理 |
-| Real Policy Loop | B+C+D | B Edge-side PASS；E2E reported PASS / evidence review pending | docs/gate3/BCD_INTEGRATION_REPORT.md | 补 Dashboard ACK 证据 |
-| Real FAN Command | B+C+D | B Edge-side PASS；E2E reported PASS / evidence review pending | docs/gate3/B_EDGE_REPORT.md + BCD report | 补 Dashboard ACK 与 Backend events |
+| Real Policy Loop | B+C+D | **PASS；D FINAL EVIDENCE ARCHIVED** | `docs/gate3/BCD_INTEGRATION_REPORT.md` + `evidence/final_report/D/U09-campus-policy.png` | 保持回归 |
+| Real FAN Command | B+C+D | **PASS；最终 ACK/物理 FAN 证据已归档** | B final evidence + D final evidence | 保持回归 |
 | IPv6 address modes | A | USER-REPORTED PASS / EVIDENCE PENDING G4 | N12，用户确认已实测 | 后补 SLAAC/DHCPv6/Static 图 |
 | IPv6-over-IPv4 Overlay | A | USER-REPORTED PASS / EVIDENCE PENDING G4 | N13，ISP IPv4-only/static route | 后补 Tunnel 图 |
 | Central Network Admin | A | USER-REPORTED PASS / EVIDENCE PENDING G4 | N14，ADMIN Telnet/VTY ACL | 后补 ADMIN 允许/OFFICE 拒绝图 |
 | Port Security / sticky MAC | A | USER-REPORTED PASS / EVIDENCE PENDING G4 | N15，sticky/maximum 1/restrict | 后补正常/violation/恢复图 |
 | Cloud-off local autonomy | B | REAL OFFLINE ON PASS / FULL EVIDENCE PENDING | G4-B-01/02，v2/33 保留 | 后补离线 OFF 与 Attributes |
-| Cloud reconnect + State Sync | B+C+D | REAL EDGE/BACKEND PASS / UI EVIDENCE PENDING | G4-B-03，G4-C-02/05 | 后补恢复 Dashboard |
+| Cloud reconnect + State Sync | B+C+D | **PASS；恢复 UI 已归档** | G4-B-03、G4-C-02/05、`evidence/final_report/D/U10-cloud-ws-restored.png` | 保持回归 |
 | 当前工作树 canonical `.pkt` | A | **G4 USER PACKAGE / EVIDENCE PENDING** | 当前用户 Gate4 包 136,138 字节，SHA-256 见 G4 A 报告；旧网络 blob 为历史基线 | G4 增量修改与回归；不声称已嵌入 G3 SBC 程序 |
 | A Gate 3 canonical `.pkt` | A | **PUSHED ON `feat/network`** | blob `55605ee0`，120,703 字节；含 Gate 1 + 2 + 3 全部网络配置与 Edge 接线 | 已采用本版本；后续由 A 维护 canonical |
 
@@ -156,3 +156,8 @@ NOC 五功能已完成并通过本地 HTTP/WS/浏览器验证；详细接口、�
 ## 2026-09-19 最终仓库同步
 
 `feat/edge`作为正式交付分支：五大NOC功能、真实NC读取、最终配置总览、五次实验映射、25组/70张逐图清单以及21张G4网络原图均已整合。正式PT包为147803 bytes，SHA-256 `6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`。当前状态为验收完成、报告准备中；70张PNG、CFG01–CFG08和展示彩排记录属于报告与答辩素材。
+
+
+### D 最终证据收尾（2026-09-19）
+
+D01–D13 已完成（13/13）并归档至 `evidence/final_report/D/`。覆盖 U02/U06/U07/U08/U09/U10/U11；最终截图总清单和素材准备索引已同步为完成。D 当前无新增开发任务。
