@@ -19,3 +19,16 @@ Backend down，截图显示控制平面失联/正在重连、Cloud DISCONNECTED�
 ## 恢复与缺证
 
 用户说明无需刷新、无需再发 Policy 自动恢复；现有 G4-C-05 只证明 Backend 与 Edge 恢复，不含恢复后的 Dashboard。G4-D-02-dashboard-recovery-pass.png 为 EVIDENCE_INDEX 中待补清单，不创建伪造 PNG。Global R2 Dashboard 验收归档尚未完整。自动 ACK 回归见 VALIDATION_REPORT。
+
+
+## 2026-09-19 最终 D 证据收尾
+
+本报告正文保留 2026-09-17 的历史事实，不回写当时尚未取得的截图。最终报告阶段已补齐 D01–D13（13/13），归档于 `evidence/final_report/D/`。
+
+其中与 Gate4 恢复相关的新增最终证据为：
+
+- `U10-cloud-ws-failure.png`：Cloud OFFLINE，本地自治模式；
+- `U10-cloud-ws-local-fan.png`：CLOUD OFFLINE 下 TEMP=33.3 C、TURN_ON、FAN ON，物理 FAN state=2；
+- `U10-cloud-ws-restored.png`：CLOUD RECONNECTED、STATE_SYNC 与 Dashboard SUCCESS 同屏。
+
+因此本页“恢复 UI 截图后补”仅代表 2026-09-17 的历史状态；当前 D 最终证据已闭环。完整索引见 `../final/EVIDENCE_PENDING.md`。
