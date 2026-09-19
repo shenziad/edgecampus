@@ -79,7 +79,7 @@ TEMP01 → MCU → EDGE-SBC-01
 
 Gate 2 集成报告：`docs/gate2/INTEGRATION_REPORT.md`。
 
-## Gate 3 已整合能力（补证待完成）
+## Gate 3 已整合能力
 
 A Network：
 
@@ -102,11 +102,11 @@ policy_ack / command_ack
 Dashboard
 ```
 
-实际 Policy 核心证据为 v3/33 C，最终 Backend 图为 v5；连续联调版本正常递增。B 已验证 31.8 C FAN OFF、34.9 C FAN ON。Dashboard ACK 修复后证据待补。
+历史 Policy 核心证据包含 v3/33 C 与连续递增版本；B 已验证 AUTO/FAN 行为。最终报告阶段已补齐 Dashboard Policy ACK、Cloud Failure、本地自治与 state_sync 恢复证据，D01–D13 已归档至 `evidence/final_report/D/`。
 
 ## G4及NOC最终状态
 
-G4的21张网络验证原图和9张Edge/Backend/Dashboard原图已经归档到当前分支。它们覆盖远程管理、Port Security、IPv6地址分配、Tunnel、路由表、N1–N11回归及NAT共存修复。G4后增加的真实NC采集和中文NOC软件已经完成；当前只剩最终报告要求的明确截图、完整配置导出和连续彩排记录。
+G4的21张网络验证原图和9张Edge/Backend/Dashboard原图已经归档到当前分支。它们覆盖远程管理、Port Security、IPv6地址分配、Tunnel、路由表、N1–N11回归及NAT共存修复。G4后增加的真实NC采集和中文NOC软件已经完成；B 最终证据 12/12、D 最终证据 13/13 已归档，其余报告截图、完整配置导出和连续彩排记录继续按清单整理。
 
 ## 真实性边界
 
