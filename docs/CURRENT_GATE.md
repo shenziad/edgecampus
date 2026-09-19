@@ -8,7 +8,8 @@
 - 五大NOC板块已完成：Edge Control、Network Operation、Security Operation、Policy Management、Failure Simulation。
 - PT Network Controller真实只读接入已完成，Managed设备映射ONLINE；OSPF/BGP/Tunnel显示NOT COLLECTED。
 - Security/Branch使用演示适配器；Campus Network/Security为上层展示；Cloud按钮实际断开Edge WebSocket；Network Failure禁用并返回409。
-- G4的21张网络原图、A/B最终证据，以及课程补强图47–54均已纳入当前分支；另有9张G4 Edge/Backend/Dashboard证据和1张NC Managed清单图。
+- G4的21张网络原图、A/B/D最终证据，以及课程补强图47–54均已纳入当前分支；另有9张G4 Edge/Backend/Dashboard历史证据和1张NC Managed清单图。
+- B01–B12已完成（12/12），D01–D13已完成（13/13）；D最终证据位于`evidence/final_report/D/`。
 - 最终配置、五次实验落点和课程重点补强增量已经整理成独立文档。
 
 ## 当前权威入口
@@ -24,7 +25,7 @@
 
 ## 报告素材准备
 
-计划补拍25组、70张PNG；每张的文件名、操作和预期画面见四人清单。另整理CFG01–CFG08完整配置附件，并可在同一最终软件和PT包上完成三轮展示彩排记录。这些工作服务于实验报告和答辩材料，不影响已经完成的项目验收结论。
+原计划补拍25组、70张PNG；当前 B 12/12、D 13/13 已完成，其余 Owner 按四人清单继续整理。另整理CFG01–CFG08完整配置附件，并可在同一最终软件和PT包上完成三轮展示彩排记录。这些工作服务于实验报告和答辩材料，不影响已经完成的项目验收结论。
 
 ## 正式PT包
 

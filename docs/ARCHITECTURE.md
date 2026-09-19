@@ -258,4 +258,4 @@ NOC 五功能已完成并通过本地 HTTP/WS/浏览器验证；详细接口、�
 
 ## 2026-09-19 最终交付同步
 
-当前正式分支为`feat/edge`。21张G4网络原图、A/B最终证据、课程补强图47–54、最终配置总览、五次实验映射和四人逐图清单已经纳入。正式PT包为156539 bytes，SHA-256 `4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`。课程增量把Core–Access改为静态EtherChannel，VLAN100扩为`10.255.0.0/29`并增加R-COURSE/R-TEST隔离验证链路；Protocol 1.0与真实Edge闭环不变。详细差异见[课程重点补强](COURSE_COVERAGE_PATCH.md)。
+当前正式分支为`feat/edge`。21张G4网络原图、A/B/D最终证据、课程补强图47–54、最终配置总览、五次实验映射和四人逐图清单已经纳入。正式PT包为156539 bytes，SHA-256 `4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`。课程增量把Core–Access改为静态EtherChannel，VLAN100扩为`10.255.0.0/29`并增加R-COURSE/R-TEST隔离验证链路；Protocol 1.0与真实Edge闭环不变。详细差异见[课程重点补强](COURSE_COVERAGE_PATCH.md)。

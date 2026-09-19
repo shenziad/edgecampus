@@ -130,7 +130,7 @@ Real FastAPI
 
 Network Health 只读真实 NC：Managed→ONLINE，OSPF/BGP/Tunnel NOT COLLECTED；Network Failure 禁用/409。Security/Branch模拟，Campus Network/Security展示，不写IOS。Cloud按钮实际中断Edge WS，自治和物理FAN仍需PT现场证据。
 
-G1–G4历史证据、21张G4网络原图、A/B最终报告证据和图47～54课程补强证据已经归档。当前包156539 bytes，SHA-256见完成报告；课程补强的权威说明见[COURSE_COVERAGE_PATCH](COURSE_COVERAGE_PATCH.md)。
+G1–G4历史证据、21张G4网络原图、A/B/D最终报告证据和图47～54课程补强证据已经归档。当前包156539 bytes，SHA-256见完成报告；课程补强的权威说明见[COURSE_COVERAGE_PATCH](COURSE_COVERAGE_PATCH.md)。
 
 ## Gate 3 已整合 Owner 边界（历史基线）
 
@@ -189,4 +189,4 @@ static TCP/80 + business ACL PASS
 
 ## 当前收尾任务
 
-按70张逐图清单和CFG01–CFG08附件清单准备报告，复用当前分支已有73张证据原图。整理A29/A30保存重开、B01–B05包内程序和展示彩排记录。本轮源码检查结果见 [最终验证](final/VALIDATION.md)。原 G1–G4 报告保留历史事实。
+按逐图清单和CFG01–CFG08附件清单准备报告，复用当前分支`evidence/`中的177张证据图；B01–B12、D01–D13已经归档。继续整理未完成的A/C项、保存重开和展示彩排记录。本轮源码检查结果见[最终验证](final/VALIDATION.md)。原G1–G4报告保留历史事实。

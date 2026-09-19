@@ -857,7 +857,7 @@ G4图片提供已有网络配置参考，不替代后续NC准入和当前运行�
 
 ### 12.4 当前包与核验入口
 
-当前正式 `.pkt`：156539 bytes，SHA-256 `4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`。21张G4网络原图、A/B最终证据和课程补强图47–54已经纳入当前分支；来源网络包与当前整合包是不同历史版本，不用于覆盖当前正式包。课程临时违规副本仅作为图54复现附件，不是正式包。最终包的保存重开、包内程序和现场行为按A29/A30、B01–B05、课程补强清单及CFG附件核验。
+当前正式 `.pkt`：156539 bytes，SHA-256 `4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`。21张G4网络原图、A/B/D最终证据和课程补强图47–54已经纳入当前分支；来源网络包与当前整合包是不同历史版本，不用于覆盖当前正式包。课程临时违规副本仅作为图54复现附件，不是正式包。最终包的保存重开、包内程序和现场行为按逐图清单、课程补强清单及CFG附件核验。
 
 为完整实验报告，保存重开后整理：六台网络设备SW-CORE/SW-ACCESS/R-HQ/R-ISP/R-BRANCH/SW-BRANCH的完整配置；各PC/Server/NC地址和GUI服务；实际MCU/SBC程序；NC清单/API与Dashboard；N1–N15、Edge、Policy、Command、Outage、Recovery演示和展示彩排记录。报告素材计划见 [EVIDENCE_PENDING](final/EVIDENCE_PENDING.md)，软件回归见 [VALIDATION](final/VALIDATION.md)。
 

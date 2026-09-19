@@ -2,9 +2,9 @@
 
 整理日期：2026-09-19。适用版本：当前 `feat/edge`，项目状态 **验收完成，报告准备中**。本清单针对最终报告的四项要求：**完整功能演示、完整配置信息、前五次实验逐项对照、明确创新点**。已阅读本地代码、配置总览、实验映射、G1–G4报告和现有证据目录，并核对来源提交后将21张G4网络原图纳入当前分支。
 
-本清单共有 **70组截图用途**：**44组已有可复用素材**、**25组报告补图任务**，另有I08直接复用这些补图。引用 **73张不同的已有原图**（均已纳入当前分支；其中21张G4网络图保留来源提交）；同图多处出现是交叉引用，不重复拍摄。另列完整配置非截图附件CFG01–CFG09。
+本清单原始规划为**70组截图用途**和A/B/C/D共70张补图。当前仓库`evidence/`已有**177张证据图**，B01–B12与D01–D13已全部完成，A组已合入最终证据并新增图47–54课程补强；仍未完成的项以本清单中的`[ ]`和[素材准备索引](final/EVIDENCE_PENDING.md)为准。另列完整配置非截图附件CFG01–CFG09。
 
-**多人分工**：见 [截图分工与操作手册（四人）](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)，四人各自使用自己的完整项目，可独立同时操作；25组报告补图任务已经拆成70张明确PNG：A30张、B12张、C15张、D13张，每张都有编号、文件名、操作步骤和预期画面。
+**多人分工**：见[截图分工与操作手册（四人）](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)。原任务拆为A30张、B12张、C15张、D13张；B与D现已完成，A/C按未勾选项继续，每张仍保留原编号、文件名、操作步骤和预期画面。
 
 **直接准备报告图片**：先看 [§10 只补缺图速查](#missing-shots)，需要截图细节再按代号回查前文。配置信息与五次实验对照分别见§6、§7，创新点素材见§8。
 
@@ -290,7 +290,9 @@
   **本地已有**：[evidence/noc/NOC-NC-01-controller-managed-inventory.png](../evidence/noc/NOC-NC-01-controller-managed-inventory.png)。
 
 
-- [ ] **U02｜最终中文 Dashboard 五位一体全景**
+- [x] **U02｜最终中文 Dashboard 五位一体全景**
+
+  **D组最终证据**：[evidence/final_report/D/U02-noc-overview-01.png](../evidence/final_report/D/U02-noc-overview-01.png)。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -321,7 +323,9 @@
   - **C13**｜`U05-controller-topology-response.png`：控制器CONNECTED；终端显示topology和topology_error的实际返回值；页面显示对应的拓扑采集内容。
 
 
-- [ ] **U06｜Security模拟攻击、红色事件与恢复**
+- [x] **U06｜Security模拟攻击、红色事件与恢复**
+
+  **D组最终证据**：[攻击](../evidence/final_report/D/U06-security-attack.png) / [恢复](../evidence/final_report/D/U06-security-restored.png)。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -329,14 +333,18 @@
   - **D07**｜`U06-security-restored.png`：端口安全SECURE，端口FORWARDING；事件显示恢复，累计违规数与攻击后的数值相同。
 
 
-- [ ] **U07｜ACL阻断模拟事件**
+- [x] **U07｜ACL阻断模拟事件**
+
+  **D组最终证据**：[evidence/final_report/D/U07-acl-block-event.png](../evidence/final_report/D/U07-acl-block-event.png)。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
   - **D08**｜`U07-acl-block-event.png`：ACL_BLOCK_EVENT红色卡片，文字为“检测到未授权流量·ACL已阻断”；ACL ACTIVE，端口安全SECURE，端口FORWARDING。
 
 
-- [ ] **U08｜分部运维Router/Switch检查**
+- [x] **U08｜分部运维Router/Switch检查**
+
+  **D组最终证据**：[Router](../evidence/final_report/D/U08-branch-check-router.png) / [Switch](../evidence/final_report/D/U08-branch-check-switch.png) / [Denied API](../evidence/final_report/D/U08-branch-check-denied-api.png)。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -345,14 +353,18 @@
   - **D04**｜`U08-branch-check-denied-api.png`：device为R-BRANCH，management为DENIED，acl为DENY，source为SIMULATED。
 
 
-- [ ] **U09｜Campus三类策略与Edge底层ACK**
+- [x] **U09｜Campus三类策略与Edge底层ACK**
+
+  **D组最终证据**：[evidence/final_report/D/U09-campus-policy.png](../evidence/final_report/D/U09-campus-policy.png)。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
   - **D05**｜`U09-campus-policy.png`：园区策略版本可见；Edge thermal-01/实际vN/33/AUTO，Network Branch Access ALLOW与IoT Isolation启用，Security Port Security STRICT；策略ACK为同一vN/APPLIED。
 
 
-- [ ] **U10｜Cloud Failure按钮实际中断WS**
+- [x] **U10｜Cloud Failure按钮实际中断WS**
+
+  **D组最终证据**：[断云](../evidence/final_report/D/U10-cloud-ws-failure.png) / [离线本地FAN](../evidence/final_report/D/U10-cloud-ws-local-fan.png) / [恢复state_sync](../evidence/final_report/D/U10-cloud-ws-restored.png)。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -361,7 +373,9 @@
   - **D11**｜`U10-cloud-ws-restored.png`：Cloud ONLINE，状态同步为同步成功SUCCESS，实时遥测恢复；SBC出现CLOUD RECONNECTED和TX STATE_SYNC。
 
 
-- [ ] **U11｜NC-only模式禁用Network Failure**
+- [x] **U11｜NC-only模式禁用Network Failure**
+
+  **D组最终证据**：[禁用状态](../evidence/final_report/D/U11-network-simulation-disabled.png) / [409 API](../evidence/final_report/D/U11-network-disabled-api.png)。
 
   **逐张拍摄**（操作步骤见[四人清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)对应图号）：
 
@@ -763,11 +777,11 @@
   **本地已有**：[evidence/network/G4-A-02b-port-security-violation-pass.png](../evidence/network/G4-A-02b-port-security-violation-pass.png)。
 
 
-- [ ] **I08｜统一NOC与Campus Policy上层展示**
+- [x] **I08｜统一NOC与Campus Policy上层展示**
 
-  必须一张最终中文Campus/安全/运维/演练相关界面；用U02/U06/U08/U09/U10同一批待补图即可。图注说明Edge策略可真实执行，网络/安全为展示或模拟，Campus上层不破坏thermal-01/version/ACK。此项当前没有满足要求的完整最终界面图，不重复生成新拍摄代号。
+  D组最终证据已覆盖中文Edge首屏、Security、Branch运维、Campus Policy与Cloud Failure/恢复。Edge策略采用真实Policy ACK与真实SBC/FAN闭环；网络/安全页面保留“模拟数据”或“PT控制器·实际数据”等来源标签，不混淆真实性边界。
 
-  **命名/补图**：直接使用 `U02-noc-overview-*.png` / `U09-campus-policy.png` 等，不另拍 `I08` 图。
+  **最终素材**：直接复用 `evidence/final_report/D/` 下 U02/U06/U07/U08/U09/U10/U11，不另拍 `I08` 图。
 
 
 ## 9. 排查过程与最终附件
@@ -837,16 +851,16 @@ U03/U04/U05配套`/api/controller/state`、`/api/network/state`；F06/F07/F11配
 | F07 | `F07-command-ack.png` | MANUAL OFF/ON、Command APPLIED ACK、物理状态 | 必补；可合图复用 |
 | F09 | `F09-offline-fan-off.png` | Backend真正停止期间CLOUD OFFLINE、TURN_OFF、FAN state=0；必要时补离线ON state=2 | 必补；可合图复用 |
 | F11 | `F11-dashboard-recovered.png` | Backend恢复后中文UI、原Policy/温度/FAN与state_sync | 必补；可合图复用 |
-| U02 | `U02-noc-overview-01.png` | 最终中文Edge首屏；其他板块按U03/U06/U08/U09/U10拍摄 | 必拍 |
+| U02 | `U02-noc-overview-01.png` | 最终中文Edge首屏；其他板块按U03/U06/U08/U09/U10拍摄 | 已完成（D） |
 | U03 | `U03-nc-dashboard-api.png` | 两台Managed→ONLINE、NC CONNECTED、NOT COLLECTED及同次API | 必补；可合图复用 |
 | U04 | `U04-nc-unavailable.png` | NC关闭时清空旧卡片、恢复时重新采集 | 必补；可合图复用 |
 | U05 | `U05-controller-topology-response.png` | NC物理拓扑实际JSON，或真实降级错误且清单仍可用 | 必补；可合图复用 |
-| U06 | `U06-security-attack.png` | 安全模拟攻击红色事件、计数与恢复审计 | 必补；可合图复用 |
-| U07 | `U07-acl-block-event.png` | ACL_BLOCK_EVENT红色事件；端口SECURE/FORWARDING | 必拍 |
-| U08 | `U08-branch-check.png` | Router/Switch模拟PASS/ALLOW，保留模拟标签 | 必补；可合图复用 |
-| U09 | `U09-campus-policy.png` | Campus Version及Edge/Network/Security，配置展示说明 | 必补；可合图复用 |
-| U10 | `U10-cloud-ws-failure.png` | 按钮真实WS断开、离线最后观测、恢复state_sync SUCCESS | 必补；可合图复用 |
-| U11 | `U11-network-simulation-disabled.png` | Network Failure禁用/说明，必要时附409 | 必补；可合图复用 |
+| U06 | `U06-security-attack.png` | 安全模拟攻击红色事件、计数与恢复审计 | 已完成（D） |
+| U07 | `U07-acl-block-event.png` | ACL_BLOCK_EVENT红色事件；端口SECURE/FORWARDING | 已完成（D） |
+| U08 | `U08-branch-check.png` | Router/Switch模拟PASS/ALLOW，保留模拟标签 | 已完成（D） |
+| U09 | `U09-campus-policy.png` | Campus Version及Edge/Network/Security，配置展示说明 | 已完成（D） |
+| U10 | `U10-cloud-ws-failure.png` | 按钮真实WS断开、离线最后观测、恢复state_sync SUCCESS | 已完成（D） |
+| U11 | `U11-network-simulation-disabled.png` | Network Failure禁用/说明，必要时附409 | 已完成（D） |
 | C10 | `C10-dns-config.png` | DNS On与两个A记录 | 报告配置复现 |
 | C11 | `C11-http-config.png` | 两Server HTTP On、页面资源与地址 | 报告配置复现 |
 | C15 | `C15-nc-access-address.png` | Core Gi1/0/10 access30及NC .30.30/24/GW | 报告配置复现 |

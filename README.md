@@ -54,7 +54,7 @@ EdgeCampus 将 Packet Tracer 中的总部园区、企业 WAN、Internet 与异�
 - [前五次实验报告补拍的5张图](docs/EXPERIMENT_EVIDENCE_COVERAGE.md)
 - [最终完成报告](docs/final/PROJECT_COMPLETION_REPORT.md)与[软件验证](docs/final/VALIDATION.md)
 
-当前仓库已正式收录21张G4网络原图、A/B组最终报告证据、图47～54课程补强证据、既有Edge/Backend/Dashboard证据和NC Managed清单原图。剩余截图、配置附件和展示彩排记录用于撰写报告、制作图表和准备答辩，不再作为项目验收门槛。
+当前仓库已正式收录21张G4网络原图、A/B/D组最终报告证据、图47～54课程补强证据、既有Edge/Backend/Dashboard证据和NC Managed清单原图。B01–B12与D01–D13已完成；剩余截图、配置附件和展示彩排记录用于撰写报告、制作图表和准备答辩，不再作为项目验收门槛。
 
 当前正式分支为 `feat/edge`，远程同名分支作为交付分支。`packet_tracer/EdgeCampus.pkt` 是唯一正式PT包，当前大小156539 bytes，SHA-256 `4f53c07e45ea66ea96bd83b42b751cb3cfb41c354c9f9489ae4358f4cdf1634c`。
 
@@ -82,7 +82,7 @@ TEMP01 → MCU → EDGE-SBC-01
 
 Gate 2 集成报告：`docs/gate2/INTEGRATION_REPORT.md`。
 
-## Gate 3 已整合能力（补证待完成）
+## Gate 3 已整合能力
 
 A Network：
 
@@ -105,11 +105,11 @@ policy_ack / command_ack
 Dashboard
 ```
 
-实际 Policy 核心证据为 v3/33 C，最终 Backend 图为 v5；连续联调版本正常递增。B 已验证 31.8 C FAN OFF、34.9 C FAN ON。Dashboard ACK 修复后证据待补。
+历史 Policy 核心证据包含 v3/33 C 与连续递增版本；B 已验证 AUTO/FAN 行为。最终报告阶段已补齐 Dashboard Policy ACK、Cloud Failure、本地自治与 state_sync 恢复证据，D01–D13 已归档至 `evidence/final_report/D/`。
 
 ## G4及NOC最终状态
 
-G4的21张网络验证原图和9张Edge/Backend/Dashboard原图已经归档到当前分支。它们覆盖远程管理、Port Security、IPv6地址分配、Tunnel、路由表、N1–N11回归及NAT共存修复。G4后增加的真实NC采集和中文NOC软件已经完成；当前只剩最终报告要求的明确截图、完整配置导出和连续彩排记录。
+G4的21张网络验证原图和9张Edge/Backend/Dashboard原图已经归档到当前分支。它们覆盖远程管理、Port Security、IPv6地址分配、Tunnel、路由表、N1–N11回归及NAT共存修复。G4后增加的真实NC采集和中文NOC软件已经完成；B 最终证据 12/12、D 最终证据 13/13 已归档，其余报告截图、完整配置导出和连续彩排记录继续按清单整理。
 
 ## 真实性边界
 

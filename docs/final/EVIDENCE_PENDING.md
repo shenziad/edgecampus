@@ -4,12 +4,14 @@
 
 ## 1. 已有证据
 
-[最终报告素材总清单](../FINAL_REPORT_SCREENSHOT_CHECKLIST.md)已经逐项登记73张可直接复用的原图，全部位于当前分支：
+[最终报告素材总清单](../FINAL_REPORT_SCREENSHOT_CHECKLIST.md)已经逐项登记当前证据；仓库`evidence/`现有177张图片，全部位于当前分支：
 
 - G1–G3网络、Edge、Backend和Dashboard历史证据；
 - 21张G4网络原图，来源提交 `4e0d31491689f24ce2d5e2a8bd6c7663af1f12d8`；
 - 9张G4 Edge/Backend/Dashboard恢复与鲁棒性证据；
 - NC-HQ设备清单原图，其中SW-CORE、SW-BRANCH为Managed。
+- A/B/D最终报告证据，其中B01–B12与D01–D13已经完成；
+- 图47–54课程重点补强证据，包括静态EtherChannel、Branch PAT/ACL、双DROTHER、隔离重分发及双端口Port Security。
 
 已有证据直接按总清单给出的本地路径引用，不重复截图。
 
@@ -75,3 +77,33 @@ A可在自己的完整项目中使用当前正式PT包和当前提交，连续�
 10. `evidence/final_report/B/F09-offline-fan-off.png`
 11. `evidence/final_report/B/F11-dashboard-recovered.png`
 12. `evidence/final_report/B/F11-edge-recovered.png`
+
+
+### D 组证据完成状态
+
+**D01–D13 已完成（13/13）**。正式报告证据已保存至 `evidence/final_report/D/`。
+
+已覆盖：
+
+- D01：最终中文 Dashboard 首屏，Edge `ONLINE`、Cloud `CONNECTED`、实时温度/FAN 与真实 NC 数据同屏；
+- D02–D04：Branch Router/Switch 运维检查及非管理员来源 `DENIED / DENY / SIMULATED`；
+- D05：Campus 三类策略展示，Edge thermal-01 v2 / 33 C / AUTO 与 Policy ACK `APPLIED`；
+- D06–D08：Port Security 模拟攻击/恢复与 ACL_BLOCK_EVENT，保留模拟来源标签；
+- D09–D11：Cloud Failure 实际断开 Edge WebSocket、离线本地 AUTO 触发 FAN ON，以及恢复后的 `CLOUD RECONNECTED + STATE_SYNC + SUCCESS`；
+- D12–D13：真实 NC 模式下 Network Failure 控件禁用，并由 `POST /api/simulation/network` 返回 409 证明不混用模拟网络状态。
+
+最终证据文件：
+
+1. `evidence/final_report/D/U02-noc-overview-01.png`
+2. `evidence/final_report/D/U08-branch-check-router.png`
+3. `evidence/final_report/D/U08-branch-check-switch.png`
+4. `evidence/final_report/D/U08-branch-check-denied-api.png`
+5. `evidence/final_report/D/U09-campus-policy.png`
+6. `evidence/final_report/D/U06-security-attack.png`
+7. `evidence/final_report/D/U06-security-restored.png`
+8. `evidence/final_report/D/U07-acl-block-event.png`
+9. `evidence/final_report/D/U10-cloud-ws-failure.png`
+10. `evidence/final_report/D/U10-cloud-ws-local-fan.png`
+11. `evidence/final_report/D/U10-cloud-ws-restored.png`
+12. `evidence/final_report/D/U11-network-simulation-disabled.png`
+13. `evidence/final_report/D/U11-network-disabled-api.png`

@@ -2,7 +2,7 @@
     "archive_date":  "2026-09-19",
     "project_status":  "ACCEPTANCE_COMPLETE_REPORT_PREPARATION",
     "branch":  "feat/edge",
-    "note":  "Deterministic SHA-256 manifest for repository evidence images, Packet Tracer packages, and archived source documents. It includes the imported A/B final evidence and the 2026-09-19 course patch figures 47-54. Historical gate reports remain unchanged; current configuration is documented in docs/COURSE_COVERAGE_PATCH.md.",
+    "note":  "Deterministic SHA-256 manifest for repository evidence images, Packet Tracer packages, and archived source documents. It includes the imported A/B/D final evidence and the 2026-09-19 course patch figures 47-54. Historical gate reports remain unchanged; current configuration is documented in docs/COURSE_COVERAGE_PATCH.md.",
     "artifacts":  [
                       {
                           "path":  "edge/packet_tracer/evidence/B1_hysteresis_console.png",
@@ -498,6 +498,71 @@
                           "path":  "evidence/final_report/B/F11-edge-recovered.png",
                           "bytes":  615982,
                           "sha256":  "ae92dade9ca19133c3fe25b838c058e7a7f829555095bfdd3a11c0e423861a11"
+                      },
+                      {
+                          "path":  "evidence/final_report/D/U02-noc-overview-01.png",
+                          "bytes":  1398913,
+                          "sha256":  "081d221facf96106fcb35ece95fc80464b4681a638207aa335feb93e02216831"
+                      },
+                      {
+                          "path":  "evidence/final_report/D/U06-security-attack.png",
+                          "bytes":  106811,
+                          "sha256":  "bfcbe1d5a63d293b1058f9f7f4bba6b709deaf89f4abcf81fdeab8c5ca7a63fd"
+                      },
+                      {
+                          "path":  "evidence/final_report/D/U06-security-restored.png",
+                          "bytes":  111911,
+                          "sha256":  "797be8d73ab9d429e0c9e4f68ed1e3dec883a1f0725eca5bc3a8a378804cc173"
+                      },
+                      {
+                          "path":  "evidence/final_report/D/U07-acl-block-event.png",
+                          "bytes":  101233,
+                          "sha256":  "dd5a4fb1fcc613dbd69d865d473d692d32a97da1b77cb0016c739790ae59cba6"
+                      },
+                      {
+                          "path":  "evidence/final_report/D/U08-branch-check-denied-api.png",
+                          "bytes":  44257,
+                          "sha256":  "225af00c9ad59d22ca2e9a3eae10daecd5e64021dd1d110ae2a61b459506c420"
+                      },
+                      {
+                          "path":  "evidence/final_report/D/U08-branch-check-router.png",
+                          "bytes":  160772,
+                          "sha256":  "3f3ce1e6d5c808184910232e016b47c686da4ae050949ae6b22a42e0d2bcd25b"
+                      },
+                      {
+                          "path":  "evidence/final_report/D/U08-branch-check-switch.png",
+                          "bytes":  149304,
+                          "sha256":  "5ffd7d50c1cd5fb67ffd7343ee3141e2bafe7f2c059b4e0671316a262e5fb60b"
+                      },
+                      {
+                          "path":  "evidence/final_report/D/U09-campus-policy.png",
+                          "bytes":  419923,
+                          "sha256":  "e98a848a7968097ca591dfc37064a91c4d280f9f96fbdeb0807fef87e499dd99"
+                      },
+                      {
+                          "path":  "evidence/final_report/D/U10-cloud-ws-failure.png",
+                          "bytes":  134704,
+                          "sha256":  "6516d5e8f30d642d30aad920f5d01f864cab0db01586dd52b75d1983ed049c5e"
+                      },
+                      {
+                          "path":  "evidence/final_report/D/U10-cloud-ws-local-fan.png",
+                          "bytes":  183347,
+                          "sha256":  "a7a7d59bba47239d4750d22d0d07b1285421f103c1312215245d7514d0c5e20e"
+                      },
+                      {
+                          "path":  "evidence/final_report/D/U10-cloud-ws-restored.png",
+                          "bytes":  362204,
+                          "sha256":  "f9cc55067609b530abb5311e95574837fab7b22243764357eed33ac7f754c598"
+                      },
+                      {
+                          "path":  "evidence/final_report/D/U11-network-disabled-api.png",
+                          "bytes":  59459,
+                          "sha256":  "97bb304e860c98c43051a8f2d911bf6909b634ccc533185c0b25c7ffa3150785"
+                      },
+                      {
+                          "path":  "evidence/final_report/D/U11-network-simulation-disabled.png",
+                          "bytes":  612885,
+                          "sha256":  "d0e10b5ccc5e5dcf11488bf8b99310c0568cb59493bd218bea680a075b720a42"
                       },
                       {
                           "path":  "evidence/gate3_bcd/G3-INT-01-real-edge-online-pass.png",
