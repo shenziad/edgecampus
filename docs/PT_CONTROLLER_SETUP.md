@@ -1,12 +1,12 @@
 # Packet Tracer 控制器实际数据接入
 
-## 当前实际接入结论（2026-09-18）
+## 当前实际接入结论（2026-09-19）
 
 项目完成（待补证据）。用户已确认 Dashboard 真实设备显示成功，并提供配置报告：NC-HQ `192.168.30.30/24`/网关 `.30.1`，GE0接SW-CORE Gi1/0/10 access VLAN30；R-HQ管理Loopback0 `10.255.255.1/32`；VTY新增允许NC `.30.30`同时保留ADMIN `.30.20`。这是用户实施记录，尚待完整running-config与成功Dashboard/API归档。两项Managed原图已入库，见 [最终报告](final/PROJECT_COMPLETION_REPORT.md)。
 
 下方‘尚未联调通过’或UNAVAILABLE检查描述的是早期开发时刻，不能作为当前失败结论。Managed映射仍仅依据collectionStatus；报告中的R-HQ发现不代表已Managed。
 
-本次接入为只读：Backend 登录控制器，读取设备清单与物理拓扑。未运行设备发现、写配置、关闭链路或编辑 canonical .pkt。PT 控制器的配置由用户在当前 PT 工作区完成。Edge Protocol v1.0 不变；最新收尾状态以最终报告为准。
+Backend接入为只读：登录控制器并读取设备清单与物理拓扑，不写设备配置或关闭链路。当前正式 `.pkt` 采用用户最新保存版本，PT控制器配置由用户在当前PT工作区完成。Edge Protocol v1.0 不变；最新收尾状态以最终报告为准。
 
 ## 1. 在 PT 添加 NC-HQ
 

@@ -461,4 +461,4 @@ Gate 0 已实测该通道；Final Architecture v2 不改变它。
 | CLI 管理 | login local，transport input telnet；具体设备覆盖及凭据按源报告/实际配置核对 |
 | 宿主机API端口 | NC Real World Access 58000；FastAPI/Edge WS 8000；不能用PT内部192.168.30.30替代宿主机127.0.0.1:58000 |
 
-NC用户已确认连通，直接截图证明SW-CORE `.30.1` 与SW-BRANCH `.40.66` Managed。R-HQ Loopback发现与管理路由尚待实际配置/清单核验，不自行新增OSPF/BGP发布、不冒称Managed。新增NC准入不能放开普通OFFICE/Branch用户管理权限。所有最终回归与留证见 [EV-01–28](final/EVIDENCE_PENDING.md)。
+NC用户已确认连通，直接截图证明SW-CORE `.30.1` 与SW-BRANCH `.40.66` Managed。R-HQ Loopback发现与管理路由尚待实际配置/清单核验，不自行新增OSPF/BGP发布、不冒称Managed。新增NC准入不能放开普通OFFICE/Branch用户管理权限。所有最终回归与留证见 [最终素材总清单](FINAL_REPORT_SCREENSHOT_CHECKLIST.md)。

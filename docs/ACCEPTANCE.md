@@ -1,10 +1,10 @@
 # Gate 与验收标准 — Final Architecture v2
 
-## 最新项目收尾结论（2026-09-18）
+## 最新项目收尾结论（2026-09-19）
 
-总状态 **完成（待补证据）**。下方既有 N1–N15/E1/C1/D1/P1/P2/R1/R2 标准保持；历史 G5 NOT STARTED 表示此前阶段记录。本次转入最终归档，但包打开/程序一致性/连续三轮彩排仍未完成，不标记 G5 PASS。
+总状态 **完成（待补证据）**。下方既有 N1–N15/E1/C1/D1/P1/P2/R1/R2 标准保持；历史 G5 NOT STARTED 表示此前阶段记录。21张G4网络原图已归档到当前分支；最终指定截图、包内程序一致性和连续三轮彩排记录仍待补。
 
-新增 NOC 验收：真实 NC 清单/IP/type/collectionStatus 与 Dashboard一致；Managed→ONLINE；OSPF/BGP/Tunnel NOT COLLECTED；失联不回退模拟/不保留陈旧在线；Network Failure禁用/409；Security与Branch明确SIMULATED；Campus thermal保留Edge ACK，Network/Security展示不写IOS；Cloud按钮实际中断WS并等待真实state_sync。完整证据范围见 [EV-01–28](final/EVIDENCE_PENDING.md)。
+新增 NOC 验收：真实 NC 清单/IP/type/collectionStatus 与 Dashboard一致；Managed→ONLINE；OSPF/BGP/Tunnel NOT COLLECTED；失联不回退模拟/不保留陈旧在线；Network Failure禁用/409；Security与Branch明确SIMULATED；Campus thermal保留Edge ACK，Network/Security展示不写IOS；Cloud按钮实际中断WS并等待真实state_sync。完整证据范围见 [最终素材总清单](FINAL_REPORT_SCREENSHOT_CHECKLIST.md)和[四人逐张操作清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)。
 
 ## 总原则
 

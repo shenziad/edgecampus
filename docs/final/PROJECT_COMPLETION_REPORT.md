@@ -1,15 +1,15 @@
 # EdgeCampus 最终完成报告
 
-项目状态：**完成（待补证据） / COMPLETE — EVIDENCE PENDING**。归档日期：2026-09-18；分支：`feat/edge`。
+项目状态：**完成（待补证据） / COMPLETE — EVIDENCE PENDING**。归档日期：2026-09-19；分支：`feat/edge`。
 
-此状态按用户最新要求标记，表示本轮功能开发收尾。G3/G4 缺失现场证据、最终包核验与 G5 三轮彩排仍待完成；没有将未执行的彩排写成 PASS。后续工作为补证、复核和必要修复。
+此状态表示功能开发与仓库整合完成。21张G4网络原图、9张G4 Edge/Backend/Dashboard原图和NC Managed清单图已经归入当前分支；最终报告指定截图、完整配置附件和连续三轮彩排记录继续待补。
 
 ## 本次归档依据
 
 - 用户提供的 [NOC 升级配置报告](source/EdgeCampus_NOC功能升级过程与配置报告.docx)及[原文提取](source/REPORT_TEXT.md)。原始报告没有内嵌截图。
-- G4 历史报告与 [9 张真实证据索引](../gate4/EVIDENCE_INDEX.md)。A N12–N15 为用户确认已实测，截图后补。
+- G4历史报告、[9张Edge/Backend/Dashboard证据索引](../gate4/EVIDENCE_INDEX.md)，以及现已纳入当前分支的21张G4网络原图。
 - G4 后本地开发提交：`260192d` Network Agent；`b791bd5` Security Center；`1a54005` Branch/Policy/Simulation；`2069e38` 中文界面与端口说明；`9181ea5` NC 真实读取；`1aaa81d` 真实设备健康与 NOT COLLECTED。
-- 用户确认 NC 已连通且 Dashboard 已显示。现归档的 [NC 清单截图](../../evidence/noc/NOC-NC-01-controller-managed-inventory.png)直接证明 SW-CORE、SW-BRANCH 为 Managed；Dashboard 成功画面及同次 API JSON 尚缺。
+- 用户确认 NC 已连通且 Dashboard 已显示。现归档的 [NC 清单截图](../../evidence/noc/NOC-NC-01-controller-managed-inventory.png)直接证明 SW-CORE、SW-BRANCH 为 Managed；最终Dashboard与同次API JSON按C10–C15逐张清单补拍。
 - 本次重新执行的[软件验证](VALIDATION.md)。HTTP fixture/Fake Edge 回归与真实 PT 现场证据分开记录。
 
 ## 最终能力与真实作用范围
@@ -27,15 +27,15 @@
 
 PT 企业 WAN 为模拟数据平面。RealWSClient→FastAPI 与宿主机→NC Real World Access 是不同的带外通道；不声称 WebSocket 经过 PT BGP/NAT。HQ-SERVICE/BACKEND-STUB 不是宿主机 FastAPI。
 
-## 报告确认的 G4 后网络配置
+## 当前G4后网络与NC配置
 
 | 项目 | 用户报告的实际配置 | 证据状态 |
 |---|---|---|
-| NC-HQ | `192.168.30.30/24`，网关 `192.168.30.1`；GigabitEthernet0→SW-CORE Gi1/0/10，access VLAN30 | 已记录；配置/拓扑截图待补 |
-| ADMIN-PC | `192.168.30.20`，可访问 NC-HQ | 用户报告通过；页面/地址截图待补 |
-| R-HQ 管理 | Loopback0 `10.255.255.1/32`，description MANAGEMENT_LOOPBACK；G0/0 保留 OSPF 链路 | 报告称已发现；不能据此声明 R-HQ Managed，实际管理路由与配置待导出 |
-| 设备 CLI | 本地用户名认证、VTY 0–4 `login local`、`transport input telnet` | 报告记录；需完整运行配置明确应用设备及 ACL 绑定 |
-| VTY-HQ-ADMIN | permit host `.30.20` 与 `.30.30`，deny any | 新增 NC 准入；需证明仍拒绝普通 OFFICE/BR-OFFICE |
+| NC-HQ | `192.168.30.30/24`，网关 `192.168.30.1`；GigabitEthernet0→SW-CORE Gi1/0/10，access VLAN30 | 配置记录已整理；配置/拓扑按A/C项清单补拍 |
+| ADMIN-PC | `192.168.30.20`，可访问 NC-HQ | 配置记录已整理；页面/地址按A项清单补拍 |
+| R-HQ 管理 | Loopback0 `10.255.255.1/32`，description MANAGEMENT_LOOPBACK；G0/0 保留 OSPF 链路 | G4配置与NC报告均已整理；最终管理路由和running-config按CFG附件导出 |
+| 设备 CLI | 本地用户名认证、VTY 0–4 `login local`、`transport input telnet` | 配置落点已整理；按CFG01–CFG06导出完整运行配置 |
+| VTY-HQ-ADMIN | permit host `.30.20` 与 `.30.30`，deny any | A24–A27拍摄实际管理允许与拒绝 |
 | 已有直接截图 | SW-CORE `192.168.30.1` / MultiLayerSwitch；SW-BRANCH `172.16.40.66` / Switch；均 Managed | 原图已入库；同图另三项 Unsupported，未改写为在线 |
 
 报告中 CLI 段落被压平，不自动作为脚本执行。本次未操作 PT、未写 IOS、未自动运行 Discovery。用户名/VTY ACL 的真实设备覆盖范围、Loopback 路由与 `access-class … in` 绑定，以最终 running-config 为准。
@@ -44,22 +44,23 @@ PT 企业 WAN 为模拟数据平面。RealWSClient→FastAPI 与宿主机→NC R
 
 | 阶段 | 收尾状态 |
 |---|---|
-| G0–G2 | 保持既有已完成/关闭基线 |
-| G3 | 功能已整合、用户实测确认；修复后真实 Dashboard ACK 与完整 events 待补 |
-| G4 | 已实现、用户确认实测；9 张真实证据已归档，其余网络/离线 OFF/恢复 UI/最终回归待补 |
-| G4 后 NOC | 实现收尾；NC 成功为用户确认并有控制器清单原图；真实 Dashboard/API 配套证据待补 |
-| G5 | 最终包已归档候选；打开复核与连续三轮彩排待执行并留证；未宣称 G5 验收 PASS |
+| G0–G2 | 既有完成基线和历史证据保留 |
+| G3 | 功能整合完成，历史网络与Edge证据保留 |
+| G4 | 功能完成；21张网络图和9张软件侧图已纳入当前分支 |
+| G4后NOC | 五大板块完成；真实NC Managed清单原图已归档 |
+| 最终报告 | 73张已有图可复用；25组/70张指定PNG、CFG01–CFG08和三轮记录待补 |
 | 项目总状态 | **完成（待补证据）** |
 
 ## 最新交付包
 
-`packet_tracer/EdgeCampus.pkt` 为用户已经修改的最新本地包，本次原样归档，没有改写二进制。
+`packet_tracer/EdgeCampus.pkt` 是本次发布采用的唯一正式PT包。
 
-- 大小：144,326 bytes。
-- SHA-256：`1c390fd766e6cb3c108f4e69853f61f614ca5a1a790cbed92e4cbd3f37e505dd`。
+- 大小：147,803 bytes。
+- SHA-256：`6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`。
+- 当前包已纳入 `feat/edge`；现场保存重开和包内程序一致性仍按A29/A30、B01–B05核验。
 - 原始 DOCX SHA-256：`ce6f10931e090d52e9e004fc191a46d8084e1c1976da7901e6709fb185b50e6b`。
 - G4 的 136,138 bytes 包及旧哈希为历史版本；不再当作当前包。
-- 未在 PT 打开此包核验，不能仅凭哈希证明已包含报告全部配置与最新 SBC 程序。此项见 [EV-26/27](EVIDENCE_PENDING.md)。
+- 哈希用于锁定发布二进制；现场可运行性和最终行为以逐张截图及配置附件为准。
 
 ## 启动与收尾入口
 
@@ -72,4 +73,4 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\start_pt_backe
 
 输入 NC 的 Web/API 管理员账户，不混用设备 Discovery CLI 凭据。打开 `http://127.0.0.1:8000`。真实 PT 留证时不启动 Fake Edge。本次没有启动长期 Backend 服务。
 
-完整补证要求见 [EVIDENCE_PENDING.md](EVIDENCE_PENDING.md)；现场流程见 [DEMO_SCRIPT.md](../DEMO_SCRIPT.md)。补齐后更新证据索引与状态，不重命名未拍摄图片为 PASS，不用模拟数据填补真实验收空缺。
+完整补证要求见 [逐张操作清单](../FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)和[待补索引](EVIDENCE_PENDING.md)；现场流程见 [DEMO_SCRIPT.md](../DEMO_SCRIPT.md)。补齐后更新证据索引与状态，不重命名未拍摄图片为 PASS，不用模拟数据填补真实验收空缺。

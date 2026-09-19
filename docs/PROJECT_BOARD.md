@@ -129,10 +129,10 @@ B+C+D：记录真实 AUTO 策略 → 停真实 Backend → 跨迟滞阈值验证
 | VLAN / Trunk / SVI / EtherChannel / ROAS | G1/G2 | ✅ |
 | OSPF / BGP | G3 | ✅ HQ OSPF Area 0 + WAN eBGP 65001/65000/65002 PASS |
 | ACL / NAT/PAT / DNS/HTTP / static mapping | G1/G3 | ✅ HQ ACL；WAN/Branch ACL、PAT、DNS/HTTP、静态 TCP/80 映射均 PASS |
-| SLAAC / DHCPv6 / Static IPv6 / IPv6 route | G4 | USER-REPORTED PASS / EVIDENCE PENDING |
-| Port Security / sticky MAC | G4 | USER-REPORTED PASS / EVIDENCE PENDING |
-| IPv6-over-IPv4 Tunnel | G4 | USER-REPORTED PASS / EVIDENCE PENDING |
-| Remote management | G4 | USER-REPORTED PASS / EVIDENCE PENDING |
+| SLAAC / DHCPv6 / Static IPv6 / IPv6 route | G4 | ✅ G4原图已纳入当前分支 |
+| Port Security / sticky MAC | G4 | ✅ 配置/违规/恢复原图已纳入 |
+| IPv6-over-IPv4 Tunnel | G4 | ✅ 两端状态、路由和业务原图已纳入 |
+| Remote management | G4 | ✅ ACL、允许登录和拒绝原图已纳入 |
 
 
 ## Gate 4 Release Decision — 2026-09-16
@@ -152,3 +152,7 @@ ACK 修复回归：19 项 Python 测试、JavaScript ACK 行为测试、compilea
 用户授权在最新本地 feat/edge 上进行 NOC 增量开发，三段完成 Network Health、Security Center、Remote Operations/Campus Policy/Failure Simulation。独立 NetworkProvider/mock adapter 与 REST API，不修改 Protocol 1.0、Edge Policy/ACK 或 canonical .pkt。当前 Gate4 与 Gate5 状态保持；详见 `docs/NOC_UPGRADE.md`。
 
 NOC 五功能已完成并通过本地 HTTP/WS/浏览器验证；详细接口、模拟边界和六步演示见 [NOC_UPGRADE.md](NOC_UPGRADE.md)。此结果不改变 Gate4 证据待补状态。
+
+## 2026-09-19 最终仓库同步
+
+`feat/edge`作为正式交付分支：五大NOC功能、真实NC读取、最终配置总览、五次实验映射、25组/70张逐图清单以及21张G4网络原图均已整合。正式PT包为147803 bytes，SHA-256 `6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`。状态保持完成（待补证据），待补70张PNG、CFG01–CFG08和连续三轮彩排记录。

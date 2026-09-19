@@ -1,6 +1,6 @@
 # EdgeCampus NOC Upgrade 最终实现
 
-状态：**完成（待补证据）**；2026-09-18，`feat/edge`。本页为最终行为；早期 Mock Network 的演示由真实 NC-only 行为替代。完整收尾与来源见 [完成报告](final/PROJECT_COMPLETION_REPORT.md)。
+状态：**完成（待补证据）**；2026-09-19，`feat/edge`。本页为最终行为；早期 Mock Network 的演示由真实 NC-only 行为替代。完整收尾与来源见 [完成报告](final/PROJECT_COMPLETION_REPORT.md)。
 
 ## 五位一体
 
@@ -25,7 +25,7 @@
 - 拓扑读取失败保留已成功取得的设备清单并报告降级。
 - 仅向本机控制器发送认证，不跟随重定向，不使用系统代理；401 重登录后重试一次。
 
-用户已确认真实 NC 接入和 Dashboard 显示。已有 [NC Managed 清单截图](../evidence/noc/NOC-NC-01-controller-managed-inventory.png)，两项为 SW-CORE/SW-BRANCH。成功 Dashboard、同次 API、失败恢复配套留证见 [EV-16–20](final/EVIDENCE_PENDING.md)。不声明 R-HQ 已 Managed。
+用户已确认真实 NC 接入和 Dashboard 显示。已有 [NC Managed 清单截图](../evidence/noc/NOC-NC-01-controller-managed-inventory.png)，两项为 SW-CORE/SW-BRANCH。成功 Dashboard、同次 API、失败恢复配套留证见 [C01–C15逐张清单](FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)。不声明 R-HQ 已 Managed。
 
 ## Security / Branch / Campus Policy
 
@@ -53,6 +53,6 @@ Campus：thermal-01/version/ACK 机制不改，campus_version 为 campus-1 / the
 
 三段开发完成 Network Agent→Security→Branch/Policy/Simulation，再增加中文界面、PT 端口对齐、真实 NC 适配器与真实健康卡片。早期 Fake Edge+Mock Network 连续演示属于软件开发记录，不作为最终真实 PT 验收。
 
-本次 46 Python、3 Node、compileall、Protocol contract 通过，详见 [VALIDATION](final/VALIDATION.md)。Protocol 1.0、设备 ID、Edge WS/API 与严格递增版本保持。最新用户 `.pkt` 原样归档，未在本次打开 PT 核验。
+本次 46 Python、3 Node、compileall、Protocol contract 通过，详见 [VALIDATION](final/VALIDATION.md)。Protocol 1.0、设备 ID、Edge WS/API 与严格递增版本保持。最新正式 `.pkt` 已纳入当前分支；现场保存重开和包内程序一致性仍按最终清单核验。
 
 真实启动与网络配置见 [PT_CONTROLLER_SETUP](PT_CONTROLLER_SETUP.md)，最终演示见 [DEMO_SCRIPT](DEMO_SCRIPT.md)，完整待补证据见 [清单](final/EVIDENCE_PENDING.md)。

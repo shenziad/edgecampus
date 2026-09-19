@@ -253,3 +253,7 @@ Cloud WebSocket 断开时：
 用户授权在最新本地 feat/edge 上进行 NOC 增量开发，三段完成 Network Health、Security Center、Remote Operations/Campus Policy/Failure Simulation。独立 NetworkProvider/mock adapter 与 REST API，不修改 Protocol 1.0、Edge Policy/ACK 或 canonical .pkt。当前 Gate4 与 Gate5 状态保持；详见 `docs/NOC_UPGRADE.md`。
 
 NOC 五功能已完成并通过本地 HTTP/WS/浏览器验证；详细接口、模拟边界和六步演示见 [NOC_UPGRADE.md](NOC_UPGRADE.md)。此结果不改变 Gate4 证据待补状态。
+
+## 2026-09-19 最终交付同步
+
+当前正式分支为`feat/edge`。21张G4网络原图、最终配置总览、五次实验映射和四人逐图清单已经纳入。正式PT包为147803 bytes，SHA-256 `6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`。架构与Protocol 1.0不变；最终报告素材仍按25组/70张清单补齐。

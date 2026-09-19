@@ -1,18 +1,93 @@
 {
-  "archive_date": "2026-09-18",
+  "archive_date": "2026-09-19",
   "project_status": "COMPLETE_EVIDENCE_PENDING",
   "branch": "feat/edge",
-  "note": "Hashes identify archived files, not PT runtime acceptance. Historical G1-G4 images retain their original scope. Missing evidence: EVIDENCE_PENDING.md. Binary artifacts only; text extracts excluded because checkout line endings may differ.",
+  "note": "Hashes identify the current PT package, archived source document, and all repository evidence images. The 21 G4 network images were imported unchanged from source commit 4e0d31491689f24ce2d5e2a8bd6c7663af1f12d8. Missing final-report screenshots and configuration exports are listed in FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md and EVIDENCE_PENDING.md.",
   "artifacts": [
-    {
-      "path": "packet_tracer/EdgeCampus.pkt",
-      "bytes": 144326,
-      "sha256": "1c390fd766e6cb3c108f4e69853f61f614ca5a1a790cbed92e4cbd3f37e505dd"
-    },
     {
       "path": "docs/final/source/EdgeCampus_NOC功能升级过程与配置报告.docx",
       "bytes": 38928,
       "sha256": "ce6f10931e090d52e9e004fc191a46d8084e1c1976da7901e6709fb185b50e6b"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/B1_hysteresis_console.png",
+      "bytes": 2682,
+      "sha256": "10250b75b7786d9895fb0fd6c5395749601d55c83db97a9bb4d50887686b9e72"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/B2_fan_state_topology.png",
+      "bytes": 11555,
+      "sha256": "20c903f6197ab2a8925e3e52eaf351fbe506cead15caef24e6560fc19c5002ab"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/B3_backend_off_local_autonomy.png",
+      "bytes": 191371,
+      "sha256": "92bdcadebd705cb8ca907cab31b739960b0281267e6d61f549b8c3ba7ef34c75"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/gate2/B-G2-01-realws-connected.png",
+      "bytes": 67614,
+      "sha256": "b0425473feb2b8940569e9955ce84f478eb7bb74ddc309a1cc2b1595c48a65e3"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/gate2/B-G2-02-hello-state.png",
+      "bytes": 107228,
+      "sha256": "eee20c322e3af368b49f6f0fbed0f5109829cefea0d2709d9b96e23288f3cfce"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/gate2/B-G2-03-fixed-telemetry.png",
+      "bytes": 129494,
+      "sha256": "e7252326b7bae629a563a285cd178a1d7cec0571ae98d0a7496b6b55c1218eb1"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/gate2/B-G2-04-real-temp-telemetry.png",
+      "bytes": 346299,
+      "sha256": "9122ea8f0a72c9d2189aa988a91f70af37ac997d79afce5d723b502a1370b66b"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/gate2/B-G2-05-full-edge-state-off.png",
+      "bytes": 356259,
+      "sha256": "b8d3c7b3b7d66c378973a2447529b025f07e26139f9e190f34538fa28708e4bb"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/gate2/B-G2-06-real-fan-on-status.png",
+      "bytes": 184449,
+      "sha256": "56335dc8030aad1e8ed438adaf3124d2c952fb13a63b0b36a7481b70ff707858"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/gate3/G3-B-01-policy-apply-ack-pass.png",
+      "bytes": 35417,
+      "sha256": "5dcaa416a9f20ea7d76091f1f3f2a41c556052a680b11d6acb5497c0f86b2711"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/gate3/G3-B-02-auto-low-temp-off-pass.png",
+      "bytes": 41755,
+      "sha256": "ca54f569925fa690595d8eac6109c6c6ebd7c7a70defe9a3e41a6acdd636d75e"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/gate3/G3-B-03-auto-high-temp-on-pass.png",
+      "bytes": 24130,
+      "sha256": "9a337237985c40ffaa6eb6595b624d6fba4f452c52b2cb6d898d238aca4b706a"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/gate3/G3-B-04-manual-policy-apply-pass.png",
+      "bytes": 35529,
+      "sha256": "726167053ca72d546f587595e8807a311efb2f7b83fa0ea6855adcb24c246b6f"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/gate3/G3-B-05-manual-command-off-pass.png",
+      "bytes": 39528,
+      "sha256": "304274cd0e6eb4d245fc39fb68a0776a3abf566d94635974bd171a341c6f18d0"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/gate3/G3-B-06-manual-command-on-pass.png",
+      "bytes": 39970,
+      "sha256": "06118283c9fb759f875d57ecefee2da80848e2ba2d8bb66debecd67a21fb286a"
+    },
+    {
+      "path": "edge/packet_tracer/evidence/gate3/G3-B-07-gate2-regression-auto-pass.png",
+      "bytes": 118454,
+      "sha256": "007348d750c167babd86b57c240f0e59879fad3c4933d995468829c0b4496d8f"
     },
     {
       "path": "evidence/backend/G1-01-unittest-pass.png",
@@ -465,9 +540,119 @@
       "sha256": "336883bdd388351e10c134da4380aa26508d78503fea044f5c1c726f4b10d912"
     },
     {
+      "path": "evidence/network/G4-A-01-remote-admin-vty-acl-pass.png",
+      "bytes": 70482,
+      "sha256": "392dd070aa0f6050c737074dab9e3dbf36562dd170d97f2f11d82aa7969f9278"
+    },
+    {
+      "path": "evidence/network/G4-A-01b-remote-admin-telnet-pass.png",
+      "bytes": 62026,
+      "sha256": "1e542f5538b81915b7bd49f5a8d637eb972451945e60fe26fbdac23be7a4118c"
+    },
+    {
+      "path": "evidence/network/G4-A-01c-remote-admin-office-deny.png",
+      "bytes": 26997,
+      "sha256": "7f47566904a4265608fededb41b2565054199b12597096a9bc5239ea9629fe51"
+    },
+    {
+      "path": "evidence/network/G4-A-02-port-security-config-pass.png",
+      "bytes": 151772,
+      "sha256": "c272cd02ac5f0cb3e1b31a1a5b14291d0e3d32d0dbd7b94a1093b6cfd788b556"
+    },
+    {
+      "path": "evidence/network/G4-A-02b-port-security-violation-pass.png",
+      "bytes": 135918,
+      "sha256": "dfdc71a1931b9bc0cbb4611884da90c41905e65c8c827fc7a5214717005eeaa5"
+    },
+    {
+      "path": "evidence/network/G4-A-02c-port-security-restore-pass.png",
+      "bytes": 78084,
+      "sha256": "c128413eec866fdf0ed04b90c1d3e056a1b49aa916c2966bb260f3ddc311531d"
+    },
+    {
+      "path": "evidence/network/G4-A-03-ipv6-addressing-pass.png",
+      "bytes": 284470,
+      "sha256": "b1c23544cd52245b31007a0dada2d81d1b5b012898121a96d2da23158002fa71"
+    },
+    {
+      "path": "evidence/network/G4-A-03b-ipv6-hq-admin-static-pass.png",
+      "bytes": 142526,
+      "sha256": "ac891db9c5ae095336729926e57c699730be3296faaa9e7d63988cf96fd37c77"
+    },
+    {
+      "path": "evidence/network/G4-A-03c-ipv6-slaac-client-pass.png",
+      "bytes": 134388,
+      "sha256": "279745a1b8d5aeadf4205601cfce21bfac5065121d046632fbf4435201d8dcdf"
+    },
+    {
+      "path": "evidence/network/G4-A-03d-ipv6-dhcpv6-pass.png",
+      "bytes": 150901,
+      "sha256": "d8474e18d21acf4e88fb38edbe2b3c200f886097c92a636124db57d41e1fd9a3"
+    },
+    {
+      "path": "evidence/network/G4-A-04-ipv6-tunnel-rhq-pass.png",
+      "bytes": 165598,
+      "sha256": "af143b00e9dd996770816c661b1282d290068a69fee9b8b7030e08b9e0870f5e"
+    },
+    {
+      "path": "evidence/network/G4-A-04b-ipv6-tunnel-rbranch-pass.png",
+      "bytes": 144596,
+      "sha256": "ca8bfa6e112ffb9473a221bb394a97988ce16b99f55027ef7f77ccc8067a1c02"
+    },
+    {
+      "path": "evidence/network/G4-A-04c-ipv6-route-tables-pass.png",
+      "bytes": 423820,
+      "sha256": "d4776038ba46c7a17b1210a3e57a93bf071acb6e567145fb73839b21e8508bc6"
+    },
+    {
+      "path": "evidence/network/G4-A-04d-br-admin-to-hq-service-ipv6-pass.png",
+      "bytes": 57907,
+      "sha256": "587e0843ccb5411204e7e1c8d8f44615483c696d7640562bb6a4ad2c7f277e06"
+    },
+    {
+      "path": "evidence/network/G4-A-05-full-regression-swcore-pass.png",
+      "bytes": 132621,
+      "sha256": "45562c0892aec282a85c26410c69bd2a3a98963c91ad5212c7371a67f452c93c"
+    },
+    {
+      "path": "evidence/network/G4-A-05b-full-regression-swcore-l3-pass.png",
+      "bytes": 179332,
+      "sha256": "139d21d74acae954ccb72a39aa6c866edd5fdfd62b1183c4cddfae950cb91224"
+    },
+    {
+      "path": "evidence/network/G4-A-05c-full-regression-routing-pass.png",
+      "bytes": 507276,
+      "sha256": "cad51bddbdac4f4bc2ac01ea6357b4d3fe0271cbb10d7c2f25d8a04964e7cf1a"
+    },
+    {
+      "path": "evidence/network/G4-A-05d-full-regression-behaviors-pass.png",
+      "bytes": 541992,
+      "sha256": "a9692da5e58883c6442973c2e6181620d24f625f493d17db700bf305c6c13bc7"
+    },
+    {
+      "path": "evidence/network/G4-A-06-n7-nat-conflict-evidence.png",
+      "bytes": 164207,
+      "sha256": "59fbcffa3efc6aacdfa623568b0bbf5d4524b9c811a0a1584743edfa02440e76"
+    },
+    {
+      "path": "evidence/network/G4-A-07-n7-n11-coexist-fix-pass.png",
+      "bytes": 466192,
+      "sha256": "64535bbee7615ffaf4d0710e7e993c1d5351e7629bde9772410a7678cd667383"
+    },
+    {
+      "path": "evidence/network/G4-A-07b-n7-n11-coexist-confirm-pass.png",
+      "bytes": 424223,
+      "sha256": "67ce454e2408ec3fc6f5b6bceefb01f4494c0f2070641af69e6070dce68a1539"
+    },
+    {
       "path": "evidence/noc/NOC-NC-01-controller-managed-inventory.png",
       "bytes": 61323,
       "sha256": "4fe0101348562a7d1f02218e30d0588c8ffe4d7da7636c904ccec997a3711467"
+    },
+    {
+      "path": "packet_tracer/EdgeCampus.pkt",
+      "bytes": 147803,
+      "sha256": "6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba"
     }
   ]
 }

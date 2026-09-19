@@ -39,16 +39,20 @@ EdgeCampus 将 Packet Tracer 中的总部园区、企业 WAN、Internet 与异�
 
 ## 当前项目状态
 
-**完成（待补证据） / COMPLETE — EVIDENCE PENDING**，更新于 2026-09-18。
+**完成（待补证据） / COMPLETE — EVIDENCE PENDING**，更新于 2026-09-19。
 
-G4 后 NOC 开发收尾，真实 NC 接入已由用户确认。Network Health 使用真实清单，Managed→ONLINE；OSPF/BGP/Tunnel NOT COLLECTED。Security/Branch 为模拟，Campus Network/Security 为展示层，Network Failure 模拟已禁用。G3/G4 缺证及最终包复核、G5 三轮彩排仍待完成，不宣称已通过全部最终验收。
+当前 `feat/edge` 已整合五大NOC板块、真实Packet Tracer Network Controller只读采集、中文Dashboard、真实Edge Policy/Command/ACK、断云自治与恢复，以及五次实验的最终网络配置说明。Network Health以NC真实清单为准：Managed→ONLINE，OSPF/BGP/Tunnel显示NOT COLLECTED；Security/Branch是演示适配器，Campus Network/Security是上层策略展示，Network Failure已禁用。
 
-- [最终完成报告](docs/final/PROJECT_COMPLETION_REPORT.md)
-- [全部待补证据：28 组](docs/final/EVIDENCE_PENDING.md)
-- [软件验证](docs/final/VALIDATION.md)与[NOC 最终说明](docs/NOC_UPGRADE.md)
-- [真实 NC 启动/配置](docs/PT_CONTROLLER_SETUP.md)与[现场演示](docs/DEMO_SCRIPT.md)
+- [最终配置总览](docs/FINAL_CONFIGURATION.md)
+- [五次实验技术映射](docs/EXPERIMENT_MAPPING.md)
+- [最终报告素材总清单](docs/FINAL_REPORT_SCREENSHOT_CHECKLIST.md)
+- [四人逐张截图操作清单](docs/FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)
+- [前五次实验需补的5张图](docs/EXPERIMENT_EVIDENCE_COVERAGE.md)
+- [最终完成报告](docs/final/PROJECT_COMPLETION_REPORT.md)与[软件验证](docs/final/VALIDATION.md)
 
-当前指挥文件：[CURRENT_GATE](docs/CURRENT_GATE.md)。分支继续 `feat/edge`，本次本地归档，不推送。
+当前仓库已正式收录21张G4网络原图、既有Edge/Backend/Dashboard证据和NC Managed清单原图。待补范围固定为25组、70张PNG，以及CFG01–CFG08配置附件和连续三轮彩排记录；逐张操作与预期画面以上述清单为准。
+
+当前正式分支为 `feat/edge`，远程同名分支作为交付分支。`packet_tracer/EdgeCampus.pkt` 是唯一正式PT包，当前大小147803 bytes，SHA-256 `6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`。
 
 ## Gate 2 已验证基线
 
@@ -99,9 +103,9 @@ Dashboard
 
 实际 Policy 核心证据为 v3/33 C，最终 Backend 图为 v5；连续联调版本正常递增。B 已验证 31.8 C FAN OFF、34.9 C FAN ON。Dashboard ACK 修复后证据待补。
 
-## G4 及之后收尾
+## G4及NOC最终状态
 
-G4 用户确认实测，9 张真实图已归档；网络 N12–N15、离线 OFF/物理输出、恢复 Dashboard 与最终回归待补。NOC 已增加中文五板块及真实 NC 只读采集。最新用户包 144326 bytes 原样归档，最终打开/源码一致性与三轮彩排仍待执行。详情见最终完成报告和补证清单。
+G4的21张网络验证原图和9张Edge/Backend/Dashboard原图已经归档到当前分支。它们覆盖远程管理、Port Security、IPv6地址分配、Tunnel、路由表、N1–N11回归及NAT共存修复。G4后增加的真实NC采集和中文NOC软件已经完成；当前只剩最终报告要求的明确截图、完整配置导出和连续彩排记录。
 
 ## 真实性边界
 

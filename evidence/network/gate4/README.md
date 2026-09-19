@@ -6,4 +6,4 @@ N12 SLAAC/DHCPv6/Static、N13 Tunnel、N14 ADMIN 允许/OFFICE 拒绝、N15 正�
 
 ## 2026-09-18 最终收尾入口
 
-项目总状态已按用户要求更新为**完成（待补证据）**。本页保留G4原始证据结论；全部G3/G4/NOC/最终包与彩排缺口以 [最终清单](../../../docs/final/EVIDENCE_PENDING.md) 为准。
+项目总状态已按用户要求更新为**完成（待补证据）**。本页保留G4原始证据结论；全部G3/G4/NOC/最终包与彩排缺口以 [最终素材清单](../../../docs/FINAL_REPORT_SCREENSHOT_CHECKLIST.md) 为准。

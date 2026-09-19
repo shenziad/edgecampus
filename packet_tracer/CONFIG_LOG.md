@@ -506,4 +506,4 @@ Backend只读ticket/设备清单/物理拓扑，不写IOS。Security/Branch仍�
 
 ### 最新用户包与待核验
 
-`packet_tracer/EdgeCampus.pkt`：144326 bytes，SHA-256 `1c390fd766e6cb3c108f4e69853f61f614ca5a1a790cbed92e4cbd3f37e505dd`。这是本次开始前用户已经修改的最新文件，原样归档；此前136138bytes/G4哈希保留为历史。本次未打开包，最终运行配置、SBC程序嵌入、保存重开及连续三轮彩排待核验。全部缺口见 `docs/final/EVIDENCE_PENDING.md`，软件验证见 `docs/final/VALIDATION.md`。
+`packet_tracer/EdgeCampus.pkt`：147803 bytes，SHA-256 `6d6c154415700ff750cabe41272b0f1f5aa46f2d8ee341c3336625175fa7a4ba`。这是当前发布采用的最新正式文件；此前136138 bytes和144326 bytes版本保留为历史。最终运行配置、SBC程序嵌入、保存重开及连续三轮彩排按 `docs/FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md` 留证。
