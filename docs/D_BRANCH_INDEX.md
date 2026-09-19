@@ -4,10 +4,10 @@
 
 - Owner: D — UI & Integration
 - Working branch: `feat/dashboard`
-- Current project Gate: **Gate 3**
+- Current project status: **ACCEPTANCE COMPLETE — REPORT PREPARATION**
 - Gate 1 D status: **PASS**
 - Gate 2 D status: **PASS**
-- Final Architecture baseline: **v2 / Gate 2 Integrated Baseline**
+- Final Architecture baseline: **v2 / final accepted baseline**
 
 D 长期负责 `dashboard/`、Dashboard 自动测试、`evidence/dashboard/`、D-side Gate 报告和端到端展示证据。D 不直接修改 A Network、B Edge、C Backend 核心实现，也不直接修改 Public Contract。
 
@@ -40,7 +40,7 @@ TEMP01 → MCU → EDGE-SBC-01 → RealWSClient → Backend → Dashboard
 
 提交时完整仓库测试 14/14 PASS，Dashboard contract tests 5/5 PASS。
 
-## Gate 3 D Mission
+## Archived Gate 3 D Mission（历史）
 
 目标：把已有 Policy / Command UI 从 fake 联调升级为真实 PT Edge 双向闭环。
 
@@ -77,6 +77,16 @@ Dashboard 可以改变展示文案，但不得重命名传输字段。
 
 RealWSClient → FastAPI 是带外控制通道；不得暗示真实 WebSocket 经过 Packet Tracer WAN / OSPF / BGP / NAT / Tunnel。
 
+## Final D Evidence — 2026-09-19
+
+D01–D13 已完成（13/13），最终证据归档于：
+
+```text
+evidence/final_report/D/
+```
+
+覆盖最终中文 Dashboard、Branch 检查、Campus Policy + Policy ACK、安全事件、Cloud Failure、本地自治 FAN、恢复 state_sync，以及 Network Failure 禁用/409。权威完成状态见 `docs/final/EVIDENCE_PENDING.md` 与 `docs/FINAL_REPORT_SCREENSHOT_CHECKLIST.md`。
+
 ## Next Action
 
-与 B/C 联调 Gate3 Policy / Command 真闭环；不继续做非验收视觉功能。
+D 不再开发新功能；保持 Protocol v1.0、真实性边界和现有 Dashboard 行为。后续仅配合最终报告整合、答辩素材引用和必要的回归确认。
