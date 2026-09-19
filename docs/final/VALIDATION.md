@@ -4,7 +4,7 @@
 
 | 检查 | 实际结果 |
 |---|---|
-| `runtime/noc-venv/Scripts/python.exe -m unittest discover -s tests -q` | PASS，46 tests，6.780 s |
+| `runtime/noc-venv/Scripts/python.exe -m unittest discover -s tests -q` | PASS，46 tests，6.500 s（D证据合并后复核） |
 | `runtime/noc-venv/Scripts/python.exe -m compileall -q backend edge tests` | PASS |
 | `runtime/noc-venv/Scripts/python.exe scripts/check_contract.py` | PASS，public contract v1.0 consistent |
 | `node tests/test_noc_dashboard.cjs` | PASS，真实NC卡片、Managed精确映射、缺字段、无模拟/陈旧数据、协议未采集 |
