@@ -45,6 +45,7 @@ EdgeCampus 将 Packet Tracer 中的总部园区、企业 WAN、Internet 与异�
 
 - [最终配置总览](docs/FINAL_CONFIGURATION.md)
 - [五次实验技术映射](docs/EXPERIMENT_MAPPING.md)
+- [最终功能演示设计](docs/FINAL_FUNCTION_DEMO.md)
 - [最终报告素材总清单](docs/FINAL_REPORT_SCREENSHOT_CHECKLIST.md)
 - [四人逐张截图操作清单](docs/FINAL_REPORT_SCREENSHOT_ASSIGNMENT.md)
 - [前五次实验需补的5张图](docs/EXPERIMENT_EVIDENCE_COVERAGE.md)

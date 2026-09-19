@@ -1,6 +1,6 @@
 # 最终现场演示与彩排脚本
 
-项目：**完成（待补证据）**。版本：2026-09-19。主讲约6分钟；最终完整验收/三轮彩排需额外时间。实际操作先彩排，不把模拟界面当作真实网络证明。
+项目：**完成（待补证据）**。版本：2026-09-19。最终演示固定采用 **园区管理 → 中心物联网控制 → Dashboard 面板控制** 的顺序。完整逐项操作、命令和预期画面见 [最终功能演示设计](FINAL_FUNCTION_DEMO.md)；本文用于现场快速串讲和彩排。
 
 ## 演示前
 
@@ -9,18 +9,24 @@
 3. IOS预检查：Po1 SU、OSPF邻居/路由、BGP会话/前缀、Tunnel/IPv6静态路由、VTY ACL、NAT。Dashboard协议NOT COLLECTED是采集范围，不是协议故障。
 4. 准备固定温度操作人、原图/JSON保存目录、停止Backend的Ctrl+C与重启命令。温度操作使用实际阈值/迟滞，调低到关闭阈值以下后再上升，避免迟滞导致误判。
 
-## 主展示：约6分钟
+## 主展示：约12分钟
 
-| 时间 | 操作与讲解 |
-|---|---|
-| 0:00–0:45 | 拓扑与Dashboard全景：Edge Control + Network Operation + Security Operation + Policy Management + Failure Simulation。说明Edge真实控制、NC真实只读、Security/Branch模拟、Network/Security策略展示 |
-| 0:45–1:40 | 打开Network Health：设备名/IP/类型/collectionStatus与NC清单对照；两台Managed→ONLINE。OSPF/BGP/Tunnel NOT COLLECTED，协议验收快速切IOS show输出。NC管理健康不等于全部业务可达 |
-| 1:40–2:40 | Temperature Policy设AUTO/33℃（version自动递增），观察APPLIED ACK；按迟滞先降温关闭，再约32℃保持OFF、约34℃开启，PT FAN与Dashboard一致。Command ON/OFF及ACK可快速展示，随后恢复AUTO |
-| 2:40–4:05 | 核心：真停Backend（Ctrl+C），Dashboard失联；Edge保留最后策略，调温跨阈值和关闭迟滞观察物理FAN ON/OFF。重启同一NC启动脚本，展示自动reconnect/hello/state_sync与UI温度/FAN/策略/version恢复，无默认回退 |
-| 4:05–5:00 | 校园网络业务：Branch访问`http://203.0.113.1`命中HQ-SERVICE；HQ OFFICE域名DNS/HTTP与PAT；BR-ADMIN IPv6跨Tunnel访问管理域。真实远程管理允许与普通用户拒绝可用现场操作或清晰预先证据解释 |
-| 5:00–6:00 | Security Attack模拟红色事件与恢复审计；Branch Check模拟VTY规则解释；Campus三策略状态与Edge ACK对应。主动说明Network Failure已禁用，不能伪造BGP DOWN；真实Port Security另在交换机上验收 |
+| 时间 | 功能 | 操作与讲解 |
+|---|---|---|
+| 0:00–0:40 | 园区管理 | PT完整拓扑：总部、ISP/Internet、分部、NC、IoT。说明这是人员入网、业务访问、安全隔离与运维的统一校园场景 |
+| 0:40–2:00 | 园区管理 | 总部员工DHCP/SLAAC；`show vlan brief`、Trunk、Po1 SU/P；ADMIN→IoT允许、OFFICE→IoT拒绝 |
+| 2:00–3:05 | 园区管理 | 分部DHCP/VLSM、VLAN40/50和ROAS；展示办公地址`.0/26`与管理地址`.64/27` |
+| 3:05–4:20 | 园区管理 | OSPF FULL、BGP表中PfxRcd数字、Branch访问`http://203.0.113.1`；普通分部用户访问管理/IoT失败 |
+| 4:20–5:15 | 园区管理 | HQ OFFICE打开`www.edgecampus.net`并展示PAT；外部访问`203.0.113.1:80`命中HQ-SERVICE |
+| 5:15–6:20 | 园区管理 | Tunnel0 up/up、双向IPv6 ping；ADMIN Telnet分部成功、普通用户失败；Port Security非法MAC计数增加并恢复 |
+| 6:20–7:15 | 中心物联网控制 | 展示TEMP→MCU→SBC→FAN；AUTO/33℃/迟滞1℃，低温OFF、迟滞区保持、高温ON |
+| 7:15–8:35 | 中心物联网控制 | 真停Backend；Edge保留最后策略并完成离线ON/OFF。重启后reconnect/hello/state_sync，策略和状态恢复 |
+| 8:35–9:20 | Dashboard | 中文总览、实时温度/FAN；下发Policy与MANUAL命令，展示APPLIED ACK和物理FAN |
+| 9:20–10:10 | Dashboard | Network Health与真实NC清单对照：两台Managed→ONLINE，OSPF/BGP/Tunnel为NOT COLLECTED |
+| 10:10–11:10 | Dashboard | Security Attack与恢复、Branch Check、Campus Policy三类状态。说明真实网络结果已在第一部分直接验证 |
+| 11:10–12:00 | Dashboard | Cloud Failure真实断开WS并等待state_sync恢复；Network Failure禁用/409。恢复ONLINE/CONNECTED/SECURE画面收束 |
 
-Cloud按钮中断WS演练可在扩展验收展示：HTTP仍服务，恢复后WAITING_FOR_STATE_SYNC→真实state_sync→SUCCESS；这与主展示真正停Backend不同。离线页面FAN为最后观测，物理实时动作在PT观察。
+Cloud按钮中断WS演练和真正停止Backend是两项不同验收：按钮验证Dashboard演练流程；真正停8000验证Edge在云端服务消失时仍自治。离线页面FAN为最后观测，物理实时动作在PT观察。
 
 ## 扩展真实网络验收命令
 

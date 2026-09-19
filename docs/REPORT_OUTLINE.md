@@ -131,7 +131,13 @@
 
 ## 14. 功能测试
 
-严格按 `docs/ACCEPTANCE.md` 的最终测试矩阵组织。
+完整功能演示按以下三部分组织，顺序不可颠倒：
+
+1. **园区管理**：直接在Packet Tracer中按总部员工入网、分部接入、跨园区办公、Internet访问、服务发布、IPv6入网、IPv6跨站点运维、中央远程维护、非法终端防护九个真实场景完成N1–N15；
+2. **中心物联网控制**：展示TEMP→MCU→SBC→FAN、AUTO迟滞控制、真正停Backend后的本地自治和恢复同步；
+3. **Dashboard面板控制**：展示中文总览、真实Policy/Command/ACK、真实NC设备健康，以及明确标识数据性质的安全、分部、园区策略和故障演练。
+
+逐项操作、命令、预期现象和讲解口径见 `docs/FINAL_FUNCTION_DEMO.md`。验收结论仍严格对应 `docs/ACCEPTANCE.md` 的最终测试矩阵。
 
 每项至少包含：
 
@@ -152,8 +158,8 @@
 
 单独放一张课程能力映射表，说明：
 
-- 实验1：VLSM / DHCP / IPv6 / static route / remote management；
-- 实验2：VLAN / Trunk / EtherChannel / SVI / ROAS；
+- 实验1：IPv6地址规划、SLAAC、DHCPv6、Static IPv6、IPv6 static route、remote management；
+- 实验2：VLAN / Trunk / EtherChannel / SVI / ROAS / IPv4 DHCP / VLSM；
 - 实验3：ACL / NAT/PAT / static mapping / DNS / HTTP；
 - 实验4：OSPF / BGP；
 - 实验5：Port Security / MAC / IPv6-over-IPv4。
