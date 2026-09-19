@@ -37,3 +37,17 @@
 ## 2026-09-18 最终收尾入口
 
 项目总状态已按用户要求更新为**完成（待补证据）**。本页保留G4原始证据结论；全部G3/G4/NOC/最终包与彩排缺口以 [最终素材清单](../FINAL_REPORT_SCREENSHOT_CHECKLIST.md) 为准。
+
+
+## 2026-09-19 D 最终证据补齐
+
+本页上方“待补证据”保留 2026-09-17 的历史审计结论，不删除历史项。最终报告阶段 D01–D13 已全部归档于 `evidence/final_report/D/`。
+
+其中原历史缺口已由以下最终证据补齐：
+
+- Dashboard 恢复：`U10-cloud-ws-restored.png`；
+- Cloud Failure 与本地自治：`U10-cloud-ws-failure.png`、`U10-cloud-ws-local-fan.png`；
+- Policy ACK / Campus Policy：`U09-campus-policy.png`；
+- Network Failure 真实性边界：`U11-network-simulation-disabled.png`、`U11-network-disabled-api.png`。
+
+最终完成状态以 `../final/EVIDENCE_PENDING.md` 和 `../FINAL_REPORT_SCREENSHOT_CHECKLIST.md` 为准。
